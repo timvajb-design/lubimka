@@ -1,0 +1,2087 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Любимка</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#F47B20;
+  --orange-light:#FDEEE1;
+  --orange-soft:#FFF6EF;
+  --text:#2B2B2B;
+  --text-soft:#8A8A8E;
+  --bg:#F5F5F7;
+  --card:#FFFFFF;
+  --green:#7CC576;
+  --shadow:0 4px 20px rgba(0,0,0,0.06);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:'Nunito',sans-serif;}
+html,body{background:var(--bg);color:var(--text);overflow-x:hidden;}
+body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
+.app-body{padding-bottom:80px;}
+
+/* ============ WELCOME ============ */
+#welcome{position:fixed;inset:0;max-width:480px;margin:0 auto;z-index:100;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,rgba(244,123,32,0.05),rgba(244,123,32,0.02));}
+.welcome-hero{flex:1;position:relative;overflow:hidden;display:flex;align-items:flex-end;
+  background:linear-gradient(140deg,#FFB367,#F47B20);}
+.welcome-hero .photo{position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=800&h=1000&fit=crop') center/cover;
+  opacity:.92;}
+.welcome-hero .overlay{position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.1) 45%,rgba(0,0,0,.72) 100%);}
+.welcome-logo{position:absolute;top:44px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:10px;z-index:2;}
+.welcome-logo svg{width:64px;height:64px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.25));}
+.welcome-logo .name{color:#fff;font-size:26px;font-weight:900;letter-spacing:.5px;text-shadow:0 2px 8px rgba(0,0,0,.3);}
+.welcome-text{position:relative;z-index:2;padding:0 28px 34px;color:#fff;}
+.welcome-text h2{font-size:27px;font-weight:900;line-height:1.25;text-shadow:0 2px 10px rgba(0,0,0,.35);}
+.welcome-text p{font-size:15px;opacity:.95;margin-top:10px;line-height:1.5;text-shadow:0 1px 6px rgba(0,0,0,.3);}
+.welcome-actions{background:var(--bg);padding:22px 20px calc(22px + env(safe-area-inset-bottom));border-radius:26px 26px 0 0;margin-top:-22px;position:relative;z-index:3;}
+.welcome-actions .hint{text-align:center;font-size:13px;color:var(--text-soft);margin-bottom:16px;line-height:1.5;}
+.btn-big{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--orange);color:#fff;border:none;border-radius:18px;padding:17px;font-size:16px;font-weight:800;cursor:pointer;transition:transform .1s;box-shadow:0 6px 18px rgba(244,123,32,.35);}
+.btn-big:active{transform:scale(.98);}
+.btn-skip{display:block;width:100%;background:transparent;color:var(--text-soft);border:none;padding:16px;font-size:15px;font-weight:700;cursor:pointer;margin-top:6px;}
+.btn-skip:active{color:var(--orange);}
+
+/* ============ Header ============ */
+.header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 10px;background:var(--bg);position:sticky;top:0;z-index:20;}
+.header .logo-row{display:flex;align-items:center;gap:8px;}
+.header .logo-mark{width:28px;height:28px;}
+.header h1{font-size:20px;font-weight:800;}
+.header .back{font-size:26px;color:var(--text);cursor:pointer;width:30px;line-height:1;}
+.icon-btn{width:38px;height:38px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);cursor:pointer;font-size:18px;}
+
+/* ============ Screens ============ */
+.screen{display:none;padding:0 16px;animation:fade .25s ease;}
+.screen.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px;}
+
+/* pet card */
+.pet-card{display:flex;align-items:center;gap:14px;cursor:pointer;}
+.pet-card .avatar{width:64px;height:64px;border-radius:18px;object-fit:cover;flex-shrink:0;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;font-size:30px;}
+.pet-card .info{flex:1;}
+.pet-card .info h3{font-size:18px;font-weight:800;}
+.pet-card .info p{font-size:13px;color:var(--text-soft);line-height:1.5;margin-top:2px;}
+.pet-card .chev{color:var(--text-soft);font-size:22px;}
+.badge{display:inline-block;background:var(--orange-light);color:var(--orange);font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;margin-top:4px;}
+
+.section-title{font-size:15px;font-weight:800;margin:6px 4px 10px;}
+.health{display:flex;align-items:center;gap:16px;}
+.ring{position:relative;width:76px;height:76px;flex-shrink:0;}
+.ring svg{transform:rotate(-90deg);}
+.ring .score{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring .score b{font-size:24px;font-weight:900;line-height:1;}
+.health .txt{font-size:12.5px;color:var(--text-soft);line-height:1.55;}
+
+.actions{display:flex;justify-content:space-between;margin:4px 0 8px;}
+.action{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;cursor:pointer;}
+.action .circle{width:46px;height:46px;border-radius:14px;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.action span{font-size:11px;color:var(--text-soft);font-weight:600;text-align:center;line-height:1.2;}
+
+.reminder{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid #F0F0F2;font-size:13.5px;}
+.reminder:last-child{border:none;}
+.reminder .when{margin-left:auto;color:var(--text-soft);font-size:12.5px;font-weight:600;}
+
+.btn{display:block;width:100%;background:var(--orange);color:#fff;border:none;border-radius:16px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;text-align:center;transition:transform .1s;}
+.btn:active{transform:scale(.98);}
+.btn-outline{background:var(--orange-soft);color:var(--orange);box-shadow:none;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* empty state */
+.empty-state{text-align:center;padding:50px 24px;}
+.empty-state .emoji{font-size:64px;margin-bottom:16px;}
+.empty-state h3{font-size:19px;font-weight:800;margin-bottom:8px;}
+.empty-state p{font-size:14px;color:var(--text-soft);line-height:1.6;margin-bottom:24px;}
+
+/* ============ Pet registration form ============ */
+#register{display:none;position:fixed;inset:0;max-width:480px;margin:0 auto;z-index:90;background:var(--bg);flex-direction:column;}
+#register.active{display:flex;}
+.reg-head{display:flex;align-items:center;gap:12px;padding:18px 20px 6px;}
+.reg-head .back{font-size:26px;cursor:pointer;width:30px;line-height:1;}
+.reg-head h2{font-size:18px;font-weight:800;}
+.progress{display:flex;gap:6px;padding:8px 20px 16px;}
+.progress .seg{flex:1;height:5px;border-radius:3px;background:#E6E6EA;transition:.3s;}
+.progress .seg.on{background:var(--orange);}
+.reg-body{flex:1;overflow-y:auto;padding:8px 24px;}
+.step{display:none;animation:fade .25s ease;}
+.step.active{display:block;}
+.step .q{font-size:23px;font-weight:900;margin-bottom:6px;line-height:1.25;}
+.step .sub{font-size:14px;color:var(--text-soft);margin-bottom:22px;line-height:1.5;}
+.field{width:100%;background:var(--card);border:2px solid transparent;border-radius:16px;padding:16px;font-size:16px;font-weight:600;box-shadow:var(--shadow);outline:none;transition:.2s;}
+.field:focus{border-color:var(--orange);}
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.choice{background:var(--card);border:2px solid transparent;border-radius:18px;padding:22px 12px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:.15s;}
+.choice:active{transform:scale(.97);}
+.choice.sel{border-color:var(--orange);background:var(--orange-soft);}
+.choice .ic{font-size:38px;display:block;margin-bottom:8px;}
+.choice .lbl{font-size:14px;font-weight:800;}
+.avatar-pick{display:flex;flex-direction:column;align-items:center;gap:16px;margin:10px 0 24px;}
+.avatar-pick .big{width:120px;height:120px;border-radius:32px;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;font-size:60px;box-shadow:var(--shadow);overflow:hidden;}
+.avatar-pick .big img{width:100%;height:100%;object-fit:cover;}
+.emoji-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.emoji-opt{width:52px;height:52px;border-radius:14px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;box-shadow:var(--shadow);border:2px solid transparent;}
+.emoji-opt.sel{border-color:var(--orange);}
+.reg-foot{padding:16px 24px calc(20px + env(safe-area-inset-bottom));}
+.two-cols{display:flex;gap:12px;}
+.two-cols .field{flex:1;}
+
+/* success */
+.success-screen{text-align:center;padding:40px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;}
+.success-screen .check{width:110px;height:110px;border-radius:50%;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;font-size:56px;margin-bottom:24px;animation:pop .4s ease;}
+@keyframes pop{0%{transform:scale(0);}70%{transform:scale(1.15);}100%{transform:scale(1);}}
+.success-screen h2{font-size:24px;font-weight:900;margin-bottom:8px;}
+.success-screen p{font-size:15px;color:var(--text-soft);line-height:1.6;margin-bottom:28px;}
+
+/* tabs */
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{background:var(--card);border:none;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;color:var(--text-soft);cursor:pointer;white-space:nowrap;box-shadow:var(--shadow);}
+.tab.on{background:var(--orange);color:#fff;}
+
+.diary-item{margin-bottom:16px;}
+.diary-item .date{font-size:13px;font-weight:800;margin-bottom:6px;}
+.diary-item .body{font-size:13.5px;color:#555;line-height:1.55;background:var(--card);padding:12px 14px;border-radius:16px;box-shadow:var(--shadow);}
+
+.adopt{display:flex;gap:12px;margin-bottom:12px;position:relative;}
+.adopt img{width:84px;height:84px;border-radius:16px;object-fit:cover;flex-shrink:0;}
+.adopt .info h4{font-size:15px;font-weight:800;}
+.adopt .info p{font-size:12.5px;color:var(--text-soft);line-height:1.5;margin-top:3px;}
+.adopt .info .loc{font-size:12px;color:var(--orange);margin-top:5px;font-weight:700;}
+.adopt .heart{position:absolute;top:8px;right:8px;font-size:18px;cursor:pointer;}
+
+.hero{background:linear-gradient(135deg,#F9944A,#F47B20);border-radius:22px;padding:20px;color:#fff;margin-bottom:14px;position:relative;overflow:hidden;}
+.hero h2{font-size:20px;font-weight:900;}
+.hero p{font-size:13px;opacity:.95;margin-top:4px;line-height:1.5;max-width:78%;}
+.hero .paw{position:absolute;right:-10px;bottom:-14px;font-size:90px;opacity:.18;}
+
+.support-stats{display:flex;gap:12px;margin:16px 0;}
+.stat{flex:1;background:var(--orange-soft);border-radius:18px;padding:16px;text-align:center;}
+.stat b{font-size:28px;font-weight:900;color:var(--orange);}
+.stat span{font-size:12px;color:var(--text-soft);display:block;margin-top:4px;line-height:1.4;}
+
+.about-text{font-size:14px;color:#555;line-height:1.7;text-align:center;padding:0 6px;}
+
+/* ============ Pet account screen ============ */
+#petScreen{display:none;position:fixed;inset:0;max-width:480px;margin:0 auto;z-index:80;background:var(--bg);flex-direction:column;}
+#petScreen.active{display:flex;}
+.ps-head{display:flex;align-items:center;gap:12px;padding:18px 20px 10px;}
+.ps-head .back{font-size:26px;cursor:pointer;width:30px;line-height:1;}
+.ps-head h2{font-size:18px;font-weight:800;flex:1;}
+.ps-head .del{font-size:26px;cursor:pointer;opacity:.7;font-weight:900;line-height:.5;}
+.ps-body{flex:1;overflow-y:auto;padding:6px 16px calc(30px + env(safe-area-inset-bottom));}
+.ps-profile{text-align:center;padding:10px 0 18px;}
+.ps-profile .big-avatar{width:110px;height:110px;border-radius:30px;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;font-size:56px;margin:0 auto 12px;box-shadow:var(--shadow);overflow:hidden;}
+.ps-profile .big-avatar img{width:100%;height:100%;object-fit:cover;}
+.ps-profile h2{font-size:24px;font-weight:900;}
+.ps-profile .meta{font-size:14px;color:var(--text-soft);margin-top:4px;}
+.ps-stats{display:flex;gap:10px;margin:14px 0;}
+.ps-stat{flex:1;background:var(--card);border-radius:16px;padding:12px 8px;text-align:center;box-shadow:var(--shadow);}
+.ps-stat b{font-size:16px;font-weight:900;display:block;}
+.ps-stat span{font-size:11px;color:var(--text-soft);}
+.hist-item{display:flex;gap:12px;align-items:flex-start;background:var(--card);border-radius:16px;padding:13px 14px;box-shadow:var(--shadow);margin-bottom:10px;position:relative;}
+.hist-item .ic{width:40px;height:40px;border-radius:12px;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.hist-item .tx{flex:1;padding-right:18px;}
+.hist-item .tx b{font-size:14.5px;font-weight:800;display:block;}
+.hist-item .tx .note{font-size:13px;color:#555;line-height:1.45;margin-top:2px;}
+.hist-item .tx .dt{font-size:12px;color:var(--text-soft);margin-top:4px;font-weight:700;}
+.hist-item .rm{position:absolute;top:10px;right:12px;color:#C9C9CE;font-size:15px;cursor:pointer;}
+/* add record modal */
+#recModal{display:none;position:fixed;inset:0;max-width:480px;margin:0 auto;z-index:85;background:rgba(0,0,0,.45);align-items:flex-end;}
+#recModal.active{display:flex;}
+.rec-sheet{background:var(--bg);width:100%;border-radius:24px 24px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom));max-height:86vh;overflow-y:auto;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:none;opacity:1;}}
+.rec-sheet h3{font-size:18px;font-weight:900;margin-bottom:14px;text-align:center;}
+.rec-types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.rec-type{background:var(--card);border:2px solid transparent;border-radius:14px;padding:12px 6px;text-align:center;cursor:pointer;box-shadow:var(--shadow);}
+.rec-type.sel{border-color:var(--orange);background:var(--orange-soft);}
+.rec-type .ic{font-size:24px;display:block;margin-bottom:4px;}
+.rec-type .lbl{font-size:11px;font-weight:800;}
+
+/* edit sheet */
+#editModal{display:none;position:fixed;inset:0;max-width:480px;margin:0 auto;z-index:86;background:rgba(0,0,0,.45);align-items:flex-end;}
+#editModal.active{display:flex;}
+.edit-sheet{background:var(--bg);width:100%;border-radius:24px 24px 0 0;padding:20px 20px calc(24px + env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto;animation:slideUp .25s ease;}
+.edit-sheet h3{font-size:18px;font-weight:900;margin-bottom:14px;text-align:center;}
+.edit-label{font-size:12.5px;font-weight:800;color:var(--text-soft);margin:12px 4px 6px;}
+.edit-avatar{display:flex;align-items:center;gap:14px;margin-bottom:4px;}
+.edit-avatar .cur{width:74px;height:74px;border-radius:20px;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;font-size:36px;overflow:hidden;box-shadow:var(--shadow);flex-shrink:0;}
+.edit-avatar .cur img{width:100%;height:100%;object-fit:cover;}
+.mini-choices{display:flex;gap:8px;flex-wrap:wrap;}
+.mini-choice{background:var(--card);border:2px solid transparent;border-radius:12px;padding:8px 13px;font-size:13px;font-weight:800;cursor:pointer;box-shadow:var(--shadow);}
+.mini-choice.sel{border-color:var(--orange);background:var(--orange-soft);color:var(--orange);}
+.btn-danger{display:block;width:100%;background:#FDECEC;color:#E05A5A;border:none;border-radius:16px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;text-align:center;margin-top:10px;}
+
+#notifModal,#menuModal{display:none;position:fixed;inset:0;max-width:480px;margin:0 auto;z-index:88;background:rgba(0,0,0,.45);align-items:flex-end;}
+#notifModal.active,#menuModal.active{display:flex;}
+
+/* ===== board / posts ===== */
+.seg-tabs{display:flex;gap:6px;background:#EAEAEE;border-radius:14px;padding:4px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+.seg-tabs::-webkit-scrollbar{display:none;}
+.seg-tabs button{flex:0 0 auto;padding-left:11px;padding-right:11px;border:none;background:transparent;padding:9px 4px;border-radius:11px;font-size:12.5px;font-weight:800;color:var(--text-soft);cursor:pointer;font-family:'Nunito',sans-serif;}
+.seg-tabs button.on{background:#fff;color:var(--orange);box-shadow:0 2px 6px rgba(0,0,0,.07);}
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.chip{background:var(--card);border:none;border-radius:12px;padding:8px 13px;font-size:12.5px;font-weight:800;color:var(--text-soft);white-space:nowrap;cursor:pointer;box-shadow:var(--shadow);font-family:'Nunito',sans-serif;}
+.chip.on{background:var(--orange);color:#fff;}
+.post{background:var(--card);border-radius:18px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden;}
+.post .ph{width:100%;height:190px;object-fit:cover;display:block;background:var(--orange-soft);}
+.post .ph-none{height:120px;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--orange-soft);}
+.post .bd{padding:13px 15px 15px;}
+.post .tp{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.post h4{font-size:17px;font-weight:900;flex:1;}
+.post .st{font-size:10.5px;font-weight:900;padding:4px 9px;border-radius:8px;background:#FDECEC;color:#E05A5A;}
+.post .st.found{background:#E8F5E7;color:#4CA344;}
+.post .st.adopt{background:var(--orange-light);color:var(--orange);}
+.post .meta{font-size:12.5px;color:var(--text-soft);line-height:1.6;}
+.post .meta b{color:var(--text);font-weight:800;}
+.post .desc{font-size:13.5px;line-height:1.5;margin-top:7px;color:#444;}
+.post .btns{display:flex;gap:8px;margin-top:12px;}
+.post .btns button{flex:1;border:none;border-radius:12px;padding:11px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+.b-tg{background:var(--orange);color:#fff;}
+.b-gr{background:#E8F5E7;color:#4CA344;}
+.b-rd{background:#FDECEC;color:#E05A5A;}
+.b-gy{background:#F0F0F2;color:var(--text-soft);}
+.fab{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);max-width:480px;width:calc(100% - 32px);z-index:30;}
+.fab button{width:100%;background:var(--orange);color:#fff;border:none;border-radius:16px;padding:15px;font-size:15px;font-weight:800;box-shadow:0 8px 22px rgba(244,123,32,.42);cursor:pointer;font-family:'Nunito',sans-serif;}
+#postForm{display:none;position:fixed;inset:0;max-width:480px;margin:0 auto;z-index:92;background:var(--bg);flex-direction:column;}
+#postForm.active{display:flex;}
+.pf-body{flex:1;overflow-y:auto;padding:8px 20px 20px;}
+.pf-photo{width:100%;height:150px;border-radius:16px;background:var(--card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-soft);font-weight:700;cursor:pointer;overflow:hidden;margin-bottom:6px;}
+.pf-photo img{width:100%;height:100%;object-fit:cover;}
+.loading{text-align:center;padding:40px;color:var(--text-soft);font-size:14px;font-weight:700;}
+
+.sum-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin:16px 0 6px;}
+.sum-grid button{background:var(--card);border:2px solid transparent;border-radius:14px;padding:14px 4px;font-size:15px;font-weight:900;color:var(--text);cursor:pointer;box-shadow:var(--shadow);font-family:'Nunito',sans-serif;transition:.15s;}
+.sum-grid button.on{border-color:var(--orange);color:var(--orange);background:var(--orange-light);}
+.sum-own{width:100%;margin-top:9px;}
+.how-row{display:flex;gap:11px;align-items:flex-start;text-align:left;margin-bottom:13px;}
+.how-row .n{width:26px;height:26px;flex:none;border-radius:50%;background:var(--orange-light);color:var(--orange);font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.how-row p{font-size:13px;line-height:1.55;color:#555;}
+
+/* меню кнопки + */
+#addSheet,#postActions{display:none;position:fixed;inset:0;z-index:95;max-width:480px;margin:0 auto;}
+#addSheet.active,#postActions.active{display:block;}
+#addSheet .ov,#postActions .ov{position:absolute;inset:0;background:rgba(0,0,0,.45);animation:fadeIn .2s;}
+#addSheet .sh,#postActions .sh{position:absolute;left:0;right:0;bottom:0;background:var(--bg);border-radius:24px 24px 0 0;padding:10px 16px calc(20px + env(safe-area-inset-bottom));animation:slideUp .25s cubic-bezier(.2,.9,.3,1);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+#addSheet .grab,#postActions .grab{width:38px;height:4px;border-radius:3px;background:#D6D6DC;margin:0 auto 14px;}
+#addSheet h3,#postActions h3{font-size:17px;font-weight:900;text-align:center;margin-bottom:14px;}
+.add-opt{display:flex;align-items:center;gap:13px;background:var(--card);border:none;width:100%;text-align:left;border-radius:16px;padding:14px 15px;margin-bottom:9px;box-shadow:var(--shadow);cursor:pointer;font-family:'Nunito',sans-serif;}
+.add-opt .em{width:44px;height:44px;flex:none;border-radius:13px;background:var(--orange-light);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.add-opt .tx b{display:block;font-size:15px;font-weight:900;color:var(--text);margin-bottom:2px;}
+.add-opt .tx span{font-size:12.5px;color:var(--text-soft);line-height:1.4;}
+.add-opt .ar{margin-left:auto;color:#C8C8CE;font-size:20px;font-weight:900;}
+.add-cancel{width:100%;border:none;background:transparent;padding:13px;font-size:15px;font-weight:800;color:var(--text-soft);cursor:pointer;font-family:'Nunito',sans-serif;}
+/* мини-баннер поддержки */
+.sup-mini{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#FFF3E8,#FFE7D3);border:none;width:100%;text-align:left;border-radius:18px;padding:14px 16px;margin-bottom:12px;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:var(--shadow);}
+.sup-mini .e{font-size:26px;}
+.sup-mini b{display:block;font-size:14.5px;font-weight:900;color:#B85C10;margin-bottom:2px;}
+.sup-mini span{font-size:12px;color:#A9702F;line-height:1.4;}
+.sup-mini .ar{margin-left:auto;color:var(--orange);font-size:20px;font-weight:900;}
+
+.promise{background:linear-gradient(135deg,#FFF3E8,#FFE9D6);border-radius:18px;padding:16px 16px 14px;margin-top:12px;}
+.promise .st{display:flex;gap:11px;align-items:flex-start;margin-bottom:11px;}
+.promise .st:last-of-type{margin-bottom:0;}
+.promise .st .n{width:24px;height:24px;flex:none;border-radius:50%;background:var(--orange);color:#fff;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;}
+.promise .st p{font-size:13px;line-height:1.5;color:#6B4A28;text-align:left;}
+.btn-ig{width:100%;border:none;border-radius:14px;padding:13px;margin-top:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:#fff;color:var(--orange);box-shadow:var(--shadow);}
+.rep-btns{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.rep-btns .btn-ig{margin-top:12px;}
+
+/* Фото в ленте: карусель */
+.feedcar{position:relative;width:100%;aspect-ratio:1.15;overflow:hidden;background:#F1ECE6;}
+.feedcar-wrap{display:flex;width:100%;height:100%;transition:transform .35s cubic-bezier(.25,.8,.35,1);}
+.feedcar-slide{flex:0 0 100%;height:100%;background-size:cover;background-position:center;}
+.car-btn{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.35);border:none;color:#fff;font-size:19px;font-weight:800;cursor:pointer;z-index:5;line-height:1;}
+.car-btn.prev{left:10px;}
+.car-btn.next{right:10px;}
+.car-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5;}
+.car-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.55);transition:.2s;}
+.car-dots i.on{background:#fff;transform:scale(1.35);}
+.car-count{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.4);color:#fff;font-size:11.5px;font-weight:800;padding:3px 9px;border-radius:20px;z-index:5;}
+/* Фото в форме: сетка миниатюр */
+.ph-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.ph-th{position:relative;aspect-ratio:1;border-radius:14px;background-size:cover;background-position:center;box-shadow:var(--shadow);}
+.ph-del{position:absolute;top:-7px;right:-7px;width:26px;height:26px;border-radius:50%;border:2.5px solid #fff;background:#E05A5A;color:#fff;font-size:12px;font-weight:900;cursor:pointer;line-height:1;z-index:2;}
+.ph-cover{position:absolute;bottom:6px;left:6px;background:rgba(0,0,0,.5);color:#fff;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:10px;}
+.ph-add{aspect-ratio:1;border-radius:14px;border:2px dashed #E8C49E;background:#FFF8F1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--orange);font-size:24px;font-weight:900;cursor:pointer;}
+.ph-add span{font-size:11px;font-weight:800;color:#C98B4E;}
+.ph-busy{display:flex;align-items:center;justify-content:center;font-size:24px;background:#FFF3E8;animation:pulse 1s infinite;}
+@keyframes pulse{50%{opacity:.5}}
+.ph-hint{font-size:12px;color:var(--text-soft);margin-top:9px;text-align:center;}
+
+
+
+/* магазин */
+.shop-hero{background:linear-gradient(135deg,#FFF3E8,#FFE7D3);border-radius:20px;padding:20px 18px;margin-bottom:14px;text-align:center;}
+.shop-hero .big{font-size:38px;margin-bottom:6px;}
+.shop-hero h3{font-size:18px;font-weight:900;color:#B85C10;margin-bottom:6px;}
+.shop-hero p{font-size:13px;color:#A9702F;line-height:1.55;}
+.prod{background:var(--card);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:16px;}
+.prod img{width:100%;display:block;}
+.prod .ph-fallback{width:100%;aspect-ratio:1;background:linear-gradient(135deg,#FFE7D3,#FFD9B8);display:flex;align-items:center;justify-content:center;font-size:64px;}
+.prod .bd{padding:14px 16px 16px;}
+.prod h4{font-size:16px;font-weight:900;margin-bottom:4px;}
+.prod .sub{font-size:12.5px;color:var(--text-soft);line-height:1.5;margin-bottom:12px;}
+.prod .row{display:flex;align-items:center;gap:10px;}
+.prod .price{font-size:20px;font-weight:900;color:var(--orange);white-space:nowrap;}
+.prod .buy{flex:1;border:none;border-radius:14px;padding:13px;font-size:14.5px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:var(--orange);color:#fff;}
+.prod .soon-tag{display:inline-block;background:#EEE9FF;color:#7A5CD0;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;margin-bottom:8px;}
+.prod .pic-wrap{position:relative;}
+.prod .pic-wrap img{width:100%;display:block;}
+.ph-upload{position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.62);color:#fff;border:none;border-radius:14px;padding:9px 14px;font-size:12.5px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;backdrop-filter:blur(4px);}
+.ph-loading{position:absolute;inset:0;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-size:30px;}
+.field-hint{font-size:11.5px;color:var(--text-soft);line-height:1.5;margin:-4px 0 12px;padding:0 3px;}
+.contact-box{background:#FFF6EC;border:1.5px dashed #F0C79A;border-radius:14px;padding:11px 13px;margin-top:10px;}
+.contact-box .lb{font-size:11px;font-weight:800;color:#B85C10;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+.contact-box .vl{font-size:14.5px;font-weight:800;color:var(--text);word-break:break-word;}
+/* счастливые истории */
+.happy-hero{background:linear-gradient(135deg,#EAF7E9,#D6F0D4);border-radius:20px;padding:20px 18px;margin-bottom:14px;text-align:center;}
+.happy-hero .n{font-size:40px;font-weight:900;color:#3E8C3A;line-height:1;}
+.happy-hero .t{font-size:13.5px;font-weight:800;color:#4E9C4A;margin-bottom:8px;}
+.happy-hero p{font-size:12.5px;color:#5A8C57;line-height:1.55;}
+.story{background:var(--card);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:14px;}
+.story img{width:100%;display:block;}
+.story .noimg{width:100%;aspect-ratio:1.5;background:linear-gradient(135deg,#EAF7E9,#D6F0D4);display:flex;align-items:center;justify-content:center;font-size:56px;}
+.story .bd{padding:14px 16px 16px;}
+.story .tag{display:inline-block;background:#EAF7E9;color:#3E8C3A;font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;margin-bottom:8px;}
+.story h4{font-size:17px;font-weight:900;margin-bottom:5px;}
+.story p{font-size:13.5px;color:var(--text-soft);line-height:1.6;white-space:pre-wrap;}
+.story .mt{font-size:11.5px;color:var(--text-soft);margin-top:9px;}
+.story .del{margin-top:10px;width:100%;border:none;border-radius:12px;padding:10px;background:#FBEDED;color:#C94A4A;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+.sform{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-bottom:16px;}
+.sform h4{font-size:15px;font-weight:900;margin-bottom:10px;}
+.sform .thumb{width:100%;aspect-ratio:1.5;border-radius:14px;background:#F4F1EC;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:10px;}
+.sform .up{display:block;text-align:center;border:2px dashed #E8C49E;background:#FFF8F1;border-radius:13px;padding:11px;color:var(--orange);font-size:13.5px;font-weight:800;cursor:pointer;margin-bottom:10px;}
+.reminder.tap{cursor:pointer;transition:background .12s;border-radius:10px;}
+.reminder.tap:active{background:#FFF3E6;}
+.add-mini{color:#3E8C3A;background:#EAF7E9;border-radius:9px;padding:3px 9px;font-size:11.5px;white-space:nowrap;}
+.chev-s{color:#C9C4BC;font-size:17px;font-weight:800;margin-left:6px;}
+.rem-hint{font-size:11px;color:var(--text-soft);text-align:center;margin-top:6px;}
+/* советы по уходу */
+.care-tip{border-top:1px solid #F1EDE6;margin-top:12px;padding-top:12px;cursor:pointer;}
+.care-tip .ct-head{display:flex;align-items:center;gap:10px;}
+.ct-pet{width:34px;height:34px;border-radius:10px;background:#FFF3E6;display:flex;align-items:center;justify-content:center;font-size:19px;overflow:hidden;flex-shrink:0;}
+.ct-pet img{width:100%;height:100%;object-fit:cover;}
+.ct-head b{font-size:13.5px;display:block;}
+.ct-head small{font-size:11.5px;color:var(--text-soft);}
+.ct-head div{flex:1;}
+.ct-chev{color:#C9C4BC;font-size:18px;font-weight:800;transition:transform .2s;}
+.care-tip.open .ct-chev{transform:rotate(90deg);}
+.ct-today{font-size:13px;line-height:1.55;color:var(--text);margin-top:8px;background:#FFF9F2;border-radius:11px;padding:9px 11px;}
+.care-tip.open .ct-today{display:none;}
+.ct-all{display:none;margin-top:8px;}
+.care-tip.open .ct-all{display:block;}
+.ct-row{font-size:13px;line-height:1.55;color:var(--text);background:#FFF9F2;border-radius:11px;padding:9px 11px;margin-bottom:6px;}
+.shop-note{font-size:12px;color:var(--text-soft);line-height:1.6;text-align:center;padding:0 10px;margin-bottom:10px;}
+
+/* bottom nav */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;display:flex;justify-content:space-around;align-items:center;padding:8px 0 14px;box-shadow:0 -4px 20px rgba(0,0,0,.05);z-index:30;}
+.nav .item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;color:var(--text-soft);cursor:pointer;font-weight:700;flex:1;}
+.nav .item.on{color:var(--orange);}
+.nav .item .ic{font-size:20px;}
+.nav .add{width:52px;height:52px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;margin-top:-20px;box-shadow:0 6px 16px rgba(244,123,32,.45);flex:0 0 auto;}
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGO (кот + пёс + сердце) ==================== -->
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<clipPath id="lgClip"><circle cx="100" cy="110" r="86"/></clipPath>
+<g id="lubimkaLogo">
+  <circle cx="100" cy="110" r="86" fill="#F47B20"/>
+  <rect x="58" y="0" width="84" height="100" fill="#fff" clip-path="url(#lgClip)"/>
+  <path fill="#F47B20" d="M 48,112 C 40,95 38,70 46,42 L 54,16 C 60,22 64,28 66,34 C 69,31 72,28 76,27 L 86,14 C 90,22 93,32 94,42 C 95,48 97,54 98,58 C 97,61 95,63 94,64 C 92,68 91,70 90,72 C 87,76 85,79 82,82 C 74,90 62,100 56,108 Z"/>
+  <path fill="#F47B20" d="M 152,112 C 160,96 162,70 156,40 C 152,26 140,17 124,16 C 115,15 108,20 104,28 C 101,34 99,42 96,52 C 98,58 101,61 104,62 C 107,66 109,70 110,74 C 113,82 116,88 120,94 C 128,104 142,110 148,112 Z"/>
+  <path fill="#F47B20" d="M 136,16 C 154,20 170,34 176,56 C 180,74 176,90 164,97 C 155,101 148,96 146,86 C 144,74 146,58 142,44 C 140,33 138,24 136,16 Z"/>
+  <path fill="#fff" d="M 163,44 C 170,58 171,76 163,88 C 159,93 154,92 153,86 C 158,78 160,62 157,50 C 158,46 161,44 163,44 Z"/>
+  <path fill="#fff" d="M 100,178 C 70,152 52,132 52,108 C 52,92 64,81 78,81 C 88,81 96,88 100,97 C 104,88 112,81 122,81 C 136,81 148,92 148,108 C 148,132 130,152 100,178 Z"/>
+</g>
+</defs>
+</svg>
+
+<!-- ==================== WELCOME SCREEN ==================== -->
+<div id="welcome">
+  <div class="welcome-hero">
+    <div class="photo"></div>
+    <div class="overlay"></div>
+    <div class="welcome-logo">
+      <svg viewBox="0 0 100 100"><path fill="#fff" d="M50 88C30 74 12 60 12 40 12 26 22 18 33 18c8 0 14 5 17 11 3-6 9-11 17-11 11 0 21 8 21 22 0 20-18 34-38 48z"/><circle cx="35" cy="34" r="7" fill="#F47B20"/><circle cx="63" cy="34" r="7" fill="#F47B20"/></svg>
+      <div class="name">Любимка</div>
+    </div>
+    <div class="welcome-text">
+      <h2 id="welcomeGreeting">Добро пожаловать в Любимку! 🐾</h2>
+      <p>Мы рады, что вы с нами. Здесь тепло тем, кого мы любим — и тем, кто ещё ищет свой дом.</p>
+    </div>
+  </div>
+  <div class="welcome-actions">
+    <div class="hint">Давайте начнём с самого главного —<br>создайте аккаунт для вашего питомца 💛</div>
+    <button class="btn-big" onclick="startRegister()">➕ Создать аккаунт питомцу</button>
+    <button class="btn-skip" onclick="skipWelcome()">Пока нет питомца — пропустить</button>
+  </div>
+</div>
+
+<!-- ==================== PET REGISTRATION ==================== -->
+<div id="register">
+  <div class="reg-head">
+    <div class="back" onclick="regBack()">‹</div>
+    <h2>Аккаунт питомца</h2>
+  </div>
+  <div class="progress">
+    <div class="seg on" data-seg="0"></div>
+    <div class="seg" data-seg="1"></div>
+    <div class="seg" data-seg="2"></div>
+    <div class="seg" data-seg="3"></div>
+    <div class="seg" data-seg="4"></div>
+  </div>
+  <div class="reg-body">
+
+    <!-- Step 0: type -->
+    <div class="step active" data-step="0">
+      <div class="q">Кто ваш любимец?</div>
+      <div class="sub">Выберите вид животного</div>
+      <div class="choice-grid">
+        <div class="choice" onclick="pickType(this,'Кошка','🐱')"><span class="ic">🐱</span><span class="lbl">Кошка</span></div>
+        <div class="choice" onclick="pickType(this,'Собака','🐶')"><span class="ic">🐶</span><span class="lbl">Собака</span></div>
+        <div class="choice" onclick="pickType(this,'Птица','🦜')"><span class="ic">🦜</span><span class="lbl">Птица</span></div>
+        <div class="choice" onclick="pickType(this,'Грызун','🐹')"><span class="ic">🐹</span><span class="lbl">Грызун</span></div>
+        <div class="choice" onclick="pickType(this,'Рыбка','🐠')"><span class="ic">🐠</span><span class="lbl">Рыбка</span></div>
+        <div class="choice" onclick="pickType(this,'Другой','🐾')"><span class="ic">🐾</span><span class="lbl">Другой</span></div>
+      </div>
+    </div>
+
+    <!-- Step 1: name -->
+    <div class="step" data-step="1">
+      <div class="q">Как зовут малыша?</div>
+      <div class="sub">Введите кличку питомца</div>
+      <input class="field" id="petName" placeholder="Например: Мурка" oninput="checkStep()">
+    </div>
+
+    <!-- Step 2: breed + gender -->
+    <div class="step" data-step="2">
+      <div class="q">Расскажите о породе</div>
+      <div class="sub" id="breedSub">Выберите из списка или впишите свою — подберём советы по уходу именно для вашей породы 🧡</div>
+      <div class="mini-choices" id="breedChips" style="margin-bottom:10px"></div>
+      <input class="field" id="petBreed" placeholder="Или впишите породу вручную" style="margin-bottom:14px" oninput="breedTyped()">
+      <div class="choice-grid">
+        <div class="choice" onclick="pickGender(this,'Мальчик')"><span class="ic">♂️</span><span class="lbl">Мальчик</span></div>
+        <div class="choice" onclick="pickGender(this,'Девочка')"><span class="ic">♀️</span><span class="lbl">Девочка</span></div>
+      </div>
+    </div>
+
+    <!-- Step 3: birth + weight -->
+    <div class="step" data-step="3">
+      <div class="q">Дата рождения и вес</div>
+      <div class="sub">Не знаете точную дату — укажите примерную. Возраст посчитаем сами и поздравим с днём рождения 🎂</div>
+      <div class="edit-label">Дата рождения</div>
+      <input class="field" id="petBirth" type="date" style="margin-bottom:12px">
+      <div class="edit-label">Вес (кг)</div>
+      <input class="field" id="petWeight" type="number" step="0.1" placeholder="Например: 4.2">
+    </div>
+
+    <!-- Step 4: avatar -->
+    <div class="step" data-step="4">
+      <div class="q">Выберите аватар</div>
+      <div class="sub">Загрузите фото или выберите эмодзи</div>
+      <div class="avatar-pick">
+        <div class="big" id="avatarPreview">🐱</div>
+        <label class="btn btn-outline" style="width:auto;padding:12px 22px;cursor:pointer">
+          📷 Загрузить фото
+          <input type="file" accept="image/*" style="display:none" onchange="loadPhoto(event)">
+        </label>
+        <div class="emoji-row" id="emojiRow">
+          <div class="emoji-opt sel" onclick="pickEmoji(this,'🐱')">🐱</div>
+          <div class="emoji-opt" onclick="pickEmoji(this,'🐶')">🐶</div>
+          <div class="emoji-opt" onclick="pickEmoji(this,'🐰')">🐰</div>
+          <div class="emoji-opt" onclick="pickEmoji(this,'🐹')">🐹</div>
+          <div class="emoji-opt" onclick="pickEmoji(this,'🦜')">🦜</div>
+          <div class="emoji-opt" onclick="pickEmoji(this,'🐠')">🐠</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: success -->
+    <div class="step" data-step="5">
+      <div class="success-screen">
+        <div class="check">🎉</div>
+        <h2 id="successName">Аккаунт создан!</h2>
+        <p>Теперь у вашего питомца есть цифровая карточка. Ведите дневник, следите за здоровьем и прививками.</p>
+        <button class="btn" onclick="finishRegister()">Перейти в приложение</button>
+      </div>
+    </div>
+
+  </div>
+  <div class="reg-foot" id="regFoot">
+    <button class="btn" id="regNextBtn" onclick="regNext()" disabled>Далее</button>
+  </div>
+</div>
+
+<!-- ==================== PET ACCOUNT SCREEN ==================== -->
+<div id="petScreen">
+  <div class="ps-head">
+    <div class="back" onclick="closePet()">‹</div>
+    <h2>Аккаунт питомца</h2>
+    <div class="del" onclick="openMenu()">⋯</div>
+  </div>
+  <div class="ps-body" id="psBody"></div>
+</div>
+
+<!-- ==================== ADD RECORD MODAL ==================== -->
+<div id="recModal" onclick="if(event.target===this)closeRec()">
+  <div class="rec-sheet">
+    <h3>Новая запись в истории</h3>
+    <div class="rec-types" id="recTypes">
+      <div class="rec-type sel" onclick="pickRecType(this,'Прививка','💉')"><span class="ic">💉</span><span class="lbl">Прививка</span></div>
+      <div class="rec-type" onclick="pickRecType(this,'Ветеринар','🏥')"><span class="ic">🏥</span><span class="lbl">Ветеринар</span></div>
+      <div class="rec-type" onclick="pickRecType(this,'Лекарство','💊')"><span class="ic">💊</span><span class="lbl">Лекарство</span></div>
+      <div class="rec-type" onclick="pickRecType(this,'Паразиты','🪱')"><span class="ic">🪱</span><span class="lbl">Обработка</span></div>
+      <div class="rec-type" onclick="pickRecType(this,'Груминг','✂️')"><span class="ic">✂️</span><span class="lbl">Груминг</span></div>
+      <div class="rec-type" onclick="pickRecType(this,'Заметка','📝')"><span class="ic">📝</span><span class="lbl">Заметка</span></div>
+    </div>
+    <input class="field" id="recTitle" placeholder="Название (например: прививка от бешенства)" style="margin-bottom:10px">
+    <input class="field" id="recDate" type="date" style="margin-bottom:10px">
+    <textarea class="field" id="recNote" rows="3" placeholder="Комментарий (необязательно)" style="resize:none;margin-bottom:14px"></textarea>
+    <button class="btn" onclick="saveRec()">Сохранить запись</button>
+    <button class="btn-skip" onclick="closeRec()">Отмена</button>
+  </div>
+</div>
+
+<!-- ==================== EDIT PET MODAL ==================== -->
+<div id="editModal" onclick="if(event.target===this)closeEdit()">
+  <div class="edit-sheet">
+    <h3>Редактировать</h3>
+    <div class="edit-label">Аватар</div>
+    <div class="edit-avatar">
+      <div class="cur" id="editAvatarCur">🐱</div>
+      <div>
+        <label class="mini-choice" style="display:inline-block;cursor:pointer">📷 Новое фото
+          <input type="file" accept="image/*" style="display:none" onchange="editPhoto(event)">
+        </label>
+        <div class="mini-choices" id="editEmojiRow" style="margin-top:8px">
+          <span class="mini-choice" onclick="editEmoji(this,'🐱')">🐱</span>
+          <span class="mini-choice" onclick="editEmoji(this,'🐶')">🐶</span>
+          <span class="mini-choice" onclick="editEmoji(this,'🐰')">🐰</span>
+          <span class="mini-choice" onclick="editEmoji(this,'🐹')">🐹</span>
+          <span class="mini-choice" onclick="editEmoji(this,'🦜')">🦜</span>
+          <span class="mini-choice" onclick="editEmoji(this,'🐠')">🐠</span>
+        </div>
+      </div>
+    </div>
+    <div class="edit-label">Кличка</div>
+    <input class="field" id="editName" placeholder="Кличка">
+    <div class="edit-label">Вид</div>
+    <div class="mini-choices" id="editTypeRow">
+      <span class="mini-choice" onclick="editType(this,'Кошка')">🐱 Кошка</span>
+      <span class="mini-choice" onclick="editType(this,'Собака')">🐶 Собака</span>
+      <span class="mini-choice" onclick="editType(this,'Птица')">🦜 Птица</span>
+      <span class="mini-choice" onclick="editType(this,'Грызун')">🐹 Грызун</span>
+      <span class="mini-choice" onclick="editType(this,'Рыбка')">🐠 Рыбка</span>
+      <span class="mini-choice" onclick="editType(this,'Другой')">🐾 Другой</span>
+    </div>
+    <div class="edit-label">Порода</div>
+    <input class="field" id="editBreed" placeholder="Порода">
+    <div class="edit-label">Пол</div>
+    <div class="mini-choices" id="editGenderRow">
+      <span class="mini-choice" onclick="editGender(this,'Мальчик')">♂️ Мальчик</span>
+      <span class="mini-choice" onclick="editGender(this,'Девочка')">♀️ Девочка</span>
+    </div>
+    <div class="edit-label">Дата рождения</div>
+    <input class="field" id="editBirth" type="date">
+    <div class="edit-label">Вес (кг)</div>
+    <input class="field" id="editWeight" type="number" step="0.1" placeholder="Вес (кг)">
+    <div style="height:16px"></div>
+    <button class="btn" onclick="saveEdit()">💾 Сохранить изменения</button>
+    <button class="btn-danger" onclick="deletePet()">🗑 Удалить аккаунт питомца</button>
+    <button class="btn-skip" onclick="closeEdit()">Отмена</button>
+  </div>
+</div>
+
+<!-- ==================== PET MENU ==================== -->
+<div id="menuModal" onclick="if(event.target===this)closeMenu()">
+  <div class="rec-sheet">
+    <h3 id="menuTitle">Питомец</h3>
+    <button class="btn" onclick="closeMenu();openEdit()" style="margin-bottom:10px">✏️ Редактировать профиль</button>
+    <button class="btn-danger" onclick="closeMenu();deletePet()" style="margin-top:0">🗑 Удалить аккаунт</button>
+    <button class="btn-skip" onclick="closeMenu()">Отмена</button>
+  </div>
+</div>
+
+<!-- ==================== NOTIFICATIONS ==================== -->
+<div id="notifModal" onclick="if(event.target===this)closeNotif()">
+  <div class="rec-sheet">
+    <h3>🔔 Напоминания</h3>
+    <div id="notifList"></div>
+    <button class="btn-skip" onclick="closeNotif()">Закрыть</button>
+  </div>
+</div>
+
+<!-- ==================== POST FORM ==================== -->
+<div id="postForm">
+  <div class="reg-head">
+    <div class="back" onclick="closePostForm()">‹</div>
+    <h2 id="pfTitle">Новое объявление</h2>
+  </div>
+  <div class="pf-body">
+    <div class="edit-label">Фото питомца</div>
+    <div id="pfPhotoBox"></div>
+    <div class="edit-label" id="pfNameLbl">Кличка</div>
+    <input class="field" id="pfName" placeholder="Например: Барсик">
+    <div class="edit-label">Кто это?</div>
+    <div class="mini-choices" id="pfTypeRow">
+      <span class="mini-choice sel" onclick="pfType(this,'Кошка')">🐱 Кошка</span>
+      <span class="mini-choice" onclick="pfType(this,'Собака')">🐶 Собака</span>
+      <span class="mini-choice" onclick="pfType(this,'Другой')">🐾 Другой</span>
+    </div>
+    <div class="edit-label">Порода и окрас</div>
+    <div class="two-cols">
+      <input class="field" id="pfBreed" placeholder="Порода">
+      <input class="field" id="pfColor" placeholder="Окрас">
+    </div>
+    <div class="edit-label" id="pfMarksLbl">Приметы</div>
+    <input class="field" id="pfMarks" placeholder="Шрам на ухе, красный ошейник…">
+    <div class="edit-label">Город и район / метро</div>
+    <div class="two-cols">
+      <input class="field" id="pfCity" placeholder="Москва">
+      <input class="field" id="pfDistrict" placeholder="Район, метро">
+    </div>
+    <div class="edit-label">Как с вами связаться?</div>
+    <input class="field" id="pfContact" placeholder="@ник, телефон или как удобно">
+    <div class="field-hint">Это увидят все, кто откроет объявление. Оставьте пустым, если не хотите — тогда люди смогут только поделиться вашим объявлением.</div>
+    <div id="pfDateWrap">
+      <div class="edit-label" id="pfDateLbl">Дата пропажи</div>
+      <input class="field" id="pfDate" type="date">
+    </div>
+    <div id="pfRewardWrap">
+      <div class="edit-label">Вознаграждение (необязательно)</div>
+      <input class="field" id="pfReward" placeholder="Например: 5000 ₽">
+    </div>
+    <div id="pfPriceWrap" style="display:none">
+      <div class="edit-label">Цена за сутки</div>
+      <input class="field" id="pfPrice" placeholder="Например: 500 ₽/сутки">
+    </div>
+    <div class="edit-label">Описание / история</div>
+    <textarea class="field" id="pfDesc" rows="4" style="resize:none" placeholder="Расскажите подробнее…"></textarea>
+    <div style="height:16px"></div>
+    <button class="btn" id="pfSave" onclick="savePost()">Опубликовать</button>
+    <p style="font-size:11.5px;color:var(--text-soft);text-align:center;margin-top:12px;line-height:1.5">
+      Публикуя объявление, вы соглашаетесь, что информация достоверна.<br>С вами свяжутся в Telegram.</p>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div class="app-body" id="appBody" style="display:none">
+  <div class="header">
+    <div class="back" id="backBtn" style="display:none" onclick="goHome()">‹</div>
+    <div class="logo-row">
+      <svg class="logo-mark" viewBox="0 0 100 100"><path fill="#F47B20" d="M50 88C30 74 12 60 12 40 12 26 22 18 33 18c8 0 14 5 17 11 3-6 9-11 17-11 11 0 21 8 21 22 0 20-18 34-38 48z"/><circle cx="35" cy="34" r="7" fill="#fff"/><circle cx="63" cy="34" r="7" fill="#fff"/></svg>
+      <h1 id="pageTitle">Мой питомец</h1>
+    </div>
+    <div class="icon-btn" onclick="openNotif()">🔔</div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen active" id="home">
+    <div class="hero">
+      <h2 id="heroHi">Привет! 👋</h2>
+      <p id="heroSub">Рады видеть вас в Любимке. Заботьтесь о тех, кого любите 🐾</p>
+      <div class="paw">🐾</div>
+    </div>
+    <div id="petsContainer"></div>
+    <div id="homeExtra"></div>
+    <div style="height:14px"></div>
+  </div>
+
+  <!-- HELP -->
+  <div class="screen" id="help">
+    <div class="seg-tabs">
+      <button class="on" data-kind="lost"     onclick="setKind('lost',this)">🔍 Потеряшки</button>
+      <button          data-kind="adopt"    onclick="setKind('adopt',this)">🏠 Ищут дом</button>
+      <button          data-kind="boarding" onclick="setKind('boarding',this)">🛏 Передержка</button>
+      <button          data-kind="shelter"  onclick="setKind('shelter',this)">🏥 Приюты</button>
+      <button          data-kind="happy"    onclick="setKind('happy',this)">💚 Помогли</button>
+    </div>
+    <div class="filter-row" id="filterRow"></div>
+    <button class="sup-mini" onclick="goSupport()">
+      <span class="e">💛</span>
+      <span><b>Поддержать Любимку</b><span>Проект бесплатный и живёт на вашу поддержку</span></span>
+      <span class="ar">›</span></button>
+    <div id="boardList"><div class="loading">Загрузка…</div></div>
+    <div style="height:80px"></div>
+  </div>
+  <div class="fab" id="boardFab" style="display:none"><button onclick="openPostForm()">➕ Добавить объявление</button></div>
+
+  <!-- MAP -->
+  <div class="screen" id="shop">
+    <div class="shop-hero">
+      <div class="big">🧶</div>
+      <h3>Игрушки ручной работы</h3>
+      <p>Каждая игрушка связана вручную, с любовью. Без пластика и клея — только мягкая пряжа, безопасная для зубов питомца. <b>Вся выручка идёт на развитие Любимки и помощь животным.</b></p>
+    </div>
+
+    <div class="prod">
+      <div class="pic-wrap" id="wrap_toy1"><div class="ph-fallback" id="img_toy1">🐣</div></div>
+      <div class="bd">
+        <h4>Игрушка «Цыплёнок»</h4>
+        <div class="sub">Вязаная игрушка с бубенчиками — кошки и собаки в восторге. Ручная работа, каждая уникальна.</div>
+        <div class="row">
+          <div class="price">1000 ₽</div>
+          <button class="buy" onclick="orderToy('Цыплёнок')">Хочу! 💬</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod">
+      <div class="pic-wrap" id="wrap_toy2"><div class="ph-fallback" id="img_toy2">🐭</div></div>
+      <div class="bd">
+        <h4>Игрушка «Мышка»</h4>
+        <div class="sub">Яркая вязаная мышка с хвостиком из пряжи. Мягкая, безопасная для зубов и дёсен.</div>
+        <div class="row">
+          <div class="price">1000 ₽</div>
+          <button class="buy" onclick="orderToy('Мышка')">Хочу! 💬</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="prod">
+      <div class="pic-wrap" id="wrap_house"><div class="ph-fallback" id="img_house">🏠</div></div>
+      <div class="bd">
+        <span class="soon-tag">Скоро в магазине</span>
+        <h4>Домик для кота</h4>
+        <div class="sub">Уже в работе! Уютный домик ручной работы. Хочешь узнать первым, когда будет готов — подпишись на наш канал.</div>
+        <button class="buy" style="width:100%" onclick="openChannel()">✈️ Следить в канале</button>
+      </div>
+    </div>
+
+    <div class="shop-note">Как это работает: жмёшь «Хочу!» → открывается чат с автором → договариваемся о доставке и оплате. Отправка по всей России 🐾</div>
+    <div style="height:14px"></div>
+  </div>
+
+  <!-- SUPPORT -->
+  <div class="screen" id="support">
+    <div class="card" style="text-align:center;padding:26px 18px 22px">
+      <div style="font-size:46px;margin-bottom:8px">💛</div>
+      <h3 style="font-size:19px;font-weight:900;margin-bottom:8px">Поддержать Любимку</h3>
+      <p style="font-size:13.5px;line-height:1.6;color:#555">Любимка бесплатна для всех и всегда такой останется. Проект живёт на поддержку неравнодушных людей — спасибо, что вы с нами! 🐾</p>
+      <div class="support-stats">
+        <div class="stat"><b>50%</b><span>на помощь животным</span></div>
+        <div class="stat"><b>50%</b><span>на развитие проекта</span></div>
+      </div>
+      <div class="sum-grid" id="sumGrid">
+        <button onclick="pickSum(this,100)">100 ₽</button>
+        <button class="on" onclick="pickSum(this,300)">300 ₽</button>
+        <button onclick="pickSum(this,500)">500 ₽</button>
+        <button onclick="pickSum(this,1000)">1000 ₽</button>
+        <button onclick="pickSum(this,2000)">2000 ₽</button>
+        <button onclick="pickSum(this,0)">Своя</button>
+      </div>
+      <input class="field sum-own" id="ownSum" type="number" placeholder="Своя сумма, ₽" style="display:none">
+      <button class="btn" style="margin-top:14px" onclick="support()">💛 Поддержать</button>
+      <p style="font-size:11.5px;color:var(--text-soft);margin-top:11px;line-height:1.5">Оплата картой или через СБП.<br>Безопасно, через сервис CloudTips.</p>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Куда идут деньги</div>
+      <div class="how-row"><div class="n">🐾</div><p><b>50% — животным.</b> На эти деньги я покупаю корм и кормлю бездомных животных и подопечных приютов.</p></div>
+      <div class="how-row"><div class="n">⚙️</div><p><b>50% — на развитие.</b> Серверы, база данных и новые функции: поиск потеряшек, карта приютов, напоминания о прививках.</p></div>
+
+      <div class="promise">
+        <p style="font-size:13.5px;font-weight:900;color:#B85C10;margin-bottom:12px;text-align:left">Как я отчитываюсь за каждый рубль</p>
+        <div class="st"><span class="n">1</span><p>Вы переводите любую сумму</p></div>
+        <div class="st"><span class="n">2</span><p>Я покупаю корм на половину собранного</p></div>
+        <div class="st"><span class="n">3</span><p>Еду и кормлю животных — сам, лично</p></div>
+        <div class="st"><span class="n">4</span><p><b>Снимаю всё на видео и выкладываю</b> — вы своими глазами видите, куда ушли ваши деньги</p></div>
+        <div class="rep-btns">
+          <button class="btn-ig" onclick="openChannel()">✈️ Telegram</button>
+          <button class="btn-ig" onclick="openIG()">📸 Instagram</button>
+        </div>
+        <p style="font-size:11.5px;color:#A9702F;margin-top:9px;text-align:center;line-height:1.45">Все отчёты о покупке корма — здесь</p>
+      </div>
+      <p style="font-size:12px;color:var(--text-soft);line-height:1.55;margin-top:12px">Я — Алексей, автор Любимки. Делаю проект сам, оформлен как самозанятый, чек приходит автоматически.</p>
+    </div>
+
+    <div class="card" style="text-align:center;padding:22px 18px">
+      <div style="font-size:30px;margin-bottom:6px">🤝</div>
+      <p style="font-size:13.5px;line-height:1.6;color:#555">Нет возможности поддержать деньгами? Просто расскажите о Любимке друзьям — это тоже очень помогает 💛</p>
+      <button class="btn btn-outline" style="margin-top:14px" onclick="shareApp()">📤 Поделиться приложением</button>
+    </div>
+    <div style="height:14px"></div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="screen" id="about">
+    <div class="card" style="text-align:center;padding:26px 20px">
+      <div id="userAvatar" style="width:80px;height:80px;border-radius:50%;background:var(--orange-soft);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 12px">👤</div>
+      <h3 id="userName" style="font-size:19px;font-weight:800">Гость</h3>
+      <p style="font-size:13px;color:var(--text-soft);margin-top:4px" id="userPets">Питомцев: 0</p>
+      <button class="btn" style="margin-top:16px" onclick="openScreen('support')">💛 Поддержать проект</button>
+    </div>
+    <div class="card" style="padding:26px 20px">
+      <svg viewBox="0 0 100 100" style="width:70px;display:block;margin:0 auto 14px"><path fill="#F47B20" d="M50 88C30 74 12 60 12 40 12 26 22 18 33 18c8 0 14 5 17 11 3-6 9-11 17-11 11 0 21 8 21 22 0 20-18 34-38 48z"/><circle cx="35" cy="34" r="7" fill="#fff"/><circle cx="63" cy="34" r="7" fill="#fff"/></svg>
+      <p class="about-text">Любимка — экосистема для тех, кто любит животных. Следите за здоровьем питомцев, ищите дом бездомным и помогайте тем, кто в беде.</p>
+      <button class="btn btn-outline" style="margin-top:16px" onclick="openChannel()">✈️ Канал Любимки в Telegram</button>
+      <button class="btn btn-outline" style="margin-top:9px" onclick="openIG()">📸 Мы в Instagram</button>
+      <button class="btn btn-outline" style="margin-top:9px" onclick="shareApp()">📤 Рассказать друзьям</button>
+    </div>
+    <div style="height:14px"></div>
+  </div>
+
+  <div id="postActions">
+    <div class="ov" onclick="closePostActions()"></div>
+    <div class="sh">
+      <div class="grab"></div>
+      <h3>Моё объявление</h3>
+      <button class="add-opt" onclick="actEdit()">
+        <span class="em">✏️</span>
+        <span class="tx"><b>Редактировать</b><span>Изменить фото, описание и детали</span></span>
+        <span class="ar">›</span></button>
+      <button class="add-opt" onclick="actShare()">
+        <span class="em">📣</span>
+        <span class="tx"><b>Рассказать подписчикам</b><span>Отправить ссылку в чат, группу или канал</span></span>
+        <span class="ar">›</span></button>
+      <button class="add-opt" id="paFound" onclick="actFound()">
+        <span class="em">🎉</span>
+        <span class="tx"><b>Питомец нашёлся!</b><span>Отметить и убрать из поиска</span></span>
+        <span class="ar">›</span></button>
+      <button class="add-opt" onclick="actDelete()">
+        <span class="em" style="background:#FFE3E0">🗑</span>
+        <span class="tx"><b style="color:#E05A5A">Удалить объявление</b><span>Насовсем, без возможности вернуть</span></span>
+        <span class="ar">›</span></button>
+      <button class="add-cancel" onclick="closePostActions()">Отмена</button>
+    </div>
+  </div>
+
+  <div id="addSheet">
+    <div class="ov" onclick="closeAdd()"></div>
+    <div class="sh">
+      <div class="grab"></div>
+      <h3>Что добавим? 🐾</h3>
+      <button class="add-opt" onclick="addChoice('pet')">
+        <span class="em">🐱</span>
+        <span class="tx"><b>Аккаунт питомца</b><span>Профиль, прививки, вес и вся история</span></span>
+        <span class="ar">›</span></button>
+      <button class="add-opt" onclick="addChoice('lost')">
+        <span class="em">🔍</span>
+        <span class="tx"><b>Потерялось животное</b><span>Объявление увидят все пользователи</span></span>
+        <span class="ar">›</span></button>
+      <button class="add-opt" onclick="addChoice('adopt')">
+        <span class="em">🏠</span>
+        <span class="tx"><b>Ищет дом</b><span>Помочь найти хозяев бездомному</span></span>
+        <span class="ar">›</span></button>
+      <button class="add-opt" onclick="addChoice('boarding')">
+        <span class="em">🛏</span>
+        <span class="tx"><b>Предложить передержку</b><span>Готовы приютить питомца на время</span></span>
+        <span class="ar">›</span></button>
+      <button class="add-cancel" onclick="closeAdd()">Отмена</button>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="item on" data-screen="home" onclick="openScreen('home')"><span class="ic">🏠</span>Главная</div>
+    <div class="item" data-screen="help" onclick="openScreen('help')"><span class="ic">❤️</span>Помощь</div>
+    <div class="add" onclick="addPetFromNav()">+</div>
+    <div class="item" data-screen="shop" onclick="openScreen('shop')"><span class="ic">🛍</span>Магазин</div>
+    <div class="item" data-screen="about" onclick="openScreen('about')"><span class="ic">👤</span>Профиль</div>
+  </div>
+</div>
+
+<script>
+const ADMIN_ID=1699772237;   // 👈 твой Telegram-id: только ты видишь кнопки редактирования
+// ================= Telegram init =================
+let tg = window.Telegram ? window.Telegram.WebApp : null;
+let userName = 'друг';
+if(tg){
+  tg.expand(); tg.ready();
+  try{tg.setHeaderColor('#F5F5F7');tg.setBackgroundColor('#F5F5F7');}catch(e){}
+  const u = tg.initDataUnsafe && tg.initDataUnsafe.user;
+  if(u && u.first_name) userName = u.first_name;
+}
+function haptic(t){ try{ if(tg&&tg.HapticFeedback){ if(t==='ok')tg.HapticFeedback.notificationOccurred('success'); else tg.HapticFeedback.impactOccurred('light'); } }catch(e){} }
+function alertMsg(m){ try{ tg.showAlert(m); }catch(e){ try{alert(m);}catch(e2){console.log(m);} } }
+
+// ================= Supabase =================
+const SB_URL='https://aidcgtpxuqlxxmtupvmb.supabase.co';
+const SB_KEY='sb_publishable_wjs19qEtyU6agaIX2-upLQ_cq237K3I';
+const SB_H={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+let ME={id:0,uname:'',name:'Друг'};
+
+async function sbGet(path){
+  try{ const r=await fetch(SB_URL+'/rest/v1/'+path,{headers:SB_H}); return r.ok?await r.json():[]; }
+  catch(e){ console.warn('sbGet',e); return []; }
+}
+async function sbPost(table,body,ret){
+  try{ const r=await fetch(SB_URL+'/rest/v1/'+table,{method:'POST',
+    headers:Object.assign({},SB_H,{'Prefer':ret?'return=representation':'resolution=merge-duplicates'}),
+    body:JSON.stringify(body)});
+    return r.ok?(ret?await r.json():true):null; }catch(e){ console.warn(e); return null; }
+}
+async function sbPatch(path,body){
+  try{ const r=await fetch(SB_URL+'/rest/v1/'+path,{method:'PATCH',headers:SB_H,body:JSON.stringify(body)}); return r.ok; }
+  catch(e){ return false; }
+}
+async function sbDel(path){
+  try{ const r=await fetch(SB_URL+'/rest/v1/'+path,{method:'DELETE',headers:SB_H}); return r.ok; }
+  catch(e){ return false; }
+}
+async function registerUser(){
+  // ME.id — постоянный ключ пользователя
+  const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
+  if(u&&u.id){ ME={id:u.id,uname:u.username||'',name:u.first_name||'Друг'}; }
+  else { let d=localStorage.getItem('lubimka_devid');
+    if(!d){ d=String(900000000+Math.floor(Math.random()*90000000)); localStorage.setItem('lubimka_devid',d); }
+    ME={id:parseInt(d),uname:'',name:userName}; }
+  await fetch(SB_URL+'/rest/v1/users',{method:'POST',
+    headers:Object.assign({},SB_H,{'Prefer':'resolution=merge-duplicates'}),
+    body:JSON.stringify({id:ME.id,username:ME.uname,first_name:ME.name})}).catch(e=>{});
+}
+
+// ================= Storage =================
+// Питомцы: локальный кэш (мгновенно) + облако (синхронизация)
+const DB = {
+  getPets(){ try{return JSON.parse(localStorage.getItem('lubimka_pets')||'[]');}catch(e){return [];} },
+  savePets(p){ localStorage.setItem('lubimka_pets', JSON.stringify(p)); syncUp(); },
+  savePetsLocal(p){ localStorage.setItem('lubimka_pets', JSON.stringify(p)); },
+  addPet(pet){ const p=this.getPets(); pet.id=Date.now(); p.push(pet); this.savePets(p); return pet; },
+  seenWelcome(){ return localStorage.getItem('lubimka_welcomed')==='1'; },
+  setWelcomed(){ localStorage.setItem('lubimka_welcomed','1'); }
+};
+
+// ---------- Облачная синхронизация питомцев ----------
+let syncTimer=null, syncing=false;
+function syncUp(){                       // локально -> облако (с задержкой, чтобы не спамить)
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(pushPets, 700);
+}
+async function pushPets(){
+  if(!ME.id || syncing) return;
+  syncing=true;
+  try{
+    const pets=DB.getPets();
+    // сервер = зеркало телефона: стираем свои и пишем заново
+    await sbDel('pets?owner_id=eq.'+ME.id);
+    for(const p of pets){
+      const saved=await sbPost('pets',{
+        owner_id:ME.id, name:p.name, type:p.type||null, breed:p.breed||null,
+        gender:p.gender||null, birth:p.birth||null,
+        weight:(p.weight!==undefined&&p.weight!=='')?p.weight:null,
+        emoji:p.emoji||null, photo:p.photo||null
+      },true);
+      if(saved&&saved[0]&&p.history&&p.history.length){
+        const rows=p.history.map(h=>({pet_id:saved[0].id,type:h.type||null,emoji:h.emoji||null,
+          title:h.title||'',note:h.note||null,date:h.date||null}));
+        await sbPost('pet_records',rows);
+      }
+    }
+    localStorage.setItem('lubimka_synced',String(Date.now()));
+  }catch(e){ console.warn('pushPets',e); }
+  syncing=false;
+}
+async function pullPets(){               // облако -> телефон (при запуске)
+  if(!ME.id) return false;
+  const rows=await sbGet('pets?owner_id=eq.'+ME.id+'&select=*,pet_records(*)&order=created_at.asc');
+  if(!rows||!rows.length) return false;
+  const pets=rows.map((r,i)=>({
+    id: Date.now()+i, cloudId:r.id, name:r.name, type:r.type, breed:r.breed,
+    gender:r.gender, birth:r.birth, weight:r.weight, emoji:r.emoji, photo:r.photo,
+    history:(r.pet_records||[]).map((h,j)=>({id:Date.now()+i*1000+j,type:h.type,emoji:h.emoji,
+      title:h.title,note:h.note,date:h.date})).sort((a,b)=>(b.date||'').localeCompare(a.date||''))
+  }));
+  DB.savePetsLocal(pets);
+  return true;
+}
+
+// ================= Boot =================
+async function boot(){
+  await registerUser();
+  // миграция: возраст -> дата рождения
+  const mig=DB.getPets(); let ch=false;
+  mig.forEach(p=>{ if(!p.birth && p.age){ p.birth=(new Date().getFullYear()-parseInt(p.age))+'-01-01'; ch=true; } });
+  if(ch) DB.savePetsLocal(mig);
+  document.getElementById('welcomeGreeting').textContent = 'Здравствуйте, '+userName+'! 🐾';
+  let pets = DB.getPets();
+  if(DB.seenWelcome() || pets.length>0){ enterApp(); }
+  else { document.getElementById('welcome').style.display='flex'; }
+
+  // подтягиваем питомцев из облака (новый телефон / переустановка)
+  const local=DB.getPets();
+  const got=await pullPets();
+  if(got){
+    pets=DB.getPets();
+    if(document.getElementById('appBody').style.display==='block'){ renderHome(); renderProfile(); }
+    else if(pets.length>0){ DB.setWelcomed(); enterApp(); }
+  } else if(local.length>0){
+    pushPets();          // в облаке пусто, а на телефоне есть — заливаем
+  }
+}
+function enterApp(){
+  document.getElementById('welcome').style.display='none';
+  document.getElementById('register').classList.remove('active');
+  document.getElementById('appBody').style.display='block';
+  renderHome();
+  renderProfile();
+  openScreen('home');
+}
+function skipWelcome(){ DB.setWelcomed(); haptic(); enterApp(); }
+
+// ================= Registration flow =================
+let regStep = 0;
+let newPet = {type:'',emoji:'🐱',name:'',breed:'',gender:'',birth:'',weight:'',photo:null};
+
+function startRegister(){
+  haptic();
+  regStep=0;
+  newPet={type:'',emoji:'🐱',name:'',breed:'',gender:'',birth:'',weight:'',photo:null};
+  // reset UI
+  document.querySelectorAll('#register .choice').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('petName').value='';
+  document.getElementById('petBreed').value='';
+  document.getElementById('petBirth').value='';
+  document.getElementById('petWeight').value='';
+  document.getElementById('avatarPreview').textContent='🐱';
+  document.getElementById('welcome').style.display='none';
+  document.getElementById('register').classList.add('active');
+  showStep(0);
+}
+function showStep(n){
+  regStep=n;
+  document.querySelectorAll('#register .step').forEach(s=>s.classList.remove('active'));
+  document.querySelector('#register .step[data-step="'+n+'"]').classList.add('active');
+  document.querySelectorAll('.progress .seg').forEach((s,i)=>s.classList.toggle('on', i<=Math.min(n,4)));
+  document.getElementById('regFoot').style.display = (n>=5)?'none':'block';
+  document.querySelector('.reg-body').scrollTop=0;
+  checkStep();
+}
+function checkStep(){
+  const btn=document.getElementById('regNextBtn');
+  let ok=true;
+  if(regStep===0) ok = !!newPet.type;
+  if(regStep===1) ok = document.getElementById('petName').value.trim().length>0;
+  btn.disabled=!ok;
+  btn.textContent = (regStep===4)?'Создать аккаунт 🎉':'Далее';
+}
+function pickType(el,type,emoji){
+  document.querySelectorAll('#register .step[data-step="0"] .choice').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  newPet.type=type; newPet.emoji=emoji;
+  document.getElementById('avatarPreview').textContent=emoji;
+  // preselect matching emoji
+  document.querySelectorAll('#emojiRow .emoji-opt').forEach(o=>o.classList.toggle('sel', o.textContent===emoji));
+  renderBreedChips();
+  haptic(); checkStep();
+}
+function renderBreedChips(){
+  const box=document.getElementById('breedChips');
+  const arr=BREEDS_BY_TYPE[newPet.type];
+  if(!arr){ box.innerHTML=''; document.getElementById('breedSub').textContent='Можно пропустить, если не знаете'; return; }
+  document.getElementById('breedSub').textContent='Выберите из списка или впишите свою — подберём советы по уходу именно для вашей породы 🧡';
+  box.innerHTML=arr.map(b=>`<span class="mini-choice" onclick="pickBreed(this,'${b.replace(" 💛","")}')">${b}</span>`).join('')
+    +`<span class="mini-choice" onclick="pickBreed(this,'')">Не знаю 🤷</span>`;
+}
+function pickBreed(el,b){
+  document.querySelectorAll('#breedChips .mini-choice').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('petBreed').value=b;
+  haptic();
+}
+function breedTyped(){
+  document.querySelectorAll('#breedChips .mini-choice').forEach(x=>x.classList.remove('sel'));
+}
+function pickGender(el,g){
+  document.querySelectorAll('#register .step[data-step="2"] .choice').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); newPet.gender=g; haptic();
+}
+function pickEmoji(el,e){
+  document.querySelectorAll('#emojiRow .emoji-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel'); newPet.emoji=e; newPet.photo=null;
+  document.getElementById('avatarPreview').textContent=e;
+  document.getElementById('avatarPreview').innerHTML=e;
+  haptic();
+}
+function compressImage(file, cb, onFail){
+  const fail=(why)=>{ console.warn('compressImage:',why);
+    // запасной путь: читаем как есть, но проверяем, что это настоящая картинка
+    try{
+      const r2=new FileReader();
+      r2.onload=e=>{
+        const d=e.target.result;
+        if(!d || d.length>=4500000){ if(onFail) onFail('big'); return; }
+        const test=new Image();
+        test.onload=()=>cb(d);
+        test.onerror=()=>{ if(onFail) onFail('decode'); };
+        test.src=d;
+      };
+      r2.onerror=()=>{ if(onFail) onFail('read'); };
+      r2.readAsDataURL(file);
+    }catch(e){ if(onFail) onFail('read'); }
+  };
+  try{
+    if(!file || !file.type || file.type.indexOf('image')===-1){
+      // некоторые галереи не ставят type — всё равно пробуем
+      if(file && file.size===0){ if(onFail) onFail('empty'); return; }
+    }
+    const url=URL.createObjectURL(file);
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const max=600; let w=img.naturalWidth||img.width, h=img.naturalHeight||img.height;
+        if(!w||!h){ URL.revokeObjectURL(url); fail('nosize'); return; }
+        if(w>h){ if(w>max){h*=max/w;w=max;} } else { if(h>max){w*=max/h;h=max;} }
+        const c=document.createElement('canvas'); c.width=Math.round(w); c.height=Math.round(h);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        const out=c.toDataURL('image/jpeg',0.82);
+        URL.revokeObjectURL(url);
+        if(out && out.length>50) cb(out); else fail('canvas');
+      }catch(e){ URL.revokeObjectURL(url); fail(e); }
+    };
+    img.onerror=()=>{ URL.revokeObjectURL(url); fail('decode'); };
+    img.src=url;
+  }catch(e){ fail(e); }
+}
+function loadPhoto(ev){
+  const f=ev.target.files && ev.target.files[0];
+  ev.target.value='';
+  if(!f) return;
+  document.getElementById('avatarPreview').innerHTML='⏳';
+  compressImage(f, d=>{ newPet.photo=d;
+    document.getElementById('avatarPreview').innerHTML='<img src="'+d+'">'; haptic('ok');
+  }, why=>{
+    document.getElementById('avatarPreview').innerHTML=newPet.emoji||'🐱';
+    alertMsg('Не удалось загрузить это фото. Попробуйте другое из галереи.');
+  });
+}
+function regNext(){
+  if(regStep===1) newPet.name=document.getElementById('petName').value.trim();
+  if(regStep===2){ newPet.breed=document.getElementById('petBreed').value.trim(); }
+  if(regStep===3){ newPet.birth=document.getElementById('petBirth').value; newPet.weight=document.getElementById('petWeight').value; }
+  if(regStep===4){ saveNewPet(); showStep(5); haptic('ok'); return; }
+  showStep(regStep+1);
+}
+function regBack(){ if(regStep===0){ backToWelcomeOrApp(); } else { showStep(regStep-1); } }
+function backToWelcomeOrApp(){
+  document.getElementById('register').classList.remove('active');
+  if(DB.getPets().length>0 || DB.seenWelcome()){ enterApp(); }
+  else { document.getElementById('welcome').style.display='flex'; }
+}
+function saveNewPet(){
+  DB.addPet({type:newPet.type,emoji:newPet.emoji,name:newPet.name,breed:newPet.breed,
+    gender:newPet.gender,birth:newPet.birth,weight:newPet.weight,photo:newPet.photo,created:Date.now()});
+  DB.setWelcomed();
+  document.getElementById('successName').textContent = newPet.name+' в семье! 🎉';
+}
+function finishRegister(){ enterApp(); }
+
+// ================= Render =================
+function renderHome(){
+  const pets=DB.getPets();
+  const c=document.getElementById('petsContainer');
+  const extra=document.getElementById('homeExtra');
+  const bd=pets.find(isBirthday);
+  if(bd){
+    const y=petAge(bd);
+    document.getElementById('heroHi').textContent='У '+bd.name+' день рождения! 🎂';
+    document.getElementById('heroSub').textContent=(y?bd.name+' исполняется '+y+' '+yearsWord(y)+'! ':'')+'Поздравляем! 🎉';
+  } else {
+    document.getElementById('heroHi').textContent='Привет, '+userName+'! 👋';
+    document.getElementById('heroSub').textContent='Рады видеть вас в Любимке. Заботьтесь о тех, кого любите 🐾';
+  }
+  if(pets.length===0){
+    c.innerHTML='';
+    extra.innerHTML=`<div class="empty-state">
+      <div class="emoji">🐾</div>
+      <h3>Питомцев пока нет</h3>
+      <p>Создайте аккаунт для своего любимца —<br>заведём дневник, напоминания и карту здоровья</p>
+      <button class="btn" onclick="startRegister()">➕ Добавить питомца</button>
+    </div>
+    <div style="height:12px"></div>
+    <button class="sup-mini" onclick="goSupport()">
+      <span class="e">💛</span>
+      <span><b>Поддержать Любимку</b><span>Проект бесплатный и живёт на вашу поддержку</span></span>
+      <span class="ar">›</span></button>`;
+    return;
+  }
+  let html='';
+  pets.forEach(p=>{
+    const av = p.photo ? `<img class="avatar" src="${p.photo}">` : `<div class="avatar">${p.emoji||'🐾'}</div>`;
+    const meta=[p.breed||p.type, petAgeText(p), p.weight?p.weight+' кг':''].filter(Boolean).join(' · ');
+    html+=`<div class="card pet-card" onclick="openPet(${p.id})">
+      ${av}
+      <div class="info"><h3>${p.name}</h3><p>${meta}</p>${p.gender?`<span class="badge">${p.gender}</span>`:''}</div>
+      <div class="chev">›</div></div>`;
+  });
+  c.innerHTML=html;
+  const score=Math.round(pets.reduce((a,p)=>a+healthScore(p),0)/pets.length);
+  const col=score>=4?'#7CC576':(score>=2?'#F5A623':'#E05A5A');
+  const off=201-201*score/5;
+  let rems=[]; pets.forEach(p=>rems=rems.concat(petReminders(p)));
+  rems.sort((a,b)=>(a.days===null?9999:a.days)-(b.days===null?9999:b.days));
+  const remHtml=rems.slice(0,4).map(r=>`<div class="reminder tap" onclick="remTap(${r.pid},'${r.type}')"><span>${r.emoji}</span> ${r.text} <span class="when">${daysText(r.days)}</span><span class="chev-s">›</span></div>`).join('')
+    +`<p class="rem-hint">Нажмите на строку, чтобы добавить запись</p>`;
+  extra.innerHTML=`
+    <div class="card">
+      <div class="section-title">Рейтинг здоровья</div>
+      <div class="health">
+        <div class="ring"><svg width="76" height="76"><circle cx="38" cy="38" r="32" fill="none" stroke="#eee" stroke-width="8"/><circle cx="38" cy="38" r="32" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="${off}"/></svg><div class="score"><b>${score}<span style="font-size:14px">/5</span></b></div></div>
+        <div class="txt">${healthTip(score)}</div>
+      </div>
+      ${pets.map(p=>{
+        const bt=breedTips(p);
+        const day=Math.floor(Date.now()/86400000);
+        const tip=bt.tips[day%bt.tips.length];
+        return `<div class="care-tip" onclick="toggleCare(this)">
+          <div class="ct-head"><span class="ct-pet">${p.photo?`<img src="${p.photo}">`:(p.emoji||'🐾')}</span>
+            <div><b>Уход · ${esc(p.name)}</b><small>${esc(bt.label)}</small></div>
+            <span class="ct-chev">›</span></div>
+          <div class="ct-today">💡 ${tip}</div>
+          <div class="ct-all">${bt.tips.map(t=>`<div class="ct-row">• ${t}</div>`).join('')}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin:0 0 4px">Напоминания</div>
+      ${remHtml}
+    </div>
+    <button class="btn btn-outline" onclick="startRegister()">➕ Добавить ещё питомца</button>
+    <div style="height:12px"></div>
+    <button class="sup-mini" onclick="goSupport()">
+      <span class="e">💛</span>
+      <span><b>Поддержать Любимку</b><span>Проект бесплатный и живёт на вашу поддержку</span></span>
+      <span class="ar">›</span></button>`;
+}
+function renderProfile(){
+  const pets=DB.getPets();
+  document.getElementById('userName').textContent=userName;
+  document.getElementById('userPets').textContent='Питомцев: '+pets.length;
+  const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+  if(u && u.photo_url){ document.getElementById('userAvatar').innerHTML='<img src="'+u.photo_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'; }
+}
+// ================= Pet account screen =================
+let curPetId = null;
+let recEmoji = '💉', recType = 'Прививка';
+
+function openPet(id){
+  curPetId = id;
+  renderPetScreen();
+  document.getElementById('petScreen').classList.add('active');
+  haptic();
+}
+function closePet(){
+  document.getElementById('petScreen').classList.remove('active');
+  renderHome();
+}
+function getCurPet(){ return DB.getPets().find(x=>x.id===curPetId); }
+
+function yearsWord(a){ const l=a%10,l2=a%100; if(l===1&&l2!==11)return 'год'; if(l>=2&&l<=4&&(l2<12||l2>14))return 'года'; return 'лет'; }
+function petAge(p){
+  if(!p.birth) return null;
+  const b=new Date(p.birth+'T00:00:00'), n=new Date();
+  let y=n.getFullYear()-b.getFullYear();
+  const m=n.getMonth()-b.getMonth();
+  if(m<0||(m===0&&n.getDate()<b.getDate())) y--;
+  return y<0?0:y;
+}
+function petAgeText(p){
+  const y=petAge(p);
+  if(y===null) return '';
+  if(y===0){
+    const b=new Date(p.birth+'T00:00:00'), n=new Date();
+    let mo=(n.getFullYear()-b.getFullYear())*12+(n.getMonth()-b.getMonth());
+    if(n.getDate()<b.getDate())mo--;
+    if(mo<1)mo=1;
+    return mo+' мес.';
+  }
+  return y+' '+yearsWord(y);
+}
+function isBirthday(p){
+  if(!p.birth) return false;
+  const b=new Date(p.birth+'T00:00:00'), n=new Date();
+  return b.getDate()===n.getDate()&&b.getMonth()===n.getMonth();
+}
+// --- reminders & health ---
+function lastRec(p,t){
+  const f=(p.history||[]).filter(h=>h.type===t&&h.date).sort((a,b)=>b.date.localeCompare(a.date))[0];
+  return f?new Date(f.date+'T00:00:00'):null;
+}
+const DAY=86400000;
+function petReminders(p){
+  const out=[];
+  const lv=lastRec(p,'Прививка');
+  if(lv) out.push({emoji:'💉',text:'Прививка · '+p.name,days:Math.ceil((lv.getTime()+365*DAY-Date.now())/DAY),pid:p.id,type:'Прививка'});
+  else out.push({emoji:'💉',text:'Добавить прививку · '+p.name,days:null,pid:p.id,type:'Прививка'});
+  const lp=lastRec(p,'Паразиты');
+  if(lp) out.push({emoji:'🪱',text:'Обработка от паразитов · '+p.name,days:Math.ceil((lp.getTime()+90*DAY-Date.now())/DAY),pid:p.id,type:'Паразиты'});
+  else out.push({emoji:'🪱',text:'Добавить обработку от паразитов · '+p.name,days:null,pid:p.id,type:'Паразиты'});
+  return out;
+}
+function daysText(d){
+  if(d===null) return '<b class="add-mini">+ добавить</b>';
+  if(d<0) return 'просрочено!';
+  if(d===0) return 'сегодня';
+  return 'через '+d+' дн.';
+}
+function healthScore(p){
+  let s=0;
+  if(p.breed)s++; if(p.weight)s++; if(p.birth)s++;
+  const lv=lastRec(p,'Прививка'); if(lv&&(Date.now()-lv.getTime())<365*DAY)s++;
+  const lp=lastRec(p,'Паразиты'); if(lp&&(Date.now()-lp.getTime())<90*DAY)s++;
+  return s;
+}
+// ================= Породы и советы по уходу =================
+const BREEDS_BY_TYPE={
+ 'Кошка':['Британская','Шотландская вислоухая','Мейн-кун','Сфинкс','Сибирская','Русская голубая','Бенгальская','Персидская','Абиссинская','Дворянка 💛'],
+ 'Собака':['Лабрадор','Немецкая овчарка','Йоркширский терьер','Чихуахуа','Шпиц','Такса','Хаски','Корги','Французский бульдог','Дворняжка 💛']
+};
+const BREED_TIPS={
+ 'британ':['Склонны к набору веса — кормите по норме, а не «по глазам»','Вычёсывайте 1–2 раза в неделю: плотный подшёрсток','Следите за сердцем: у породы бывает ГКМП, раз в год — осмотр у врача'],
+ 'шотланд':['Берегите суставы — порода склонна к проблемам с хрящами, не допускайте прыжков с высоты','Чистите уши раз в 1–2 недели — сложенное ухо хуже проветривается','Не перекармливайте: лишний вес усиливает нагрузку на суставы'],
+ 'мейн':['Крупной кошке — большой лоток и когтеточка повыше','Вычёсывайте 2–3 раза в неделю, особенно штаны и воротник','Раз в год проверяйте сердце — у породы встречается ГКМП'],
+ 'сфинкс':['Купайте раз в 1–2 недели — кожа выделяет много себума','Зимой берегите от холода, летом — от прямого солнца (кожа обгорает!)','Кормите чуть больше нормы: голая кошка тратит много энергии на обогрев'],
+ 'сибир':['Вычёсывайте 2 раза в неделю, в линьку — каждый день','Порода активная: нужны игры и место полазить','Шерсть защищает от холода, но колтуны сводят защиту на нет — следите'],
+ 'русская голуб':['Деликатный желудок — переводите на новый корм постепенно, за 7–10 дней','Короткая шерсть: достаточно вычёсывать раз в неделю','Стеснительны с чужими — обеспечьте укрытие, где можно спрятаться'],
+ 'бенгал':['Очень энергичны: минимум 2 активные игры в день, иначе разнесут дом','Многие бенгалы любят воду — не удивляйтесь и не ругайте','Чувствительное пищеварение: качественный корм с высоким содержанием мяса'],
+ 'перс':['Ежедневное вычёсывание — без вариантов, колтуны образуются мгновенно','Протирайте глаза каждый день: плоская мордочка = слезотечение','Следите за дыханием в жару — брахицефалам тяжело дышать'],
+ 'абиссин':['Самая активная из кошек: полки, игры, внимание — обязательно','Следите за зубами: порода склонна к гингивиту, приучайте к чистке','Раз в год сдавайте анализ мочи — бывают проблемы с почками'],
+ 'лабрадор':['Не перекармливайте! Лабрадоры не знают меры — ожирение их главный враг','Минимум час активной прогулки в день','Проверяйте уши после купания и прогулок — висячее ухо любит отиты'],
+ 'овчарк':['Нужна работа для головы: команды, поиск, игрушки-головоломки','Следите за тазобедренными суставами — не перегружайте щенка прыжками','Вычёсывайте 2–3 раза в неделю: линяют круглый год'],
+ 'йорк':['Зубы — слабое место: чистите 2–3 раза в неделю, иначе камень','Маленькая печень — никаких кусков со стола','Стригите или вычёсывайте регулярно: шерсть растёт как волосы'],
+ 'чихуа':['Мёрзнут даже дома — одёжка зимой это не блажь, а необходимость','Родничок может не зарастать — берегите голову от ударов','Дрожь — не всегда холод: может быть стресс или голод'],
+ 'шпиц':['Не стригите машинкой — шерсть может не восстановиться (алопеция X)','Вычёсывайте через день, в линьку — ежедневно','Зубы мелкие и слабые: чистка и осмотры обязательны'],
+ 'такс':['Берегите спину! Не давайте прыгать с дивана — у такс слабые межпозвонковые диски','Держите вес в норме: лишний кг = лишняя нагрузка на позвоночник','По лестнице вниз — лучше на руках, особенно щенка и пожилую'],
+ 'хаски':['Нужно МНОГО движения: час-полтора активности в день минимум','Не перекармливайте — едят мало для своего размера, это норма','Линька два раза в год обильная: пуходёрка — ваш лучший друг'],
+ 'корги':['Длинная спина как у таксы — берегите от прыжков с высоты','Склонны к обжорству и лишнему весу — строгая норма корма','Вычёсывайте 2–3 раза в неделю: подшёрсток очень плотный'],
+ 'бульдог':['В жару гуляйте утром и вечером — брахицефалы перегреваются мгновенно','Чистите складки на морде 2–3 раза в неделю','Храп и хрюканье — норма, но одышка в покое — повод к врачу'],
+ 'дворня':['Метисы обычно крепче породистых — но прививки и обработки нужны так же','Раз в год — профилактический осмотр у ветеринара','Вы дали дом тому, кто его не имел. Это лучшее, что можно сделать 💛'],
+ 'дворян':['Метисы обычно крепче породистых — но прививки и обработки нужны так же','Раз в год — профилактический осмотр у ветеринара','Вы дали дом тому, кто его не имел. Это лучшее, что можно сделать 💛'],
+};
+const TYPE_TIPS={
+ 'Кошка':['Миски для еды и воды держите в разных местах — кошки так пьют больше','Лоток мойте без хлорки: резкий запах отпугивает','Играйте хотя бы 15 минут в день — скука вредит здоровью'],
+ 'Собака':['Гуляйте минимум дважды в день, одна прогулка — активная','Чистите зубы 2–3 раза в неделю или давайте дентал-лакомства','Обрабатывайте от клещей с весны до поздней осени'],
+ 'Птица':['Клетку — подальше от сквозняков и кухни (пары тефлона опасны!)','Выпускайте полетать каждый день в безопасной комнате','Меняйте воду ежедневно, мойте поилку'],
+ 'Грызун':['Точить зубы — жизненная необходимость: минеральный камень и веточки всегда в клетке','Клетку убирайте 1–2 раза в неделю','Резкие перепады температуры опасны — не ставьте клетку у окна'],
+ 'Рыбка':['Подменивайте 20–25% воды раз в неделю, не всю сразу','Не перекармливайте: корм на 2–3 минуты, остатки убирайте','Следите за температурой — резкие скачки опаснее неидеальной'],
+ 'Другой':['Найдите ветеринара, который работает именно с вашим видом животного','Изучите особенности вида: свет, температура, рацион','Карантин для новых соседей — минимум 2 недели'],
+};
+function breedTips(p){
+  const b=(p.breed||'').toLowerCase();
+  if(b){
+    for(const k in BREED_TIPS){ if(b.indexOf(k)>-1) return {label:p.breed, tips:BREED_TIPS[k]}; }
+  }
+  return {label:p.type||'Питомец', tips:TYPE_TIPS[p.type]||TYPE_TIPS['Другой']};
+}
+function toggleCare(el){ el.classList.toggle('open'); haptic(); }
+function healthTip(s){
+  if(s>=5) return 'Отлично! Вы прекрасно заботитесь о своих любимцах 💛';
+  if(s>=3) return 'Хорошо! Проверьте, актуальны ли прививки и обработка от паразитов.';
+  return 'Заполните профиль питомца и добавьте прививки в историю — рейтинг вырастет.';
+}
+function renderPetScreen(){
+  const p=getCurPet(); if(!p) return;
+  const av = p.photo ? `<img src="${p.photo}">` : (p.emoji||'🐾');
+  const hist=(p.history||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  let histHtml='';
+  if(hist.length===0){
+    histHtml=`<div class="empty-state" style="padding:26px 20px">
+      <div class="emoji" style="font-size:44px">📖</div>
+      <h3 style="font-size:16px">История пока пуста</h3>
+      <p style="margin-bottom:0">Добавляйте прививки, визиты к врачу<br>и важные события из жизни питомца</p></div>`;
+  } else {
+    hist.forEach(h=>{
+      const d=h.date? new Date(h.date+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}):'';
+      histHtml+=`<div class="hist-item">
+        <div class="ic">${h.emoji}</div>
+        <div class="tx"><b>${h.title}</b>${h.note?`<div class="note">${h.note}</div>`:''}<div class="dt">${h.type}${d?' · '+d:''}</div></div>
+        <div class="rm" onclick="removeRec(${h.id})">✕</div></div>`;
+    });
+  }
+  const vacc=(p.history||[]).filter(h=>h.type==='Прививка').length;
+  document.getElementById('psBody').innerHTML=`
+    <div class="ps-profile">
+      <div class="big-avatar">${av}</div>
+      <h2>${p.name}</h2>
+      <div class="meta">${[p.breed||p.type,p.gender].filter(Boolean).join(' · ')}</div>
+    </div>
+    <div class="ps-stats">
+      <div class="ps-stat"><b>${petAgeText(p)||'—'}</b><span>возраст</span></div>
+      <div class="ps-stat"><b>${p.weight?p.weight+' кг':'—'}</b><span>вес</span></div>
+      <div class="ps-stat"><b>${vacc}</b><span>прививок</span></div>
+    </div>
+    <button class="btn" onclick="openRec()" style="margin-bottom:16px">➕ Добавить в историю</button>
+    <div class="section-title">История ${p.name}</div>
+    ${histHtml}`;
+}
+function deletePet(){
+  const p=getCurPet(); if(!p) return;
+  const doDel=()=>{ DB.savePets(DB.getPets().filter(x=>x.id!==curPetId)); closeEdit(); closePet(); haptic('ok'); };
+  const msg='Удалить аккаунт '+p.name+'? Вся история тоже удалится.';
+  try{ tg.showConfirm(msg, ok=>{ if(ok)doDel(); }); }
+  catch(e){ if(confirm(msg)) doDel(); }
+}
+function remTap(pid,type){
+  openPet(pid);
+  openRec();
+  const map={'Прививка':'Прививка','Паразиты':'Обработка'};
+  document.querySelectorAll('#recTypes .rec-type').forEach(el=>{
+    const lbl=el.querySelector('.lbl');
+    if(lbl&&lbl.textContent===map[type]) el.click();
+  });
+}
+function openRec(){
+  document.getElementById('recTitle').value='';
+  document.getElementById('recNote').value='';
+  document.getElementById('recDate').value=new Date().toISOString().slice(0,10);
+  document.getElementById('recModal').classList.add('active');
+}
+function closeRec(){ document.getElementById('recModal').classList.remove('active'); }
+function pickRecType(el,t,e){
+  document.querySelectorAll('#recTypes .rec-type').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel'); recType=t; recEmoji=e; haptic();
+}
+function saveRec(){
+  const title=document.getElementById('recTitle').value.trim();
+  if(!title){ alertMsg('Введите название записи'); return; }
+  const pets=DB.getPets();
+  const p=pets.find(x=>x.id===curPetId); if(!p) return;
+  if(!p.history) p.history=[];
+  p.history.push({id:Date.now(),type:recType,emoji:recEmoji,title:title,
+    note:document.getElementById('recNote').value.trim(),
+    date:document.getElementById('recDate').value});
+  DB.savePets(pets);
+  closeRec(); renderPetScreen(); haptic('ok');
+}
+function removeRec(rid){
+  const pets=DB.getPets();
+  const p=pets.find(x=>x.id===curPetId); if(!p||!p.history) return;
+  p.history=p.history.filter(h=>h.id!==rid);
+  DB.savePets(pets); renderPetScreen(); haptic();
+}
+
+// ================= Edit pet =================
+let editData={};
+const typeEmoji={'Кошка':'🐱','Собака':'🐶','Птица':'🦜','Грызун':'🐹','Рыбка':'🐠','Другой':'🐾'};
+
+function openEdit(){
+  const p=getCurPet(); if(!p) return;
+  editData={emoji:p.emoji,photo:p.photo,type:p.type,gender:p.gender};
+  document.getElementById('editName').value=p.name||'';
+  document.getElementById('editBreed').value=p.breed||'';
+  document.getElementById('editBirth').value=p.birth||'';
+  document.getElementById('editWeight').value=p.weight||'';
+  document.getElementById('editAvatarCur').innerHTML = p.photo?`<img src="${p.photo}">`:(p.emoji||'🐾');
+  document.querySelectorAll('#editTypeRow .mini-choice').forEach(el=>
+    el.classList.toggle('sel', el.textContent.includes(p.type)));
+  document.querySelectorAll('#editGenderRow .mini-choice').forEach(el=>
+    el.classList.toggle('sel', !!p.gender && el.textContent.includes(p.gender)));
+  document.querySelectorAll('#editEmojiRow .mini-choice').forEach(el=>
+    el.classList.toggle('sel', !p.photo && el.textContent.trim()===p.emoji));
+  document.getElementById('editModal').classList.add('active');
+  haptic();
+}
+function closeEdit(){ document.getElementById('editModal').classList.remove('active'); }
+function editType(el,t){
+  document.querySelectorAll('#editTypeRow .mini-choice').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel'); editData.type=t;
+  if(!editData.photo){ editData.emoji=typeEmoji[t]||'🐾';
+    document.getElementById('editAvatarCur').innerHTML=editData.emoji; }
+  haptic();
+}
+function editGender(el,g){
+  const was=el.classList.contains('sel');
+  document.querySelectorAll('#editGenderRow .mini-choice').forEach(x=>x.classList.remove('sel'));
+  if(!was){ el.classList.add('sel'); editData.gender=g; } else { editData.gender=''; }
+  haptic();
+}
+function editEmoji(el,e){
+  document.querySelectorAll('#editEmojiRow .mini-choice').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel'); editData.emoji=e; editData.photo=null;
+  document.getElementById('editAvatarCur').innerHTML=e; haptic();
+}
+function editPhoto(ev){
+  const f=ev.target.files && ev.target.files[0];
+  ev.target.value='';
+  if(!f) return;
+  document.getElementById('editAvatarCur').innerHTML='⏳';
+  compressImage(f, d=>{ editData.photo=d;
+    document.getElementById('editAvatarCur').innerHTML='<img src="'+d+'">';
+    document.querySelectorAll('#editEmojiRow .mini-choice').forEach(x=>x.classList.remove('sel')); haptic('ok');
+  }, why=>{
+    document.getElementById('editAvatarCur').innerHTML=editData.emoji||'🐱';
+    alertMsg('Не удалось загрузить это фото. Попробуйте другое из галереи.');
+  });
+}
+function saveEdit(){
+  const name=document.getElementById('editName').value.trim();
+  if(!name){ alertMsg('Кличка не может быть пустой'); return; }
+  const pets=DB.getPets();
+  const p=pets.find(x=>x.id===curPetId); if(!p) return;
+  p.name=name;
+  p.breed=document.getElementById('editBreed').value.trim();
+  p.birth=document.getElementById('editBirth').value;
+  const newW=document.getElementById('editWeight').value;
+  if(p.weight && newW && parseFloat(newW)!==parseFloat(p.weight)){
+    if(!p.history)p.history=[];
+    p.history.push({id:Date.now(),type:'Вес',emoji:'⚖️',title:'Вес обновлён: '+p.weight+' кг → '+newW+' кг',note:'',date:new Date().toISOString().slice(0,10)});
+  }
+  p.weight=newW;
+  p.type=editData.type; p.gender=editData.gender;
+  p.emoji=editData.emoji; p.photo=editData.photo;
+  DB.savePets(pets);
+  closeEdit(); renderPetScreen(); haptic('ok');
+}
+
+// ================= Menu / Notifications / Help =================
+function openMenu(){ const p=getCurPet(); if(!p)return;
+  document.getElementById('menuTitle').textContent=p.name;
+  document.getElementById('menuModal').classList.add('active'); haptic(); }
+function closeMenu(){ document.getElementById('menuModal').classList.remove('active'); }
+function openNotif(){
+  const pets=DB.getPets();
+  let h='';
+  if(pets.length===0){
+    h='<div class="empty-state" style="padding:24px 16px"><div class="emoji" style="font-size:40px;margin-bottom:8px">🐾</div><p style="margin:0;font-size:13.5px">Добавьте питомца — и здесь появятся напоминания о прививках и обработках</p></div>';
+  } else {
+    let rems=[]; pets.forEach(p=>rems=rems.concat(petReminders(p)));
+    rems.sort((a,b)=>(a.days===null?9999:a.days)-(b.days===null?9999:b.days));
+    h=rems.map(r=>`<div class="reminder tap" onclick="closeNotif();remTap(${r.pid},'${r.type}')"><span>${r.emoji}</span> ${r.text} <span class="when">${daysText(r.days)}</span><span class="chev-s">›</span></div>`).join('')
+      +`<p class="rem-hint">Нажмите на строку, чтобы добавить запись</p>`;
+  }
+  document.getElementById('notifList').innerHTML=h;
+  document.getElementById('notifModal').classList.add('active'); haptic();
+}
+function closeNotif(){ document.getElementById('notifModal').classList.remove('active'); }
+// ================= Board (Помощь) =================
+let curKind='lost', curFilter='all', boardCache=[];
+const KIND_LABEL={lost:'Потеряшки',adopt:'Ищут дом',boarding:'Передержка',shelter:'Приюты'};
+
+function setKind(k,el){
+  curKind=k; curFilter='all';
+  document.querySelectorAll('.seg-tabs button').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('boardFab').style.display = (k==='shelter'||k==='happy')?'none':'block';
+  haptic(); loadBoard();
+}
+function renderFilters(){
+  const row=document.getElementById('filterRow');
+  if(curKind==='shelter'||curKind==='happy'){ row.innerHTML=''; return; }
+  const fs=[['all','Все'],['Кошка','🐱 Кошки'],['Собака','🐶 Собаки'],['mine','Мои']];
+  if(curKind==='lost') fs.splice(3,0,['found','✅ Найденные']);
+  row.innerHTML=fs.map(f=>`<button class="chip ${curFilter===f[0]?'on':''}" onclick="setFilter('${f[0]}')">${f[1]}</button>`).join('');
+}
+function setFilter(f){ curFilter=f; renderFilters(); renderBoard(); haptic(); }
+
+let boardReq=0;
+async function loadBoard(){
+  renderFilters();
+  const my=++boardReq, k=curKind;
+  document.getElementById('boardList').innerHTML='<div class="loading">Загрузка…</div>';
+  const data = (k==='shelter')
+    ? await sbGet('shelters?select=*&order=created_at.desc')
+    : (k==='happy')
+      ? await sbGet('stories?select=*&order=created_at.desc&limit=100')
+      : await sbGet('posts?kind=eq.'+k+'&select=*&order=created_at.desc&limit=100');
+  if(my!==boardReq) return;   // пришёл ответ на устаревший запрос — игнорируем
+  boardCache=data;
+  renderBoard();
+}
+function timeAgo(iso){
+  if(!iso) return '';
+  const d=Math.floor((Date.now()-new Date(iso).getTime())/86400000);
+  if(d===0)return 'сегодня'; if(d===1)return 'вчера';
+  if(d<7)return d+' дн. назад';
+  return new Date(iso).toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+}
+function renderBoard(){
+  const list=document.getElementById('boardList');
+  if(curKind==='shelter'){
+    if(!boardCache.length){ list.innerHTML=emptyBox('🏥','Приюты скоро появятся','Мы проверяем и добавляем проверенные приюты, которым можно помочь.'); return; }
+    list.innerHTML=boardCache.map(s=>`<div class="post"><div class="bd">
+      <div class="tp"><h4>${esc(s.name)}</h4></div>
+      <div class="meta">📍 ${esc(s.city||'')}${s.address?', '+esc(s.address):''}</div>
+      ${s.needs?`<div class="desc"><b>Нужно:</b> ${esc(s.needs)}</div>`:''}
+      ${s.description?`<div class="desc">${esc(s.description)}</div>`:''}
+      ${s.contact?`<div class="btns"><button class="b-tg" onclick="openLink('${esc(s.contact)}')">Связаться</button></div>`:''}
+      </div></div>`).join('');
+    return;
+  }
+  if(curKind==='happy'){ renderStories(list); return; }
+  let arr=boardCache.slice();
+  if(curFilter==='mine') arr=arr.filter(p=>p.author_id===ME.id);
+  else if(curFilter==='found') arr=arr.filter(p=>p.status==='found');
+  else if(curFilter!=='all') arr=arr.filter(p=>p.animal_type===curFilter);
+  if(curFilter!=='found'&&curFilter!=='mine') arr=arr.filter(p=>p.status!=='found');
+
+  if(!arr.length){
+    const t={lost:['🔍','Пока никто не потерялся','И это отлично! Если у вас пропал питомец — нажмите «Добавить объявление».'],
+             adopt:['🏠','Пока нет объявлений','Знаете животное, которое ищет дом? Расскажите о нём здесь.'],
+             boarding:['🛏','Передержек пока нет','Есть свободное место для питомца? Разместите объявление.']}[curKind];
+    list.innerHTML=emptyBox(t[0],t[1],t[2]); return;
+  }
+  list.innerHTML=arr.map(p=>{
+    const mine=p.author_id===ME.id;
+    let ph='';
+    if(p.photos && p.photos.length){
+      if(p.photos.length===1){
+        ph=`<img class="ph" src="${p.photos[0]}">`;
+      } else {
+        const n=p.photos.length;
+        ph=`<div class="feedcar" ontouchstart="carTS(event,'${p.id}')" ontouchend="carTE(event,'${p.id}')">
+          <div class="feedcar-wrap" id="car_${p.id}">`;
+        p.photos.forEach(im=>ph+=`<div class="feedcar-slide" style="background-image:url(${im})"></div>`);
+        ph+=`</div>
+          <button class="car-btn prev" onclick="carouselSwipe('${p.id}',-1)">‹</button>
+          <button class="car-btn next" onclick="carouselSwipe('${p.id}',1)">›</button>
+          <div class="car-dots" id="dots_${p.id}">${Array.from({length:n},(_,i)=>'<i class="'+(i===0?'on':'')+'"></i>').join('')}</div>
+          <div class="car-count" id="cnt_${p.id}">1/${n}</div>
+        </div>`;
+      }
+    } else {
+      ph=`<div class="ph-none">${p.animal_type==='Собака'?'🐶':(p.animal_type==='Кошка'?'🐱':'🐾')}</div>`;
+    }
+    const stat=p.status==='found'?'<span class="st found">Нашёлся ✅</span>':
+      (curKind==='lost'?'<span class="st">Пропал</span>':
+       (curKind==='adopt'?'<span class="st adopt">Ищет дом</span>':''));
+    const rows=[];
+    if(p.breed||p.color) rows.push([p.breed,p.color].filter(Boolean).join(', '));
+    if(p.marks) rows.push('<b>Приметы:</b> '+esc(p.marks));
+    if(p.city||p.district) rows.push('📍 '+[p.city,p.district].filter(Boolean).join(', '));
+    if(p.event_date) rows.push('📅 '+new Date(p.event_date+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}));
+    if(p.reward) rows.push('💰 Вознаграждение: '+esc(p.reward));
+    if(p.price) rows.push('💵 '+esc(p.price));
+    let btns='';
+    if(mine){
+      btns=`<div class="btns">
+        <button class="b-tg" style="flex:1" onclick="openPostActions('${p.id}')">✏️ Управлять</button>
+        <button class="b-gy" onclick="sharePost('${p.id}')">📣</button></div>`;
+    } else {
+      btns=`<div class="btns">
+        <button class="b-tg" style="flex:1" onclick="sharePost('${p.id}')">📣 Рассказать друзьям</button>
+        <button class="b-gy" onclick="reportPost('${p.id}')">⚠️</button></div>`;
+    }
+    const contactBox=p.contact
+      ? `<div class="contact-box"><div class="lb">📞 Связаться с автором</div><div class="vl">${esc(p.contact)}</div></div>`
+      : '';
+    return `<div class="post">${ph}<div class="bd">
+      <div class="tp"><h4>${esc(p.title)}</h4>${stat}</div>
+      <div class="meta">${rows.join('<br>')}</div>
+      ${p.description?`<div class="desc">${esc(p.description)}</div>`:''}
+      ${contactBox}
+      <div class="meta" style="margin-top:8px;font-size:11.5px">👤 ${esc(p.author_name||'Пользователь')} · ${timeAgo(p.created_at)}</div>
+      ${btns}</div></div>`;
+  }).join('');
+}
+// ================= Счастливые истории =================
+let storyPhoto=null;
+const STORY_KINDS={home:'🏠 Нашёл дом',found:'🎉 Нашёлся',help:'💚 Помогли'};
+function renderStories(list){
+  const admin = String(ME.id)===String(ADMIN_ID);
+  const n = boardCache.length;
+  let h = `<div class="happy-hero">
+    <div class="n">${n}</div>
+    <div class="t">${n===0?'историй пока нет':plural(n,'счастливая история','счастливые истории','счастливых историй')}</div>
+    <p>Здесь животные, которым вместе с вами получилось помочь. Каждая история — чья-то новая жизнь 🐾</p></div>`;
+
+  if(admin) h += `<div class="sform">
+    <h4>➕ Добавить историю</h4>
+    <div class="thumb" id="stThumb">📷</div>
+    <label class="up">Выбрать фото<input type="file" accept="image/*" style="display:none" onchange="storyPhotoPick(event)"></label>
+    <input class="field" id="stName" placeholder="Кличка — например: Атлас">
+    <div class="mini-choices" id="stKinds" style="margin-bottom:10px">
+      ${Object.keys(STORY_KINDS).map((k,i)=>`<span class="mini-choice${i===0?' sel':''}" onclick="stKind(this,'${k}')">${STORY_KINDS[k]}</span>`).join('')}
+    </div>
+    <textarea class="field" id="stText" rows="4" style="resize:none" placeholder="Что произошло? Например: Атлас жил на улице у гаражей. Его забрала семья из Москвы — теперь он спит на диване и не боится людей."></textarea>
+    <button class="btn" style="margin-top:10px;font-family:'Nunito',sans-serif" onclick="saveStory()">Опубликовать историю</button>
+  </div>`;
+
+  if(!n){
+    h += emptyBox('🌱','Скоро здесь будут истории','Мы собираем истории животных, которым удалось помочь. Первая уже совсем близко.');
+    list.innerHTML=h; return;
+  }
+  h += boardCache.map(s=>`<div class="story">
+    ${s.photo?`<img src="${s.photo}" alt="">`:`<div class="noimg">🐾</div>`}
+    <div class="bd">
+      <span class="tag">${STORY_KINDS[s.kind]||'💚 Помогли'}</span>
+      <h4>${esc(s.name||'')}</h4>
+      <p>${esc(s.text||'')}</p>
+      <div class="mt">${timeAgo(s.created_at)}</div>
+      ${admin?`<button class="del" onclick="delStory('${s.id}')">Удалить</button>`:''}
+    </div></div>`).join('');
+  list.innerHTML=h;
+}
+function plural(n,a,b,c){
+  const m=n%100, d=n%10;
+  if(m>=11&&m<=14) return c;
+  if(d===1) return a; if(d>=2&&d<=4) return b; return c;
+}
+let stCurKind='home';
+function stKind(el,k){
+  stCurKind=k;
+  document.querySelectorAll('#stKinds .mini-choice').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel'); haptic();
+}
+function storyPhotoPick(ev){
+  const f=ev.target.files&&ev.target.files[0]; ev.target.value='';
+  if(!f) return;
+  const t=document.getElementById('stThumb'); t.textContent='⏳';
+  compressImage(f, d=>{
+    storyPhoto=d; t.textContent=''; t.style.backgroundImage='url('+d+')'; haptic('ok');
+  }, why=>{
+    t.textContent='📷';
+    alertMsg(why==='big'?'Фото слишком большое, попробуйте другое.':'Не удалось прочитать это фото.');
+  });
+}
+async function saveStory(){
+  const name=document.getElementById('stName').value.trim();
+  const text=document.getElementById('stText').value.trim();
+  if(!name){ alertMsg('Напишите кличку животного.'); return; }
+  if(!text){ alertMsg('Расскажите, что произошло — это самое главное в истории.'); return; }
+  const okSave=await sbPost('stories',{name:name,text:text,kind:stCurKind,photo:storyPhoto});
+  if(okSave){
+    storyPhoto=null; stCurKind='home'; haptic('ok');
+    alertMsg('История опубликована! 💚');
+    loadBoard();
+  } else {
+    alertMsg('Не удалось сохранить. Проверьте, что таблица stories создана в Supabase.');
+  }
+}
+function delStory(id){
+  const go=async()=>{
+    const r=await sbDel('stories?id=eq.'+id);
+    if(r){ haptic('ok'); loadBoard(); } else alertMsg('Не удалось удалить.');
+  };
+  try{ tg.showConfirm('Удалить эту историю?',ok=>{if(ok)go();}); }
+  catch(e){ if(confirm('Удалить эту историю?')) go(); }
+}
+
+function emptyBox(e,t,s){
+  return `<div class="card" style="text-align:center;padding:34px 22px">
+    <div style="font-size:48px;margin-bottom:10px">${e}</div>
+    <h3 style="font-size:17px;font-weight:900;margin-bottom:6px">${t}</h3>
+    <p style="font-size:13.5px;color:var(--text-soft);line-height:1.6">${s}</p></div>`;
+}
+function esc(s){ return String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
+function openLink(u){
+  if(!/^https?:/.test(u)){ if(u.startsWith('@'))u='https://t.me/'+u.slice(1); else { alertMsg(u); return; } }
+  if(tg&&tg.openLink) tg.openLink(u); else window.open(u,'_blank');
+}
+// ================= Действия с моим объявлением =================
+let actionsPost=null, editingPost=null;
+function openPostActions(id){
+  const p=boardCache.find(x=>String(x.id)===String(id)); if(!p) return;
+  actionsPost=p;
+  document.getElementById('paFound').style.display=(p.kind==='lost'&&p.status!=='found')?'flex':'none';
+  document.getElementById('postActions').classList.add('active');
+  haptic();
+}
+function closePostActions(){ document.getElementById('postActions').classList.remove('active'); }
+function actEdit(){
+  if(!actionsPost) return;
+  const p=actionsPost; closePostActions();
+  curKind=p.kind;
+  openPostForm();               // сброс формы + правильные подписи под тип
+  editingPost=p;                // ставим ПОСЛЕ openPostForm (он сбрасывает)
+  document.getElementById('pfName').value=p.title||'';
+  document.getElementById('pfBreed').value=p.breed||'';
+  document.getElementById('pfColor').value=p.color||'';
+  document.getElementById('pfMarks').value=p.marks||'';
+  document.getElementById('pfDesc').value=p.description||'';
+  document.getElementById('pfCity').value=p.city||'';
+  document.getElementById('pfDistrict').value=p.district||'';
+  if(p.event_date) document.getElementById('pfDate').value=p.event_date;
+  document.getElementById('pfReward').value=p.reward||'';
+  document.getElementById('pfPrice').value=p.price||'';
+  document.getElementById('pfContact').value=p.contact||'';
+  pfData.type=p.animal_type||'Кошка';
+  document.querySelectorAll('#pfTypeRow .mini-choice').forEach(x=>{
+    const oc=x.getAttribute('onclick')||'';
+    x.classList.toggle('sel', oc.indexOf("'"+pfData.type+"'")>-1);
+  });
+  pfData.photos=(p.photos||[]).slice(0,3);
+  renderPhotoBox();
+  document.getElementById('pfTitle').textContent='Редактирование';
+  document.getElementById('pfSave').textContent='💾 Сохранить изменения';
+}
+function actShare(){ if(!actionsPost) return; const id=actionsPost.id; closePostActions(); sharePost(id); }
+function actFound(){ if(!actionsPost) return; const id=actionsPost.id; closePostActions(); markFound(id); }
+function actDelete(){ if(!actionsPost) return; const id=actionsPost.id; closePostActions(); delPost(id); }
+
+// Поделиться объявлением — доступно всем, не только автору
+function sharePost(id){
+  const p=boardCache.find(x=>String(x.id)===String(id)); if(!p) return;
+  const head={lost:'🔍 Помогите найти',adopt:'🏠 Ищет дом',boarding:'🛏 Передержка'}[p.kind]||'🐾';
+  const text=head+': '+(p.title||'')+(p.city?' ('+p.city+')':'')+'. Подробности — в приложении Любимка:';
+  if(tg&&tg.openTelegramLink){
+    tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(APP_LINK)+'&text='+encodeURIComponent(text));
+  } else if(navigator.share){ navigator.share({title:'Любимка',text:text,url:APP_LINK}); }
+  else { alertMsg(text+' '+APP_LINK); }
+  haptic();
+}
+async function markFound(id){
+  const go=async()=>{ await sbPatch('posts?id=eq.'+id,{status:'found'}); haptic('ok'); loadBoard(); alertMsg('Отличная новость! 🎉 Объявление помечено как «Нашёлся».'); };
+  const m='Питомец нашёлся? Объявление будет помечено ✅';
+  try{ tg.showConfirm(m,ok=>{if(ok)go();}); }catch(e){ if(confirm(m))go(); }
+}
+async function delPost(id){
+  const go=async()=>{ await sbDel('posts?id=eq.'+id); haptic('ok'); loadBoard(); };
+  const m='Удалить объявление навсегда?';
+  try{ tg.showConfirm(m,ok=>{if(ok)go();}); }catch(e){ if(confirm(m))go(); }
+}
+async function reportPost(id){
+  const go=async()=>{ await sbPost('reports',{post_id:id,reporter_id:ME.id,reason:'user_report'}); alertMsg('Спасибо! Мы проверим объявление.'); haptic('ok'); };
+  const m='Пожаловаться на это объявление?';
+  try{ tg.showConfirm(m,ok=>{if(ok)go();}); }catch(e){ if(confirm(m))go(); }
+}
+
+// ---- post form ----
+let pfData={photo:null,type:'Кошка'};
+function openPostForm(){
+  editingPost=null;
+  document.getElementById('pfSave').textContent='Опубликовать';
+  pfData={photo:null,type:'Кошка'};
+  ['pfName','pfBreed','pfColor','pfMarks','pfDistrict','pfReward','pfPrice','pfDesc','pfContact'].forEach(i=>document.getElementById(i).value='');
+  const savedC=localStorage.getItem('lubimka_contact'); if(savedC) document.getElementById('pfContact').value=savedC;
+  document.getElementById('pfCity').value=localStorage.getItem('lubimka_city')||'Москва';
+  document.getElementById('pfDate').value=new Date().toISOString().slice(0,10);
+  pfData.photos=[];
+  renderPhotoBox();
+  document.querySelectorAll('#pfTypeRow .mini-choice').forEach((x,i)=>x.classList.toggle('sel',i===0));
+  const t={lost:['Пропал питомец','Кличка','Приметы','Дата пропажи'],
+           adopt:['Животное ищет дом','Кличка (если есть)','Особенности','Примерно с какого времени'],
+           boarding:['Предложить передержку','Заголовок','Условия','Свободно с']}[curKind];
+  document.getElementById('pfTitle').textContent=t[0];
+  document.getElementById('pfNameLbl').textContent=t[1];
+  document.getElementById('pfMarksLbl').textContent=t[2];
+  document.getElementById('pfDateLbl').textContent=t[3];
+  document.getElementById('pfRewardWrap').style.display=(curKind==='lost')?'block':'none';
+  document.getElementById('pfPriceWrap').style.display=(curKind==='boarding')?'block':'none';
+  document.getElementById('pfDateWrap').style.display=(curKind==='boarding')?'none':'block';
+  document.getElementById('postForm').classList.add('active');
+  haptic();
+}
+function closePostForm(){ document.getElementById('postForm').classList.remove('active'); }
+function pfType(el,t){
+  document.querySelectorAll('#pfTypeRow .mini-choice').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel'); pfData.type=t; haptic();
+}
+function pfPhoto(ev){
+  const f=ev.target.files && ev.target.files[0];
+  ev.target.value='';
+  if(!f) return;
+  if(!pfData.photos) pfData.photos=[];
+  if(pfData.photos.length>=3){ alertMsg('Максимум 3 фото.'); return; }
+  renderPhotoBox(true);                     // показываем ⏳-плитку
+  compressImage(f, d=>{
+    pfData.photos.push(d);
+    renderPhotoBox();
+    haptic('ok');
+  }, why=>{
+    renderPhotoBox();
+    alertMsg(why==='big' ? 'Фото слишком большое. Попробуйте другое.' : 'Не удалось загрузить это фото. Попробуйте другое.');
+  });
+}
+function renderPhotoBox(busy){
+  const box=document.getElementById('pfPhotoBox'); if(!box) return;
+  const ph=pfData.photos||(pfData.photos=[]);
+  let h='<div class="ph-grid">';
+  ph.forEach((src,i)=>{
+    h+='<div class="ph-th" style="background-image:url('+src+')">'
+      +(i===0?'<span class="ph-cover">Обложка</span>':'')
+      +'<button class="ph-del" onclick="delPfPhoto('+i+')">✕</button></div>';
+  });
+  if(busy) h+='<div class="ph-th ph-busy">⏳</div>';
+  else if(ph.length<3) h+='<label class="ph-add">＋<span>'+(ph.length?'ещё':'фото')+'</span><input type="file" accept="image/*" style="display:none" onchange="pfPhoto(event)"></label>';
+  h+='</div><div class="ph-hint">'+(ph.length ? ph.length+' из 3 · первое фото — обложка' : 'До 3 фото — так животное видно с разных сторон')+'</div>';
+  box.innerHTML=h;
+}
+function delPfPhoto(i){ pfData.photos.splice(i,1); renderPhotoBox(); haptic(); }
+async function savePost(){
+  const name=document.getElementById('pfName').value.trim();
+  if(!name){ alertMsg('Укажите кличку или заголовок'); return; }
+  const city=document.getElementById('pfCity').value.trim();
+  if(!city){ alertMsg('Укажите город'); return; }
+  localStorage.setItem('lubimka_city',city);
+  const btn=document.getElementById('pfSave'); btn.disabled=true; btn.textContent='Публикуем…';
+  const body={author_id:ME.id,author_name:ME.name,author_uname:ME.uname,kind:curKind,status:'active',
+    title:name,animal_type:pfData.type,
+    breed:document.getElementById('pfBreed').value.trim(),
+    color:document.getElementById('pfColor').value.trim(),
+    marks:document.getElementById('pfMarks').value.trim(),
+    description:document.getElementById('pfDesc').value.trim(),
+    city:city,district:document.getElementById('pfDistrict').value.trim(),
+    event_date:document.getElementById('pfDateWrap').style.display==='none'?null:(document.getElementById('pfDate').value||null),
+    reward:curKind==='lost'?document.getElementById('pfReward').value.trim():null,
+    price:curKind==='boarding'?document.getElementById('pfPrice').value.trim():null,
+    photos:pfData.photos&&pfData.photos.length?pfData.photos:null};
+  const contact=document.getElementById('pfContact').value.trim();
+  body.contact=contact||null;
+  if(contact) localStorage.setItem('lubimka_contact',contact);
+  let r, wasEdit=!!editingPost;
+  const retryNoContact=async(fn)=>{      // если колонки contact ещё нет в базе — не теряем объявление
+    let res=await fn(body);
+    if(!res && body.contact!==undefined){ const b2=Object.assign({},body); delete b2.contact; res=await fn(b2); }
+    return res;
+  };
+  if(wasEdit){
+    // редактирование: обновляем существующую запись, автора и тип не трогаем
+    delete body.author_id; delete body.author_name; delete body.author_uname;
+    delete body.kind; delete body.status;
+    r=await retryNoContact(bd=>sbPatch('posts?id=eq.'+editingPost.id, bd));
+  } else {
+    r=await retryNoContact(bd=>sbPost('posts',bd,true));
+  }
+  btn.disabled=false; btn.textContent='Опубликовать';
+  if(r){ editingPost=null; closePostForm(); haptic('ok'); loadBoard();
+    alertMsg(wasEdit?'Сохранено! ✅ Объявление обновлено.':'Опубликовано! 🎉 Ваше объявление увидят все пользователи Любимки.'); }
+  else alertMsg('Не удалось сохранить. Проверьте интернет и попробуйте ещё раз.');
+}
+
+// ================= Navigation =================
+const titles={home:'Мой питомец',help:'Помощь животным',shop:'Магазин',support:'Поддержать',about:'Профиль'};
+let curScreen='home';
+function openScreen(id){
+  curScreen=id;
+  document.querySelectorAll('.app-body .screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('pageTitle').textContent=titles[id]||'Любимка';
+  document.getElementById('backBtn').style.display=(id==='support')?'block':'none';
+  document.querySelectorAll('.nav .item').forEach(n=>n.classList.remove('on'));
+  const navId=(id==='support')?'about':id;
+  const ni=document.querySelector('.nav .item[data-screen="'+navId+'"]'); if(ni)ni.classList.add('on');
+  if(id==='home')renderHome(); if(id==='about')renderProfile(); if(id==='help')loadBoard(); if(id==='shop'&&!shopLoaded)loadShopPhotos();
+  document.getElementById('boardFab').style.display=(id==='help'&&curKind!=='shelter')?'block':'none';
+  
+  window.scrollTo(0,0); haptic();
+}
+function goHome(){ openScreen(curScreen==='support'?'about':'home'); }
+function addPetFromNav(){ document.getElementById('addSheet').classList.add('active'); haptic(); }
+function closeAdd(){ document.getElementById('addSheet').classList.remove('active'); }
+function addChoice(what){
+  closeAdd(); haptic();
+  if(what==='pet'){ startRegister(); return; }
+  // объявление: переходим в нужную вкладку и открываем форму
+  const idx={lost:0,adopt:1,boarding:2}[what];
+  openScreen('help');
+  setKind(what, document.querySelectorAll('.seg-tabs button')[idx]);
+  setTimeout(openPostForm, 250);
+}
+function goSupport(){ openScreen('support'); }
+function setTab(el){ el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('on')); el.classList.add('on'); haptic(); }
+let carIdx={}, carTouch={};
+function carouselSwipe(id,dir){ carouselShow(id,(carIdx[id]||0)+dir); }
+function carouselShow(id,idx){
+  const car=document.getElementById('car_'+id); if(!car) return;
+  const n=car.children.length;
+  idx=Math.max(0,Math.min(n-1,idx));
+  if(idx===(carIdx[id]||0) && car.style.transform) return;
+  car.style.transform='translateX(-'+(idx*100)+'%)';
+  carIdx[id]=idx;
+  const dots=document.getElementById('dots_'+id);
+  if(dots) Array.from(dots.children).forEach((d,i)=>d.classList.toggle('on',i===idx));
+  const cnt=document.getElementById('cnt_'+id);
+  if(cnt) cnt.textContent=(idx+1)+'/'+n;
+  haptic();
+}
+function carTS(ev,id){ carTouch[id]=ev.touches[0].clientX; }
+function carTE(ev,id){
+  const dx=ev.changedTouches[0].clientX-(carTouch[id]||0);
+  if(Math.abs(dx)>40) carouselSwipe(id, dx<0?1:-1);
+}
+function like(el){ el.textContent=el.textContent.trim()==='🤍'?'❤️':'🤍'; haptic(); }
+// ================= Поддержка проекта =================
+// Ссылка CloudTips (самозанятый). Пустая строка = кнопка покажет "скоро".
+const TIPS_URL='https://pay.cloudtips.ru/p/9b4f792f';
+let curSum=300;
+function pickSum(el,v){
+  document.querySelectorAll('#sumGrid button').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  curSum=v;
+  const own=document.getElementById('ownSum');
+  own.style.display = v===0 ? 'block' : 'none';
+  if(v===0) own.focus();
+  haptic();
+}
+function support(){
+  let sum=curSum;
+  if(sum===0){
+    sum=parseInt(document.getElementById('ownSum').value||'0');
+    if(!sum||sum<10){ alertMsg('Укажите сумму от 10 ₽'); return; }
+  }
+  if(!TIPS_URL){
+    alertMsg('Спасибо за желание поддержать! 💛 Оплата подключается — совсем скоро заработает.');
+    return;
+  }
+  const url=TIPS_URL+(TIPS_URL.indexOf('?')>-1?'&':'?')+'amount='+sum;
+  haptic('ok');
+  if(tg&&tg.openLink) tg.openLink(url); else window.open(url,'_blank');
+}
+// ⚠️ Замени на реального бота, когда создашь его в @BotFather
+const APP_LINK='https://t.me/lubimkaa1_bot/app';
+const IG_LINK='https://www.instagram.com/lubimka.app/';
+const TG_CHANNEL='https://t.me/lubimka_app';
+function openIG(){ haptic(); if(tg&&tg.openLink) tg.openLink(IG_LINK); else window.open(IG_LINK,'_blank'); }
+const SHOP_CONTACT='ka4evo420';
+// (см. ADMIN_ID вверху скрипта)
+const SHOP_ADMIN=ADMIN_ID;
+const SHOP_SLOTS=['toy1','toy2','house'];
+let shopPhotos={}, shopLoaded=false;
+
+async function loadShopPhotos(){
+  const rows=await sbGet('shop_photos?select=slot,photo');
+  (rows||[]).forEach(r=>{ if(r.photo) shopPhotos[r.slot]=r.photo; });
+  SHOP_SLOTS.forEach(paintSlot);
+  shopLoaded=true;
+}
+function paintSlot(slot){
+  const wrap=document.getElementById('wrap_'+slot); if(!wrap) return;
+  const emo={toy1:'🐣',toy2:'🐭',house:'🏠'}[slot]||'🎁';
+  wrap.innerHTML = shopPhotos[slot]
+    ? '<img id="img_'+slot+'" src="'+shopPhotos[slot]+'" alt="">'
+    : '<div class="ph-fallback" id="img_'+slot+'">'+emo+'</div>';
+  if(String(ME.id)===String(SHOP_ADMIN)){
+    wrap.insertAdjacentHTML('beforeend',
+      '<label class="ph-upload">📷 '+(shopPhotos[slot]?'Заменить фото':'Загрузить фото')+
+      '<input type="file" accept="image/*" style="display:none" onchange="uploadShopPhoto(event,\''+slot+'\')"></label>');
+  }
+}
+function uploadShopPhoto(ev,slot){
+  const f=ev.target.files && ev.target.files[0];
+  ev.target.value='';
+  if(!f) return;
+  const wrap=document.getElementById('wrap_'+slot);
+  wrap.insertAdjacentHTML('beforeend','<div class="ph-loading" id="ld_'+slot+'">⏳</div>');
+  compressImage(f, async d=>{
+    const okSave=await sbPost('shop_photos',{slot:slot,photo:d,updated_at:new Date().toISOString()});
+    const ld=document.getElementById('ld_'+slot); if(ld) ld.remove();
+    if(okSave){ shopPhotos[slot]=d; paintSlot(slot); haptic('ok');
+      alertMsg('Готово! ✅ Фото сохранено — его увидят все пользователи.'); }
+    else { alertMsg('Не удалось сохранить. Проверьте, что таблица shop_photos создана в Supabase.'); }
+  }, why=>{
+    const ld=document.getElementById('ld_'+slot); if(ld) ld.remove();
+    alertMsg(why==='big'?'Фото слишком большое, попробуйте другое.':'Не удалось прочитать это фото. Попробуйте другое.');
+  });
+}   // ⚠️ твой ник в Telegram — сюда приходят заказы
+function orderToy(item){
+  haptic('ok');
+  const url='https://t.me/'+SHOP_CONTACT;
+  alertMsg('Открываю чат с автором. Напиши: «Хочу игрушку „'+item+'“» — и договоримся о доставке 🐾');
+  if(tg&&tg.openTelegramLink) tg.openTelegramLink(url); else window.open(url,'_blank');
+}
+function openChannel(){ haptic(); if(tg&&tg.openTelegramLink) tg.openTelegramLink(TG_CHANNEL); else window.open(TG_CHANNEL,'_blank'); }
+function shareApp(){
+  const link=APP_LINK;
+  const text='Любимка — приложение для тех, кто любит животных 🐾 Профиль питомца, напоминания о прививках и помощь бездомным.';
+  if(tg&&tg.openTelegramLink){
+    tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(text));
+  } else if(navigator.share){ navigator.share({title:'Любимка',text:text,url:link}); }
+  else { alertMsg('Ссылка: '+link); }
+  haptic();
+}
+
+boot();
+</script>
+</body>
+</html>
