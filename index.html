@@ -223,6 +223,19 @@ body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
 .ms-contact{background:#fff;border-radius:10px;padding:8px 10px;font-size:12.5px;font-weight:800;margin-top:8px;}
 .ms-marks{font-size:12px;line-height:1.5;margin-top:7px;color:var(--text);}
 
+/* ===== категории раздела «Помощь» ===== */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:10px;}
+.cat-card{position:relative;border:none;background:var(--card);border-radius:16px;padding:13px 4px 11px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;box-shadow:var(--shadow);font-family:'Nunito',sans-serif;transition:transform .12s, box-shadow .12s;}
+.cat-card:active{transform:scale(.95);}
+.cat-card .ci{font-size:22px;line-height:1;}
+.cat-card .cl{font-size:11.5px;font-weight:800;color:var(--text-soft);letter-spacing:.1px;}
+.cat-card.on{background:linear-gradient(135deg,#F47B20,#F79A52);box-shadow:0 6px 16px rgba(244,123,32,.35);}
+.cat-card.on .cl{color:#fff;}
+.cat-card .cn{position:absolute;top:7px;right:8px;min-width:17px;height:17px;border-radius:9px;background:#FFF3E6;color:#F47B20;font-size:9.5px;font-weight:900;display:none;align-items:center;justify-content:center;padding:0 5px;}
+.cat-card .cn.show{display:flex;}
+.cat-card.on .cn{background:rgba(255,255,255,.28);color:#fff;}
+.cat-desc{font-size:12px;color:var(--text-soft);margin:2px 4px 12px;line-height:1.5;}
+.empty-ico{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#FFF3E6,#FFE7CC);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 14px;}
 /* ===== board / posts ===== */
 .seg-tabs{display:flex;gap:6px;background:#EAEAEE;border-radius:14px;padding:4px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
 .seg-tabs::-webkit-scrollbar{display:none;}
@@ -733,20 +746,21 @@ body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
 
   <!-- HELP -->
   <div class="screen" id="help">
-    <div class="seg-tabs">
-      <button class="on" data-kind="lost"     onclick="setKind('lost',this)">🔍 Потеряшки</button>
-      <button          data-kind="found"    onclick="setKind('found',this)">🆘 Нашёл</button>
-      <button          data-kind="adopt"    onclick="setKind('adopt',this)">🏠 Ищут дом</button>
-      <button          data-kind="boarding" onclick="setKind('boarding',this)">🛏 Передержка</button>
-      <button          data-kind="shelter"  onclick="setKind('shelter',this)">🏥 Приюты</button>
-      <button          data-kind="happy"    onclick="setKind('happy',this)">💚 Помогли</button>
+    <div class="cat-grid" id="catGrid">
+      <button class="cat-card on" data-kind="lost" onclick="setKind('lost',this)"><span class="ci">🔍</span><span class="cl">Потеряшки</span><span class="cn" id="cnt_lost"></span></button>
+      <button class="cat-card" data-kind="found" onclick="setKind('found',this)"><span class="ci">🆘</span><span class="cl">Нашёл</span><span class="cn" id="cnt_found"></span></button>
+      <button class="cat-card" data-kind="adopt" onclick="setKind('adopt',this)"><span class="ci">🏠</span><span class="cl">Ищут дом</span><span class="cn" id="cnt_adopt"></span></button>
+      <button class="cat-card" data-kind="boarding" onclick="setKind('boarding',this)"><span class="ci">🛏</span><span class="cl">Передержка</span><span class="cn" id="cnt_boarding"></span></button>
+      <button class="cat-card" data-kind="shelter" onclick="setKind('shelter',this)"><span class="ci">🏥</span><span class="cl">Приюты</span><span class="cn" id="cnt_shelter"></span></button>
+      <button class="cat-card" data-kind="happy" onclick="setKind('happy',this)"><span class="ci">💚</span><span class="cl">Помогли</span><span class="cn" id="cnt_happy"></span></button>
     </div>
+    <div class="cat-desc" id="catDesc">Пропавшие питомцы вашего города — помогите им вернуться домой</div>
     <div class="filter-row" id="filterRow"></div>
+    <div id="boardList"><div class="loading">Загрузка…</div></div>
     <button class="sup-mini" onclick="goSupport()">
       <span class="e">💛</span>
       <span><b>Поддержать Любимку</b><span>Проект бесплатный и живёт на вашу поддержку</span></span>
       <span class="ar">›</span></button>
-    <div id="boardList"><div class="loading">Загрузка…</div></div>
     <div style="height:80px"></div>
   </div>
   <div class="fab" id="boardFab" style="display:none"><button onclick="openPostForm()">➕ Добавить объявление</button></div>
@@ -1603,10 +1617,18 @@ function closeNotif(){ document.getElementById('notifModal').classList.remove('a
 let curKind='lost', curFilter='all', boardCache=[];
 const KIND_LABEL={lost:'Потеряшки',found:'Нашёл животное',adopt:'Ищут дом',boarding:'Передержка',shelter:'Приюты'};
 
+const KIND_DESC={
+ lost:'Пропавшие питомцы вашего города — помогите им вернуться домой',
+ found:'Животные, которых нашли на улице. Возможно, их уже ищут',
+ adopt:'Хвостики, которые ищут любящий дом',
+ boarding:'Временный дом для питомца, пока хозяин в отъезде',
+ shelter:'Проверенные приюты, которым нужна помощь',
+ happy:'Счастливые истории — они уже дома 💚'};
 function setKind(k,el){
   curKind=k; curFilter='all';
-  document.querySelectorAll('.seg-tabs button').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.cat-grid .cat-card').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');
+  const d=document.getElementById('catDesc'); if(d) d.textContent=KIND_DESC[k]||'';
   document.getElementById('boardFab').style.display = (k==='shelter'||k==='happy')?'none':'block';
   haptic(); loadBoard();
 }
@@ -1619,6 +1641,22 @@ function renderFilters(){
 }
 function setFilter(f){ curFilter=f; renderFilters(); renderBoard(); haptic(); }
 
+async function loadCatCounts(){
+  try{
+    const [posts,sh,st]=await Promise.all([
+      sbGet('posts?select=kind&status=eq.active&limit=1000'),
+      sbGet('shelters?select=id&limit=500'),
+      sbGet('stories?select=id&limit=500')]);
+    const c={lost:0,found:0,adopt:0,boarding:0};
+    posts.forEach(p=>{ if(c[p.kind]!==undefined) c[p.kind]++; });
+    c.shelter=sh.length; c.happy=st.length;
+    for(const k in c){
+      const el=document.getElementById('cnt_'+k); if(!el) continue;
+      el.textContent=c[k]>99?'99+':c[k];
+      el.classList.toggle('show', c[k]>0);
+    }
+  }catch(e){}
+}
 let boardReq=0;
 async function loadBoard(){
   renderFilters();
@@ -1665,7 +1703,7 @@ function renderBoard(){
              found:['🆘','Пока нет найденных','Нашли животное на улице? Опубликуйте — приложение само поищет хозяина среди потеряшек.'],
              adopt:['🏠','Пока нет объявлений','Знаете животное, которое ищет дом? Расскажите о нём здесь.'],
              boarding:['🛏','Передержек пока нет','Есть свободное место для питомца? Разместите объявление.']}[curKind];
-    list.innerHTML=emptyBox(t[0],t[1],t[2]); return;
+    list.innerHTML=emptyBox(t[0],t[1],t[2],'<button class="btn" style="margin-top:16px" onclick="openPostForm()">➕ Добавить объявление</button>'); return;
   }
   list.innerHTML=arr.map(p=>{
     const mine=p.author_id===ME.id;
@@ -1804,11 +1842,11 @@ function delStory(id){
   catch(e){ if(confirm('Удалить эту историю?')) go(); }
 }
 
-function emptyBox(e,t,s){
-  return `<div class="card" style="text-align:center;padding:34px 22px">
-    <div style="font-size:48px;margin-bottom:10px">${e}</div>
+function emptyBox(e,t,s,btn){
+  return `<div class="card" style="text-align:center;padding:30px 22px 26px">
+    <div class="empty-ico">${e}</div>
     <h3 style="font-size:17px;font-weight:900;margin-bottom:6px">${t}</h3>
-    <p style="font-size:13.5px;color:var(--text-soft);line-height:1.6">${s}</p></div>`;
+    <p style="font-size:13.5px;color:var(--text-soft);line-height:1.6">${s}</p>${btn||''}</div>`;
 }
 function esc(s){ return String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
 function openLink(u){
@@ -2128,7 +2166,7 @@ function alertCard(a){
 function alertGo(kind){
   closeNotif();
   openScreen('help');
-  const btn=document.querySelector('.seg-tabs button[data-kind="'+kind+'"]');
+  const btn=document.querySelector('.cat-card[data-kind="'+kind+'"]');
   if(btn) setKind(kind,btn);
 }
 
@@ -2175,7 +2213,7 @@ function openScreen(id){
   document.querySelectorAll('.nav .item').forEach(n=>n.classList.remove('on'));
   const navId=(id==='support')?'about':id;
   const ni=document.querySelector('.nav .item[data-screen="'+navId+'"]'); if(ni)ni.classList.add('on');
-  if(id==='home')renderHome(); if(id==='about')renderProfile(); if(id==='help')loadBoard(); if(id==='shop'&&!shopLoaded)loadShopPhotos();
+  if(id==='home')renderHome(); if(id==='about')renderProfile(); if(id==='help'){loadBoard();loadCatCounts();} if(id==='shop'&&!shopLoaded)loadShopPhotos();
   document.getElementById('boardFab').style.display=(id==='help'&&curKind!=='shelter')?'block':'none';
   
   window.scrollTo(0,0); haptic();
