@@ -2,8 +2,9 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Любимка</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Любимка — дневник питомца</title>
+<meta name="lubimka-release" content="2026-09-11.1">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -437,9 +438,199 @@ body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
 .nav .item.on{color:var(--orange);}
 .nav .item .ic{font-size:20px;}
 .nav .add{width:52px;height:52px;border-radius:50%;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;margin-top:-20px;box-shadow:0 6px 16px rgba(244,123,32,.45);flex:0 0 auto;}
+
+/* Этап 1: оформление. Данные и Supabase заменены отдельно, только в демоверсии. */
+:root{--orange:#C85818;--orange-light:#FCE8D8;--orange-soft:#FFF3E8;--text:#352D27;--text-soft:#766B63;--bg:#FAF7F2;--card:#FFF;--shadow:0 5px 24px rgba(81,52,30,.045);--demo-height:0px;--line:#EFE9E1;}
+*{font-family:'Segoe UI',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;}
+html{background:#EEE8E0;scroll-behavior:smooth;}
+body{padding-top:var(--demo-height);font-size:16px;line-height:1.5;background:var(--bg);}
+button,input,textarea{font:inherit;}
+button{cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:manipulation;}
+button,[role=button],.pet-card,.rec-type,.mini-choice,.nav .item,.nav .add{transition:background .18s,box-shadow .18s,transform .16s;}
+button:active,[role=button]:active,.pet-card:active{transform:scale(.98);}
+button:focus-visible,[role=button]:focus-visible,summary:focus-visible{outline:3px solid #A9440E;outline-offset:4px;}
+input:focus,textarea:focus{outline:2px solid #E2874E;outline-offset:2px;}
+button:disabled{cursor:default;opacity:.45;}
+.demo-ribbon{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;min-height:var(--demo-height);background:#EFE3D5;color:#6C5340;z-index:500;text-align:center;font-size:12px;line-height:30px;font-weight:600;letter-spacing:.1px;}
+.demo-toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);max-width:calc(100vw - 40px);width:max-content;background:#352D27;color:#fff;box-shadow:0 8px 28px #352d2725;padding:12px 18px;border-radius:16px;font-size:14px;z-index:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;}
+.demo-toast.show{opacity:1;transform:translate(-50%,0);}
+.ui-icon{display:inline-block;width:22px;height:22px;flex-shrink:0;vertical-align:middle;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.btn,.btn-big{min-height:54px;border-radius:17px;font-size:16px;font-weight:700;box-shadow:none;}
+.btn{background:var(--orange);}.btn:hover{background:#B74D12;}.btn-outline{background:#fff;color:var(--orange);border:1px solid #E7CEBA;}
+.btn-outline:hover{background:var(--orange-soft);}.btn-skip{min-height:48px;font-size:15px;}
+.field{min-height:54px;border:1px solid #E8DFD5;border-radius:15px;font-size:16px;padding:14px 16px;background:#fff;color:var(--text);}
+.field::placeholder{color:#8A8077;}
+.card{border:1px solid #F1EBE4;border-radius:24px;padding:20px;margin-bottom:16px;}
+.header{padding:18px 20px 14px;background:var(--bg);top:var(--demo-height);}
+.header h1{font-size:22px;letter-spacing:-.5px;}.icon-btn{width:44px;height:44px;}
+.screen{padding:0 18px;}.section-title{font-size:18px;margin:6px 0 14px;letter-spacing:-.25px;}
+.pet-card{padding:20px;gap:16px;min-height:122px;border:1px solid #EEE5DA;}
+.pet-card .avatar{width:74px;height:74px;border-radius:20px;}.pet-card .info{min-width:0;}
+.pet-card .info h3{font-size:21px;}.pet-card .info p{font-size:14px;}.badge{font-size:12px;padding:4px 10px;font-weight:600;}
+.health .txt{font-size:14px;}.ct-today{font-size:15px;line-height:1.6;}.reminder{min-height:58px;font-size:14px;}.reminder .when{font-size:13px;}
+.nav{border-top:1px solid var(--line);box-shadow:0 -4px 24px #46352106;padding-bottom:calc(12px + env(safe-area-inset-bottom));}
+.nav .item{min-height:48px;justify-content:center;font-size:12px;gap:4px;}.nav .add{background:#EF7B2E;}
+#welcome,#register,#petScreen,#recModal,#editModal,#menuModal,#notifModal,#addSheet,#postForm,#matchSheet{top:var(--demo-height);}
+#petScreen{background:var(--bg);}
+.ps-head{padding:14px 20px;gap:10px;min-height:72px;border-bottom:1px solid #EEE7DE;flex-shrink:0;}
+.ps-head h2{font-size:15px;letter-spacing:0;font-weight:600;color:var(--text-soft);text-align:center;}
+.ps-back,.ps-menu{display:flex;align-items:center;justify-content:center;gap:4px;border:1px solid #EDE3D8;border-radius:14px;background:#fff;color:var(--text);height:44px;padding:0 12px;font-size:14px;font-weight:600;}
+.ps-menu{width:44px;padding:0;}.ps-back .ui-icon{width:17px;}
+.ps-body{padding:20px 20px calc(32px + env(safe-area-inset-bottom));scrollbar-width:thin;scrollbar-color:#DFD1C2 transparent;overscroll-behavior:contain;}
+.pet-identity{position:relative;background:#fff;border:1px solid #EFE6DB;border-radius:27px;overflow:hidden;padding:22px 20px 0;box-shadow:0 6px 28px #57361105;}
+.pet-identity:before{content:'';position:absolute;right:-50px;top:-100px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,#FFF0DF,transparent 68%);pointer-events:none;}
+.pet-identity-row{display:flex;gap:19px;align-items:center;position:relative;}
+.pet-portrait{width:116px;height:126px;flex-shrink:0;overflow:hidden;border-radius:25px;background:#FAEBDD;box-shadow:0 3px 9px #3927130C;display:flex;align-items:center;justify-content:center;font-size:54px;}
+.pet-portrait img{width:100%;height:100%;object-fit:cover;}
+.pet-title{min-width:0;}.pet-eyebrow{color:#A94B1C;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.pet-title h1{font-size:34px;line-height:1.16;font-weight:750;letter-spacing:-1px;overflow-wrap:anywhere;}
+.pet-breed{font-size:14px;color:var(--text-soft);margin-top:7px;overflow-wrap:anywhere;}
+.pet-sex{font-size:12px;background:#FFF0E2;color:#935027;display:inline-flex;padding:3px 9px;border-radius:8px;margin-top:8px;}
+.pet-edit{margin-top:13px;padding:0;min-height:38px;background:none;border:0;color:var(--orange);display:flex;gap:6px;align-items:center;font-size:14px;font-weight:650;}
+.pet-edit .ui-icon{width:15px;height:15px;}
+.pet-stat-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:20px;border-top:1px solid var(--line);}
+.pet-stat{position:relative;padding:17px 5px 19px;text-align:center;min-width:0;background:none;border:none;border-radius:0;color:var(--text);line-height:1.4;}
+.pet-stat+.pet-stat:before{content:'';height:34px;width:1px;background:var(--line);position:absolute;left:0;top:24px;}
+.pet-stat strong{font-size:20px;font-weight:750;display:block;overflow-wrap:anywhere;letter-spacing:-.4px;}
+.pet-stat span{font-size:12px;color:var(--text-soft);display:block;margin-top:4px;}
+button.pet-stat:hover{background:#FFF9F3;}button.pet-stat span{color:#A64C1D;}
+.pet-primary{display:flex;gap:10px;align-items:center;justify-content:center;width:100%;margin:18px 0 26px;min-height:58px;background:var(--orange);color:#fff;border:0;border-radius:18px;font-size:17px;font-weight:700;box-shadow:0 6px 15px #C8581820;}
+.pet-primary:hover{background:#B44B12;box-shadow:0 6px 18px #C8581830;}.pet-primary .ui-icon{width:21px;}
+.diary-heading{display:flex;align-items:center;justify-content:space-between;margin:0 2px 4px;gap:12px;}
+.diary-heading h2{font-size:23px;letter-spacing:-.6px;font-weight:750;}.diary-total{font-size:12px;color:#776A5E;background:#F0E9DF;padding:4px 10px;border-radius:9px;white-space:nowrap;}
+.diary-subtitle{font-size:14px;color:var(--text-soft);margin:0 2px 20px;}
+.diary-month{font-size:12px;letter-spacing:.9px;font-weight:650;color:#79695B;text-transform:uppercase;margin:21px 4px 12px;}
+.diary-entry{position:relative;background:#fff;border:1px solid #EFE6DC;border-radius:21px;padding:17px 17px 9px;margin-bottom:12px;box-shadow:0 4px 18px #52321603;}
+.diary-top{display:flex;align-items:center;gap:12px;margin-bottom:13px;}
+.entry-icon{width:40px;height:40px;border-radius:13px;background:#FFF0E3;color:#BA591F;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.entry-icon.vet{background:#ECF2E8;color:#5B7951;}.entry-icon.parasite{background:#FFF1E0;color:#9C6A21;}.entry-icon.note{background:#F1EEF7;color:#81709C;}
+.entry-type{font-size:13px;font-weight:600;display:block;}.entry-date{display:block;font-size:12px;color:var(--text-soft);margin-top:1px;}
+.entry-title{font-size:17px;line-height:1.35;font-weight:650;letter-spacing:-.15px;margin:0 0 7px;overflow-wrap:anywhere;}
+.entry-note{font-size:14px;line-height:1.65;color:#71665D;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:4px;}
+.entry-footer{display:flex;align-items:center;justify-content:flex-end;border-top:1px solid #F4EEE7;margin-top:12px;}
+.entry-delete{border:0;background:none;min-height:39px;display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#87776A;padding:0 0 0 10px;}
+.entry-delete .ui-icon{width:14px;height:14px;}.entry-delete:hover{color:#A73624;}
+.diary-empty{text-align:center;background:#fff;border:1px dashed #DECDBD;border-radius:24px;padding:32px 20px;color:var(--text-soft);}
+.diary-empty .ui-icon{width:32px;height:32px;color:#CB692D;margin:0 0 10px;}.diary-empty h3{color:var(--text);font-size:18px;margin-bottom:8px;}.diary-empty p{font-size:14px;line-height:1.6;}
+.pet-footnote{display:flex;gap:7px;justify-content:center;align-items:center;color:#9B8B7D;font-size:12px;margin:26px 0 4px;}.brand-heart{width:17px;height:17px;}
+.rec-sheet,.edit-sheet{border-radius:28px 28px 0 0;padding:12px 22px calc(24px + env(safe-area-inset-bottom));max-height:calc(100dvh - var(--demo-height) - 22px);background:var(--bg);box-shadow:0 -8px 44px #49362216;}
+.rec-sheet:before,.edit-sheet:before{content:'';display:block;width:38px;height:4px;border-radius:4px;background:#D8CBBE;margin:0 auto 20px;}
+.rec-sheet h3,.edit-sheet h3{font-size:23px;font-weight:750;letter-spacing:-.5px;text-align:left;margin-bottom:5px;}.sheet-subtitle{font-size:14px;color:var(--text-soft);margin:0 0 20px;}
+.rec-types{gap:8px;margin-bottom:20px;}.rec-type{min-height:84px;padding:12px 4px;border-radius:16px;border:1.5px solid #EBE3DA;box-shadow:none;color:var(--text);}
+.rec-type .ic{font-size:24px;margin-bottom:6px;}.rec-type .ic .ui-icon{width:25px;height:25px;}.rec-type .lbl{font-size:12px;font-weight:600;display:block;}
+.rec-type.sel{border-color:#C85818;background:#FFF0E3;color:#A84913;box-shadow:0 0 0 1px #C85818;}
+.field-label,.edit-label{font-size:14px;font-weight:600;color:#615347;display:block;margin:14px 2px 8px;}.field-optional{font-weight:400;color:var(--text-soft);font-size:13px;}
+#recModal .field{margin-bottom:0!important;}#recModal textarea{min-height:112px;}#recModal .btn{margin-top:22px;}#recModal .btn-skip{margin-top:5px;}
+.btn-danger{background:#FAEDE8;color:#A33524;font-size:14px;min-height:48px;}.mini-choice{min-height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #E9E0D6;font-size:14px;box-shadow:none;}
+.ui-confirm{border:0;border-radius:24px;padding:25px;width:calc(100% - 40px);max-width:390px;margin:auto;color:var(--text);box-shadow:0 24px 80px #35251430;background:#fff;}
+.ui-confirm::backdrop{background:#352d2766;}.ui-confirm h3{font-size:22px;margin-bottom:10px;letter-spacing:-.4px;}.ui-confirm p{font-size:15px;color:var(--text-soft);margin-bottom:20px;line-height:1.6;}.confirm-actions{display:flex;gap:10px;}.confirm-actions button{flex:1;padding:13px 10px;border-radius:13px;border:0;min-height:48px;font-size:14px;font-weight:650;}.confirm-cancel{background:#F4EEE6;color:var(--text);}.confirm-remove{background:#A93825;color:#fff;}
+.pet-identity,.diary-entry,.pet-primary{animation:petEnter .3s ease-out both;}.pet-primary{animation-delay:.035s;}.diary-entry{animation-delay:.055s;}
+@keyframes petEnter{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@media(min-width:600px){body{box-shadow:0 0 0 1px #E2D8CC,0 0 90px #6550390B;}#petScreen{box-shadow:0 0 0 1px #E2D8CC,0 0 90px #6550390B;}}
+@media(max-width:370px){.ps-body{padding:16px 14px 28px;}.ps-head{padding:12px 14px;}.ps-head h2{font-size:13px;}.pet-identity{padding:18px 15px 0;}.pet-identity-row{gap:14px;}.pet-portrait{width:92px;height:106px;border-radius:21px;}.pet-title h1{font-size:30px;}.pet-breed{font-size:13px;}.pet-stat strong{font-size:18px;}.rec-sheet,.edit-sheet{padding-left:16px;padding-right:16px;}.diary-entry{padding:15px 15px 7px;}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
+
+
+/* Этап 2: персональная карта здоровья, разбор и визиты. */
+.pet-health-link{width:100%;display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #E5EBDC;border-radius:22px;padding:16px;margin-top:16px;color:var(--text);text-align:left;box-shadow:0 4px 20px #52603E05;}
+.pet-health-link:hover{border-color:#B7CCA3;background:#FEFFFB;}.pet-health-copy{flex:1;min-width:0;}
+.pet-health-copy strong{display:block;font-size:18px;letter-spacing:-.35px;}.pet-health-copy small{display:block;font-size:13px;color:var(--text-soft);margin-top:3px;line-height:1.45;}
+.pet-health-copy .health-link-label{display:flex;align-items:center;gap:5px;color:#567142;font-size:13px;font-weight:650;margin-top:7px;}
+.health-link-label .ui-icon{width:14px;height:14px;}
+.health-ring{width:68px;height:68px;position:relative;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.health-ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.health-ring .ring-number{position:relative;font-size:24px;font-weight:750;letter-spacing:-1px;line-height:1;}
+.health-ring .ring-number small{font-size:12px;font-weight:600;color:var(--text-soft);letter-spacing:0;}
+.health-ring .ring-progress{transition:stroke-dashoffset .5s ease;}
+.health-home-button{width:100%;background:#FCFDF9;border:1px solid #E4EBDD;border-radius:18px;padding:13px;color:var(--text);text-align:left;}
+.health-home-button:hover{background:#F5F8EF;}.health-home-button .txt{flex:1;}.health-home-button .health-link-label{display:flex;align-items:center;gap:5px;margin-top:7px;font-size:13px;color:#587342;font-weight:650;}
+.health-screen{position:fixed;inset:var(--demo-height) 0 0;max-width:480px;margin:0 auto;background:var(--bg);z-index:82;display:flex;flex-direction:column;}
+.health-screen[hidden]{display:none!important;}
+.health-head{display:flex;gap:12px;align-items:center;padding:14px 20px;min-height:72px;border-bottom:1px solid #EEE7DE;flex-shrink:0;}
+.health-head h1{font-size:19px;font-weight:750;letter-spacing:-.4px;flex:1;}.health-head .brand-heart{width:25px;height:25px;margin-right:5px;}
+.health-body{flex:1;min-height:0;overflow-y:auto;padding:20px 20px calc(32px + env(safe-area-inset-bottom));overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#DFD1C2 transparent;}
+.health-pet-switch{display:flex;align-items:center;gap:10px;margin-bottom:18px;width:100%;text-align:left;background:none;border:0;color:var(--text);min-height:48px;padding:0 2px;}
+.health-pet-switch:disabled{opacity:1;}.health-pet-switch img,.health-pet-thumb{width:42px;height:42px;border-radius:13px;object-fit:cover;background:#FBEBDC;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:23px;}
+.health-pet-switch strong{font-size:17px;font-weight:650;}.health-pet-switch .health-switch-label{margin-left:auto;font-size:13px;color:var(--orange);display:flex;align-items:center;gap:5px;}.health-switch-label .ui-icon{width:16px;height:16px;}
+.health-summary{border:1px solid #E0E8D6;border-radius:25px;padding:23px 21px 18px;background:linear-gradient(140deg,#F4F8EC,#FFFEFB 82%);margin-bottom:18px;}
+.health-summary-top{display:flex;align-items:center;gap:21px;}.health-summary .health-ring{width:96px;height:96px;}.health-summary .ring-number{font-size:33px;}.health-summary .ring-number small{font-size:16px;}
+.health-summary-copy{flex:1;min-width:0;}.health-summary-copy .eyebrow{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#688053;font-weight:650;margin-bottom:6px;}
+.health-summary-copy h2{font-size:21px;font-weight:750;line-height:1.28;letter-spacing:-.45px;}.health-summary-copy p{font-size:13px;color:#6D765F;line-height:1.5;margin-top:7px;}
+.health-summary-note{font-size:12px;color:#767667;border-top:1px solid #E2E8D9;margin-top:18px;padding-top:13px;line-height:1.6;}
+.health-panel{border:1px solid #EFE6DB;border-radius:24px;background:#fff;padding:20px;margin-bottom:18px;}
+.health-panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px;}.health-panel-title h2{font-size:19px;letter-spacing:-.4px;line-height:1.3;}.health-panel-title .tag{font-size:12px;background:#F4EEE5;color:#756652;padding:4px 9px;border-radius:8px;white-space:nowrap;}
+.health-checks{list-style:none;}.health-check{display:flex;gap:11px;align-items:center;min-height:66px;padding:13px 0;border-bottom:1px solid #F0EBE3;}.health-check:last-child{border:0;padding-bottom:3px;}
+.health-check-state{width:26px;height:26px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#EFF4E8;color:#5A7640;}.health-check-state .ui-icon{width:16px;height:16px;}.health-check.missing .health-check-state{background:#FFF0DF;color:#B77926;}
+.health-check-copy{flex:1;min-width:0;}.health-check-copy b{display:block;font-size:14px;font-weight:650;}.health-check-copy p{font-size:12px;color:var(--text-soft);line-height:1.5;margin-top:3px;overflow-wrap:anywhere;}
+.health-point{align-self:flex-start;font-size:12px;color:#567641;padding-top:4px;font-weight:650;white-space:nowrap;}.health-check.missing .health-point{color:#9B783E;}
+.score-explainer{border-top:1px solid #EFE8DF;margin-top:15px;padding-top:12px;}.score-explainer summary{font-size:13px;font-weight:600;color:#7B6F62;min-height:40px;padding:8px 0;cursor:pointer;}.score-explainer p{font-size:12px;line-height:1.65;color:var(--text-soft);margin:7px 0;}
+.health-task{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid #F0DDC9;background:#FFFAF4;border-radius:16px;width:100%;padding:14px;margin-top:9px;min-height:74px;color:var(--text);}
+.health-task:hover{border-color:#D6A77F;background:#FFF4E6;}.health-task-copy{flex:1;min-width:0;}.health-task-copy strong{display:block;font-size:14px;font-weight:650;line-height:1.45;}.health-task-copy small{display:block;font-size:12px;color:#A35222;margin-top:4px;}.health-task>.ui-icon{width:18px;color:#B25A26;}
+.health-done{display:flex;align-items:flex-start;gap:11px;padding:3px 0;}.health-done .ui-icon{color:#5C7E40;flex-shrink:0;}.health-done p{font-size:14px;color:var(--text-soft);line-height:1.6;}
+.health-visits-sub{font-size:13px;color:var(--text-soft);margin-top:-7px;margin-bottom:14px;line-height:1.5;}
+.health-visit{border:1px solid #E9E8DF;border-radius:16px;margin-bottom:10px;overflow:hidden;}.health-visit summary{display:flex;gap:11px;align-items:center;padding:14px;cursor:pointer;list-style:none;}.health-visit summary::-webkit-details-marker{display:none;}
+.health-visit .visit-ic{color:#68814E;background:#F0F5E9;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:11px;flex-shrink:0;}.health-visit .visit-ic .ui-icon{width:20px;height:20px;}
+.health-visit .visit-copy{flex:1;min-width:0;}.visit-copy strong{font-size:14px;line-height:1.45;display:block;font-weight:650;overflow-wrap:anywhere;}.visit-copy time{font-size:12px;color:var(--text-soft);display:block;margin-top:3px;}.visit-copy em{display:block;color:#9F6B27;font-size:11px;font-style:normal;margin-top:3px;}
+.visit-chevron{width:16px;height:16px;color:#9E9387;}.health-visit[open] .visit-chevron{transform:rotate(90deg);}.health-visit-note{border-top:1px solid #EEEAE0;padding:13px 15px;font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;color:#75695D;}
+.health-add-visit{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:15px;min-height:48px;border:1px solid #E6CEB8;background:#FFF9F2;color:var(--orange);border-radius:14px;font-size:14px;font-weight:650;}.health-add-visit .ui-icon{width:18px;}
+.health-empty-visits{padding:18px;border:1px dashed #E2D5C6;background:#FDFAF6;border-radius:16px;font-size:14px;color:var(--text-soft);line-height:1.6;text-align:center;}
+.health-picker-title{font-size:25px;letter-spacing:-.6px;margin:4px 0 8px;}.health-picker-hint{font-size:15px;line-height:1.6;color:var(--text-soft);margin-bottom:24px;}
+.health-pick{display:flex;align-items:center;gap:13px;width:100%;background:#fff;border:1px solid #E9E1D6;border-radius:22px;padding:18px;text-align:left;color:var(--text);margin-bottom:12px;}.health-pick:hover{border-color:#B7CCA3;}.health-pick img,.health-pick .health-pet-thumb{width:60px;height:60px;border-radius:18px;object-fit:cover;}.health-pick-copy{flex:1;min-width:0;}.health-pick-copy strong{display:block;font-size:19px;overflow-wrap:anywhere;}.health-pick-copy small{display:block;font-size:12px;color:var(--text-soft);margin-top:4px;}.health-pick .health-ring{width:52px;height:52px;}.health-pick .ring-number{font-size:20px;}.health-pick .ring-number small{font-size:10px;}
+.pet-health-link,.health-summary,.health-panel{animation:petEnter .3s ease-out both;}
+.entry-footer{justify-content:space-between;gap:10px;}.entry-edit{display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:var(--orange);font-size:13px;font-weight:600;min-height:44px;padding:0 8px 0 0;}.entry-edit .ui-icon{width:15px;height:15px;}.entry-delete{min-height:44px;}
+.visit-actions{border-top:1px solid #EEEAE0;padding:0 14px;}.record-form-error{display:none;font-size:13px;color:#A73524;background:#FBEFE9;border-radius:12px;padding:10px 13px;margin-top:12px;}.record-form-error.visible{display:block;}
+@media(max-width:370px){.health-body{padding:16px 14px 28px;}.health-head{padding:12px 14px;}.health-panel{padding:17px;}.health-summary{padding:20px 17px 16px;}.health-summary-top{gap:15px;}.health-summary .health-ring{width:80px;height:80px;}.health-summary-copy h2{font-size:19px;}.health-pick{padding:15px;gap:10px;}.health-pick img{width:48px;height:48px;}.health-pick-copy strong{font-size:17px;}}
+@media(prefers-reduced-motion:reduce){.health-ring .ring-progress{transition:none;}.pet-health-link,.health-summary,.health-panel{animation:none;}}
+
+
+/* Stage 3 — care library; all selectors scoped to new components. */
+.care-daily-card{margin:20px 0 26px;background:#FFF3E3;border:1px solid #F1DFC8;border-radius:24px;padding:20px;color:var(--text);}
+.care-card-top{display:flex;align-items:center;gap:10px;margin-bottom:15px;}.care-spark{width:38px;height:38px;display:grid;place-items:center;border-radius:13px;background:#F8DEC0;color:#A64B18;flex-shrink:0;}.care-spark .ui-icon{width:21px;height:21px;}
+.care-kicker{font-size:14px;font-weight:750;line-height:1.3;flex:1;}.care-kicker small{display:block;color:#776959;font-size:12px;font-weight:450;margin-top:3px;}
+.care-badge{display:inline-block;align-self:flex-start;color:#695541;font-size:11px;font-weight:650;line-height:1.5;background:#F4EEE5;border:1px solid #E9E0D3;border-radius:20px;padding:4px 8px;white-space:nowrap;}
+.care-current h3,.care-library-card h3{font-size:20px;line-height:1.3;letter-spacing:-.35px;margin:0 0 9px;}.care-current p,.care-library-card>p{font-size:15px;line-height:1.65;color:#64594D;margin:0;overflow-wrap:anywhere;}
+.care-current{animation:care-in .22s ease-out;}.care-card-actions{display:flex;align-items:center;gap:8px;border-top:1px solid #EDDDC8;padding-top:14px;margin-top:14px;}
+.care-next,.care-all{min-height:44px;border:0;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 12px;border-radius:13px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:background .18s,transform .18s;color:#A84916;background:#fff;}
+.care-next{box-shadow:0 2px 6px #793E0710;border:1px solid #EED9C1;}.care-next .ui-icon{width:16px;height:16px;}.care-all{margin-left:auto;background:transparent;padding-right:0;}.care-all .ui-icon{width:16px;height:16px;}.care-all:disabled{color:#8C8174;cursor:default;font-weight:500;}.care-next:hover{background:#FFF9F1;}.care-all:not(:disabled):hover{color:#743010;}
+.care-source{font-size:11px;line-height:1.55;margin-top:12px;color:#756452;}.care-source summary{padding:7px 0;cursor:pointer;min-height:32px;}.care-source p{margin:4px 0 0;font-size:12px;overflow-wrap:anywhere;}.care-source a{color:#A74715;text-underline-offset:3px;}.care-source small{display:block;margin-top:4px;font-size:11px;}
+.care-home-entry{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:17px 0;background:transparent;border:0;border-top:1px solid #EEE6DC;color:var(--text);cursor:pointer;}.care-home-entry img,.care-home-entry .health-pet-thumb{width:43px;height:43px;border-radius:14px;object-fit:cover;flex-shrink:0;}.care-home-entry>span{flex:1;min-width:0;}.care-home-entry small{display:block;font-size:12px;color:#796A5B;margin-bottom:5px;}.care-home-entry strong{display:block;font-size:14px;line-height:1.4;}.care-home-entry>.ui-icon{width:18px;height:18px;flex-shrink:0;color:#B55220;}
+.care-screen{position:fixed;inset:var(--demo-height) 0 0;max-width:480px;margin:auto;background:var(--bg);z-index:83;display:flex;flex-direction:column;}.care-screen[hidden]{display:none!important;}.care-head{display:flex;align-items:center;gap:15px;padding:14px 20px;min-height:70px;border-bottom:1px solid #EEE7DE;flex-shrink:0;}.care-head h1{font-size:17px;letter-spacing:-.3px;margin:0;}.care-head .ps-back{white-space:nowrap;}.care-body{overflow-y:auto;overscroll-behavior:contain;flex:1;min-height:0;padding:24px 20px calc(30px + env(safe-area-inset-bottom));scrollbar-width:thin;}
+.care-for{display:flex;align-items:center;gap:10px;}.care-for>img,.care-for>.health-pet-thumb{width:42px;height:42px;object-fit:cover;border-radius:14px;}.care-for>span{font-size:11px;line-height:1.4;color:#7A6B5A;}.care-for strong{display:block;font-size:14px;color:var(--text);}.care-for .care-intro-heart{margin-left:auto;}.care-intro-heart .brand-heart{width:38px;height:38px;}
+.care-intro h2{font-size:30px;line-height:1.12;letter-spacing:-1px;margin:23px 0 11px;font-weight:780;}.care-intro>p{font-size:14px;line-height:1.6;color:#796B5D;max-width:285px;margin:0;}.care-feature{margin-top:23px;margin-bottom:12px;box-shadow:0 8px 26px #7B431207;}.care-feature .care-current h3{font-size:22px;}
+.care-how{font-size:12px;color:#756653;line-height:1.65;}.care-how summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:8px;}.care-how summary::before{content:'+';font-size:18px;}.care-how[open] summary::before{content:'−';}.care-how>p{margin:0 0 12px;}
+.care-library{margin-top:26px;}.care-library-head{margin-bottom:16px;}.care-library-head h2{font-size:21px;letter-spacing:-.45px;line-height:1.3;margin:0 0 4px;}.care-library-head>span{font-size:12px;color:#837361;}.care-filters{display:flex;flex-wrap:wrap;gap:8px;}.care-filters button,.care-season-controls button{min-height:44px;padding:10px 13px;background:#fff;border:1px solid #EAE2D8;border-radius:14px;font-size:12px;font-weight:600;color:#73604D;font-family:inherit;cursor:pointer;transition:background .16s,transform .16s;}.care-filters button span{margin-left:6px;font-size:10px;opacity:.8;}.care-filters button[aria-pressed=true]{background:#B9501A;color:#fff;border-color:#B9501A;box-shadow:0 4px 9px #B9501A18;}
+.care-season-controls{margin-top:15px;background:#F0F1E7;border:1px solid #E3E7D7;border-radius:18px;padding:14px;}.care-season-controls p{font-size:12px;color:#5C654E;margin:0 0 10px;}.care-season-controls>div{display:flex;flex-wrap:wrap;gap:6px;}.care-season-controls button{border-color:#DEE2D4;font-size:11px;min-height:40px;padding:9px 10px;background:#FAFBF5;}.care-season-controls button[aria-pressed=true]{background:#526642;border-color:#526642;color:#fff;}
+.care-result-count{font-size:11px;color:#837360;margin:18px 0 11px;}.care-results{display:grid;gap:12px;}.care-library-card{border-radius:20px;background:#fff;border:1px solid #ECE6DC;padding:19px;animation:care-in .2s ease-out;}.care-library-card .care-badge{margin-bottom:12px;font-size:10px;}.care-library-card h3{font-size:17px;}.care-library-card>p{font-size:14px;}.care-library-card .care-source{border-top:1px solid #F0EBE3;padding-top:3px;}
+.care-empty{background:#fff;border-radius:20px;padding:25px 20px;text-align:center;}.care-empty>.ui-icon{color:#C56B30;width:30px;height:30px;margin-bottom:12px;}.care-empty h3{font-size:17px;margin:0 0 9px;}.care-empty p{font-size:14px;line-height:1.6;color:#786A5B;margin:0 0 18px;}
+.care-season-teaser{margin:16px 0;background:#F0F1E7;border:1px solid #E2E7D6;border-radius:22px;padding:20px;}.care-season-label{display:flex;align-items:center;gap:8px;color:#536C3C;font-size:12px;font-weight:650;}.care-season-label .ui-icon{width:19px;height:19px;}.care-season-teaser h2{font-size:19px;line-height:1.35;letter-spacing:-.3px;margin:13px 0 8px;}.care-season-teaser p{font-size:14px;color:#606953;line-height:1.65;}.care-season-teaser .care-all{color:#4E673D;padding-left:0;margin-top:8px;}
+.care-screen button:focus-visible,.care-daily-card button:focus-visible,.care-source a:focus-visible,.care-source summary:focus-visible,.care-home-entry:focus-visible,.care-season-teaser button:focus-visible{outline:3px solid #D88448;outline-offset:3px;}.care-next:active,.care-all:not(:disabled):active,.care-filters button:active,.care-home-entry:active{transform:scale(.98);}
+@keyframes care-in{from{opacity:.3;transform:translateY(4px);}to{opacity:1;transform:none;}}
+@media(max-width:370px){.care-body{padding:20px 14px 30px;}.care-head{padding:12px 14px;gap:10px;}.care-head h1{font-size:15px;}.care-daily-card{padding:17px;}.care-card-top{gap:7px;}.care-badge{font-size:10px;padding:4px 6px;}.care-next,.care-all{font-size:12px;gap:5px;}.care-next{padding:10px;}.care-intro h2{font-size:28px;}.care-filters button{padding:9px 11px;}.care-card-actions{gap:5px;}}
+@media(prefers-reduced-motion:reduce){.care-current,.care-library-card{animation:none;}.care-screen button,.care-daily-card button,.care-home-entry{transition:none;transform:none!important;}}
+
+
+/* Photos keep their original image data: only thumbnails are visually cropped. */
+.photo-section{margin-top:23px;padding-top:18px;border-top:1px solid #E7DDD0;}.photo-section-head{display:flex;align-items:center;gap:10px;margin-bottom:7px;}.photo-section-head h4{font-size:16px;letter-spacing:-.2px;margin:0;}.photo-section-head>span{margin-left:auto;font-size:12px;color:#8B7865;background:#EEE6DA;border-radius:20px;padding:5px 9px;}.photo-section>p{font-size:13px;line-height:1.6;color:#7B6D5D;margin:0 0 13px;}
+.photo-pick{min-height:54px;padding:13px 15px;display:flex;width:100%;align-items:center;justify-content:center;gap:9px;border:1.5px dashed #D79C70;border-radius:16px;background:#FFF4E9;color:#A94B1C;font-family:inherit;font-weight:650;font-size:14px;cursor:pointer;}.photo-pick .ui-icon{width:21px;height:21px;}.photo-pick:hover{background:#FCE9D5;}.photo-pick:disabled{opacity:.6;cursor:default;}.photo-section .photo-limits{font-size:11px;margin:9px 0 0;color:#887A6B;}.photo-status{min-height:0;line-height:1.5;font-size:12px;color:#526941;margin:9px 0 0;overflow-wrap:anywhere;}.photo-status:empty{display:none;}.photo-status.error{color:#A23422;}
+.photo-draft-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:14px 0;}.photo-draft-list:empty{display:none;}.photo-draft-item{position:relative;padding-top:5px;}.photo-draft-preview{display:block;position:relative;width:100%;aspect-ratio:1;border:1px solid #DFD2C1;border-radius:14px;padding:0;overflow:hidden;background:#EDE4D8;cursor:pointer;}.photo-draft-preview img{width:100%;height:100%;object-fit:cover;}.photo-draft-preview>span{position:absolute;left:4px;bottom:4px;color:#fff;background:#33251BD4;border-radius:7px;padding:3px 6px;font-size:10px;}.photo-draft-remove{position:absolute;right:-6px;top:-7px;width:44px;height:44px;border:3px solid var(--bg);border-radius:50%;background:#fff;color:#934225;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 6px #532B121F;}.photo-draft-remove .ui-icon{width:16px;height:16px;}
+.entry-photo-add{margin-top:14px;min-height:42px;display:inline-flex;align-items:center;gap:7px;color:#9E4A21;background:#FFF6EB;border:1px solid #F0DEC8;border-radius:12px;padding:9px 12px;font-size:12px;font-weight:650;cursor:pointer;}.entry-photo-add .ui-icon{width:17px;height:17px;}.entry-photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:17px;}.entry-photo{position:relative;width:100%;aspect-ratio:1.2;border:1px solid #E9E0D5;background:#F2EDE5;border-radius:13px;padding:0;overflow:hidden;cursor:pointer;}.entry-photo img{width:100%;height:100%;object-fit:cover;display:block;}.photo-more{position:absolute;inset:0;background:#21160C99;display:grid;place-items:center;color:#fff;font-size:24px;font-weight:750;}.entry-photo-hint{font-size:11px;line-height:1.5;color:#897866;margin:8px 0 0;}.health-visit .entry-photos,.health-visit .entry-photo-hint,.health-visit>.entry-photo-add{margin-left:15px;margin-right:15px;}.health-visit .entry-photo-add{margin-bottom:8px;}
+.photo-viewer{position:fixed;inset:0;margin:auto;border:0;max-width:100vw;max-height:100dvh;width:100vw;height:100dvh;background:#211D19;color:#fff;padding:0;overflow:hidden;}.photo-viewer[open]{display:flex;flex-direction:column;}.photo-viewer::backdrop{background:#17130FF2;}.photo-viewer-head{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px 12px;flex-shrink:0;}.photo-viewer-heading{flex:1;min-width:0;}.photo-viewer-heading h2{font-size:16px;line-height:1.35;margin:0 0 4px;}.photo-viewer-heading p{font-size:11px;color:#C3B9AD;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;margin:0;}.photo-viewer-count{font-size:12px;color:#E6DCD0;white-space:nowrap;}.photo-viewer button{min-height:44px;border:1px solid #74675B;border-radius:13px;background:#382F27;color:#fff;cursor:pointer;font-family:inherit;}.photo-viewer button:disabled{opacity:.3;cursor:default;}.photo-viewer .photo-close{width:44px;display:grid;place-items:center;flex-shrink:0;}.photo-close .ui-icon{width:22px;height:22px;}.photo-stage{flex:1;min-height:0;width:100%;overflow:auto;overscroll-behavior:contain;background:#15120F;}.photo-canvas{--photo-zoom:1;width:calc(100% * var(--photo-zoom));height:calc(100% * var(--photo-zoom));display:flex;justify-content:center;align-items:center;}.photo-canvas>img{width:100%;height:100%;object-fit:contain;display:block;}.photo-view-error{font-size:15px;line-height:1.6;text-align:center;color:#DED1C4;padding:25px;}
+.photo-viewer-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 16px 4px;flex-shrink:0;}.photo-viewer-controls button{padding:10px 16px;font-size:13px;font-weight:650;}.photo-viewer-controls .photo-arrow{width:44px;padding:10px;display:grid;place-items:center;}.photo-arrow .ui-icon{width:20px;height:20px;}.photo-viewer-hint{font-size:11px;color:#BBAF9F;text-align:center;margin:8px 16px 3px;}.photo-viewer .photo-delete{display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:transparent;color:#F1B5A2;padding:10px 20px;margin:0 auto calc(8px + env(safe-area-inset-bottom));font-size:12px;}.photo-delete .ui-icon{width:15px;height:15px;}
+.photo-section button:focus-visible,.entry-photo:focus-visible,.entry-photo-add:focus-visible,.photo-viewer button:focus-visible{outline:3px solid #EA9D64;outline-offset:3px;}.photo-pick:active,.entry-photo:active,.entry-photo-add:active{transform:scale(.98);}#recordSaveButton:disabled{opacity:.55;cursor:wait;}
+@media(min-width:700px){.photo-viewer{max-width:1000px;width:calc(100vw - 50px);height:calc(100dvh - 40px);border-radius:20px;}}
+@media(max-width:370px){.photo-draft-list{gap:7px;grid-template-columns:repeat(3,minmax(0,1fr));}.photo-viewer-controls{gap:8px;}.photo-viewer-controls button{font-size:12px;}}
+@media(prefers-reduced-motion:reduce){.photo-pick,.entry-photo,.entry-photo-add{transform:none!important;}}
+.rec-type-weight{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:50px;padding:10px;}.rec-type-weight .ic{margin:0;}.rec-type-weight .ic .ui-icon{width:22px;height:22px;}#recordWeightField[hidden]{display:none;}#recordWeight{font-size:22px;font-weight:650;letter-spacing:-.5px;}.weight-field-hint{font-size:11px;line-height:1.5;color:#887563;margin:7px 2px 12px;}
+.weight-panel .health-panel-title>.ui-icon{width:21px;height:21px;color:#AD5C2A;}.weight-summary{display:flex;align-items:flex-start;gap:10px;margin:22px 0 10px;}.weight-summary>div{flex:1;min-width:0;}.weight-summary strong{font-size:32px;line-height:1.1;letter-spacing:-1px;font-weight:750;color:#493525;}.weight-summary strong>span{font-size:17px;letter-spacing:-.2px;font-weight:500;}.weight-summary small{display:block;font-size:10px;line-height:1.6;color:#897662;margin-top:7px;}.weight-change{background:#F5EEE4;border-radius:13px;color:#75614B;font-size:14px;font-weight:600;padding:9px 11px;text-align:right;}.weight-change small{margin-top:2px;font-size:9px;font-weight:400;}.weight-chart{display:block;width:100%;height:auto;margin:16px 0 0;overflow:visible;}.weight-note,.weight-footnote{font-size:11px;color:#87725D;line-height:1.6;margin:5px 0 16px;}.weight-footnote{font-size:10px;margin:10px 0 0;}.weight-add{width:100%;display:flex;gap:8px;align-items:center;justify-content:center;background:#FCF1E5;color:#A64D1D;min-height:50px;border:1px solid #EED6BD;border-radius:14px;padding:12px;font-family:inherit;font-size:13px;font-weight:650;cursor:pointer;}.weight-add .ui-icon{width:17px;height:17px;}.weight-add:hover{background:#F9E7D3;}.weight-empty{padding:20px 0;text-align:center;}.weight-empty>.ui-icon{width:30px;height:30px;color:#C78A56;margin-bottom:12px;}.weight-empty h3{font-size:17px;line-height:1.35;margin:0 0 9px;}.weight-empty p{font-size:13px;color:#887462;line-height:1.6;margin:0;}.weight-history{margin-top:13px;}.weight-history>summary{display:flex;align-items:center;gap:8px;font-size:13px;min-height:44px;cursor:pointer;color:#6E5741;}.weight-history>summary:before{content:'+';font-size:19px;}.weight-history[open]>summary:before{content:'−';}.weight-history>summary span{margin-left:auto;font-size:11px;border-radius:20px;background:#F2ECE3;padding:4px 9px;}.weight-history ul{list-style:none;padding:0;margin:0;}.weight-measurement{display:flex;align-items:center;gap:10px;border-top:1px solid #EDE5DA;padding:14px 0;}.weight-measurement>div{flex:1;min-width:0;}.weight-measurement strong{display:block;font-size:14px;color:#51412F;}.weight-measurement time,.weight-measurement small{display:block;font-size:10px;line-height:1.5;color:#887462;margin-top:4px;}.weight-measurement small{color:#A5592F;}.weight-measurement button{display:flex;align-items:center;gap:5px;min-height:44px;padding:9px;color:#A04C22;background:#FBF3E9;border:1px solid #F0E4D6;border-radius:12px;font-family:inherit;font-size:11px;cursor:pointer;}.weight-measurement .ui-icon{width:14px;height:14px;}.weight-panel button:focus-visible{outline:3px solid #D68A50;outline-offset:3px;}
+
+
+.live-start{position:fixed;inset:0;background:var(--bg);z-index:900;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}.live-start[hidden]{display:none}.live-start>div{max-width:380px}.live-start h1{font-size:26px}.live-start p{color:var(--text-soft);margin:16px 0 24px}.live-start a{display:block;text-decoration:none}.live-start button{width:100%}.live-busy{border:0;border-radius:22px;background:var(--bg);color:var(--text);padding:26px;max-width:85vw;text-align:center}.live-busy::backdrop{background:#352d2750}.live-busy p{margin:0;font-weight:600}.live-spinner{display:block;width:28px;height:28px;border:3px solid #efdfd0;border-top-color:var(--orange);border-radius:50%;animation:live-spin 1s linear infinite;margin:0 auto 16px}@keyframes live-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.live-spinner{animation:none}}
+
 </style>
 </head>
 <body>
+<section class="live-start" id="liveStart" role="status"><div><h1 id="liveStartTitle">Любимка</h1><p id="liveStartText">Загружаем твоих питомцев…</p><button class="btn" id="liveRetry" type="button" onclick="boot()" hidden>Попробовать снова</button><a class="btn" id="liveTelegram" href="https://t.me/lubimkaa1_bot" hidden>Открыть в Telegram</a></div></section><dialog class="live-busy" id="liveBusy" aria-labelledby="liveBusyText"><span class="live-spinner" aria-hidden="true"></span><p id="liveBusyText" role="status">Сохраняем…</p></dialog>
+<div class="demo-toast" id="demoToast" role="status" aria-live="polite"></div>
 
 <!-- ==================== LOGO (кот + пёс + сердце) ==================== -->
 <svg width="0" height="0" style="position:absolute">
@@ -530,10 +721,10 @@ body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
     <div class="step" data-step="3">
       <div class="q">Дата рождения и вес</div>
       <div class="sub">Не знаете точную дату — укажите примерную. Возраст посчитаем сами и поздравим с днём рождения 🎂</div>
-      <div class="edit-label">Дата рождения</div>
-      <input class="field" id="petBirth" type="date" style="margin-bottom:12px">
-      <div class="edit-label">Вес (кг)</div>
-      <input class="field" id="petWeight" type="number" step="0.1" placeholder="Например: 4.2">
+      <label class="edit-label" for="petBirth">Дата рождения</label>
+<input class="field" id="petBirth" type="date" style="margin-bottom:12px">
+      <label class="edit-label" for="petWeight">Вес (кг)</label>
+<input class="field" id="petWeight" type="number" step="0.1" placeholder="Например: 4.2">
     </div>
 
     <!-- Step 4: avatar -->
@@ -586,19 +777,22 @@ body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
 <!-- ==================== ADD RECORD MODAL ==================== -->
 <div id="recModal" onclick="if(event.target===this)closeRec()">
   <div class="rec-sheet">
-    <h3>Новая запись в истории</h3>
+    <h3 id="recordFormHeading">Новая запись в истории</h3>
     <div class="rec-types" id="recTypes">
-      <div class="rec-type sel" onclick="pickRecType(this,'Прививка','💉')"><span class="ic">💉</span><span class="lbl">Прививка</span></div>
-      <div class="rec-type" onclick="pickRecType(this,'Ветеринар','🏥')"><span class="ic">🏥</span><span class="lbl">Ветеринар</span></div>
-      <div class="rec-type" onclick="pickRecType(this,'Лекарство','💊')"><span class="ic">💊</span><span class="lbl">Лекарство</span></div>
-      <div class="rec-type" onclick="pickRecType(this,'Паразиты','🪱')"><span class="ic">🪱</span><span class="lbl">Обработка</span></div>
-      <div class="rec-type" onclick="pickRecType(this,'Груминг','✂️')"><span class="ic">✂️</span><span class="lbl">Груминг</span></div>
-      <div class="rec-type" onclick="pickRecType(this,'Заметка','📝')"><span class="ic">📝</span><span class="lbl">Заметка</span></div>
+      <button type="button" class="rec-type sel" aria-pressed="true" onclick="pickRecType(this,'Прививка','💉')"><span class="ic">💉</span><span class="lbl">Прививка</span></button>
+      <button type="button" class="rec-type" aria-pressed="false" onclick="pickRecType(this,'Ветеринар','🏥')"><span class="ic">🏥</span><span class="lbl">Ветеринар</span></button>
+      <button type="button" class="rec-type" aria-pressed="false" onclick="pickRecType(this,'Лекарство','💊')"><span class="ic">💊</span><span class="lbl">Лекарство</span></button>
+      <button type="button" class="rec-type" aria-pressed="false" onclick="pickRecType(this,'Паразиты','🪱')"><span class="ic">🪱</span><span class="lbl">Обработка</span></button>
+      <button type="button" class="rec-type" aria-pressed="false" onclick="pickRecType(this,'Груминг','✂️')"><span class="ic">✂️</span><span class="lbl">Груминг</span></button>
+      <button type="button" class="rec-type" aria-pressed="false" onclick="pickRecType(this,'Заметка','📝')"><span class="ic">📝</span><span class="lbl">Заметка</span></button>
+      <button type="button" class="rec-type rec-type-weight" id="recordWeightType" aria-pressed="false" onclick="pickRecType(this,'Вес','⚖️')"><span class="ic">⚖️</span><span class="lbl">Вес</span></button>
     </div>
-    <input class="field" id="recTitle" placeholder="Название (например: прививка от бешенства)" style="margin-bottom:10px">
+    <div id="recordWeightField" hidden><label class="field-label" for="recordWeight">Вес, кг</label><input class="field" id="recordWeight" type="text" inputmode="decimal" placeholder="Например, 4,2" autocomplete="off"><p class="weight-field-hint">Вес на дату записи. Можно указать до трёх цифр после запятой.</p></div>
+<input class="field" id="recTitle" placeholder="Название (например: прививка от бешенства)" style="margin-bottom:10px">
     <input class="field" id="recDate" type="date" style="margin-bottom:10px">
     <textarea class="field" id="recNote" rows="3" placeholder="Комментарий (необязательно)" style="resize:none;margin-bottom:14px"></textarea>
-    <button class="btn" onclick="saveRec()">Сохранить запись</button>
+    <section class="photo-section" id="photoSection" aria-labelledby="photoSectionTitle"><div class="photo-section-head"><h4 id="photoSectionTitle">Фото к записи</h4><span id="photoCount">0 / 8</span></div><p>Рецепт, заключение врача или снимок питомца — всё останется рядом с записью.</p><input id="recordPhotos" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" multiple hidden onchange="photoChoose(this)"><div class="photo-draft-list" id="photoDraftList"></div><button class="photo-pick" id="photoPick" type="button" onclick="photoPickFiles()">Прикрепить фото</button><p class="photo-limits">До 8 фото · каждое до 12 МБ · вместе до 48 МБ</p><div id="photoStatus" class="photo-status" role="status"></div></section>
+<p class="record-form-error" id="recordFormError" role="alert"></p><button class="btn" id="recordSaveButton" onclick="saveRec()">Сохранить запись</button>
     <button class="btn-skip" onclick="closeRec()">Отмена</button>
   </div>
 </div>
@@ -624,8 +818,8 @@ body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
         </div>
       </div>
     </div>
-    <div class="edit-label">Кличка</div>
-    <input class="field" id="editName" placeholder="Кличка">
+    <label class="edit-label" for="editName">Кличка</label>
+<input class="field" id="editName" placeholder="Кличка">
     <div class="edit-label">Вид</div>
     <div class="mini-choices" id="editTypeRow">
       <span class="mini-choice" onclick="editType(this,'Кошка')">🐱 Кошка</span>
@@ -635,17 +829,17 @@ body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
       <span class="mini-choice" onclick="editType(this,'Рыбка')">🐠 Рыбка</span>
       <span class="mini-choice" onclick="editType(this,'Другой')">🐾 Другой</span>
     </div>
-    <div class="edit-label">Порода</div>
-    <input class="field" id="editBreed" placeholder="Порода">
+    <label class="edit-label" for="editBreed">Порода</label>
+<input class="field" id="editBreed" placeholder="Порода">
     <div class="edit-label">Пол</div>
     <div class="mini-choices" id="editGenderRow">
       <span class="mini-choice" onclick="editGender(this,'Мальчик')">♂️ Мальчик</span>
       <span class="mini-choice" onclick="editGender(this,'Девочка')">♀️ Девочка</span>
     </div>
-    <div class="edit-label">Дата рождения</div>
-    <input class="field" id="editBirth" type="date">
-    <div class="edit-label">Вес (кг)</div>
-    <input class="field" id="editWeight" type="number" step="0.1" placeholder="Вес (кг)">
+    <label class="edit-label" for="editBirth">Дата рождения</label>
+<input class="field" id="editBirth" type="date">
+    <label class="edit-label" for="editWeight">Вес (кг)</label>
+<input class="field" id="editWeight" type="number" step="0.1" placeholder="Вес (кг)">
     <div style="height:16px"></div>
     <button class="btn" onclick="saveEdit()">💾 Сохранить изменения</button>
     <button class="btn-danger" onclick="deletePet()">🗑 Удалить аккаунт питомца</button>
@@ -711,20 +905,20 @@ body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
       <input class="field" id="pfCity" placeholder="Москва">
       <input class="field" id="pfDistrict" placeholder="Район, метро">
     </div>
-    <div class="edit-label">Как с вами связаться?</div>
-    <input class="field" id="pfContact" placeholder="@ник, телефон или как удобно">
+    <label class="edit-label" for="pfContact">Как с вами связаться?</label>
+<input class="field" id="pfContact" placeholder="@ник, телефон или как удобно">
     <div class="field-hint">Это увидят все, кто откроет объявление. Оставьте пустым, если не хотите — тогда люди смогут только поделиться вашим объявлением.</div>
     <div id="pfDateWrap">
       <div class="edit-label" id="pfDateLbl">Дата пропажи</div>
       <input class="field" id="pfDate" type="date">
     </div>
     <div id="pfRewardWrap">
-      <div class="edit-label">Вознаграждение (необязательно)</div>
-      <input class="field" id="pfReward" placeholder="Например: 5000 ₽">
+      <label class="edit-label" for="pfReward">Вознаграждение (необязательно)</label>
+<input class="field" id="pfReward" placeholder="Например: 5000 ₽">
     </div>
     <div id="pfPriceWrap" style="display:none">
-      <div class="edit-label">Цена за сутки</div>
-      <input class="field" id="pfPrice" placeholder="Например: 500 ₽/сутки">
+      <label class="edit-label" for="pfPrice">Цена за сутки</label>
+<input class="field" id="pfPrice" placeholder="Например: 500 ₽/сутки">
     </div>
     <div class="edit-label">Описание / история</div>
     <textarea class="field" id="pfDesc" rows="4" style="resize:none" placeholder="Расскажите подробнее…"></textarea>
@@ -946,14 +1140,18 @@ body{max-width:480px;margin:0 auto;position:relative;min-height:100vh;}
   </div>
 
   <div class="nav">
-    <div class="item on" data-screen="home" onclick="openScreen('home')"><span class="ic">🏠</span>Главная</div>
-    <div class="item" data-screen="help" onclick="openScreen('help')"><span class="ic">❤️</span>Помощь</div>
-    <div class="add" onclick="addPetFromNav()">+</div>
-    <div class="item" data-screen="shop" onclick="openScreen('shop')"><span class="ic">🛍</span>Магазин</div>
-    <div class="item" data-screen="about" onclick="openScreen('about')"><span class="ic">👤</span>Профиль</div>
+    <div class="item on" role="button" tabindex="0" data-screen="home" onclick="openScreen('home')"><span class="ic">🏠</span>Главная</div>
+    <div class="item" role="button" tabindex="0" data-screen="help" onclick="openScreen('help')"><span class="ic">❤️</span>Помощь</div>
+    <div class="add" role="button" tabindex="0" aria-label="Добавить" onclick="addPetFromNav()">+</div>
+    <div class="item" role="button" tabindex="0" data-screen="shop" onclick="openScreen('shop')"><span class="ic">🛍</span>Магазин</div>
+    <div class="item" role="button" tabindex="0" data-screen="about" onclick="openScreen('about')"><span class="ic">👤</span>Профиль</div>
   </div>
 </div>
 
+<section id="healthScreen" class="health-screen" hidden aria-labelledby="healthTitle"><header class="health-head"><button class="ps-back" type="button" onclick="closeHealth()"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span id="healthBackText">К питомцу</span></button><h1 id="healthTitle" tabindex="-1">Здоровье</h1><svg class="brand-heart" viewBox="0 0 100 100" aria-hidden="true"><path fill="#ED7B35" d="M50 88C30 74 12 60 12 40 12 26 22 18 33 18c8 0 14 5 17 11 3-6 9-11 17-11 11 0 21 8 21 22 0 20-18 34-38 48z"/><circle cx="35" cy="34" r="7" fill="#fff"/><circle cx="63" cy="34" r="7" fill="#fff"/></svg></header><div class="health-body" id="healthBody"></div></section>
+<section class="care-screen" id="careScreen" hidden aria-labelledby="careTitle"><header class="care-head"><button class="ps-back" type="button" onclick="closeCare()"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span id="careBackText">К питомцу</span></button><h1 id="careTitle" tabindex="-1">Советы по уходу</h1></header><div class="care-body" id="careBody"></div></section>
+<dialog class="photo-viewer" id="photoViewer" aria-labelledby="photoViewerTitle"><header class="photo-viewer-head"><div class="photo-viewer-heading"><h2 id="photoViewerTitle">Фото к записи</h2><p id="photoViewerName"></p></div><span class="photo-viewer-count" id="photoViewerCount" aria-live="polite"></span><button type="button" id="photoClose" class="photo-close" onclick="photoCloseGallery()" aria-label="Закрыть фото"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header><div class="photo-stage" id="photoStage" tabindex="0" aria-label="Фотография, можно прокручивать после увеличения"><div class="photo-canvas" id="photoCanvas"></div></div><div class="photo-viewer-controls"><button type="button" id="photoPrevious" class="photo-arrow" onclick="photoMove(-1)" aria-label="Предыдущее фото"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button><button type="button" id="photoZoomButton" onclick="photoZoom()">Увеличить</button><button type="button" id="photoNext" class="photo-arrow" onclick="photoMove(1)" aria-label="Следующее фото"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div><p class="photo-viewer-hint" id="photoViewerHint"></p><button type="button" class="photo-delete" onclick="photoDeleteCurrent()"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>Удалить фото</button></dialog>
+<dialog class="ui-confirm" id="uiConfirm" aria-labelledby="confirmTitle" aria-describedby="confirmText"><h3 id="confirmTitle"></h3><p id="confirmText"></p><div class="confirm-actions"><button class="confirm-cancel" type="button" onclick="uiCancelConfirm()" autofocus>Оставить</button><button class="confirm-remove" type="button" onclick="uiAcceptConfirm()">Удалить</button></div></dialog>
 <script>
 const ADMIN_ID=1699772237;   // 👈 твой Telegram-id: только ты видишь кнопки редактирования
 // ================= Telegram init =================
@@ -971,7 +1169,7 @@ function alertMsg(m){ try{ tg.showAlert(m); }catch(e){ try{alert(m);}catch(e2){c
 // ================= Supabase =================
 const SB_URL='https://aidcgtpxuqlxxmtupvmb.supabase.co';
 const SB_KEY='sb_publishable_wjs19qEtyU6agaIX2-upLQ_cq237K3I';
-const SB_H={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+const SB_H={'apikey':SB_KEY,'Content-Type':'application/json'};
 let ME={id:0,uname:'',name:'Друг'};
 
 async function sbGet(path){
@@ -992,96 +1190,7 @@ async function sbDel(path){
   try{ const r=await fetch(SB_URL+'/rest/v1/'+path,{method:'DELETE',headers:SB_H}); return r.ok; }
   catch(e){ return false; }
 }
-async function registerUser(){
-  // ME.id — постоянный ключ пользователя
-  const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user;
-  if(u&&u.id){ ME={id:u.id,uname:u.username||'',name:u.first_name||'Друг'}; }
-  else { let d=localStorage.getItem('lubimka_devid');
-    if(!d){ d=String(900000000+Math.floor(Math.random()*90000000)); localStorage.setItem('lubimka_devid',d); }
-    ME={id:parseInt(d),uname:'',name:userName}; }
-  await fetch(SB_URL+'/rest/v1/users',{method:'POST',
-    headers:Object.assign({},SB_H,{'Prefer':'resolution=merge-duplicates'}),
-    body:JSON.stringify({id:ME.id,username:ME.uname,first_name:ME.name})}).catch(e=>{});
-}
-
-// ================= Storage =================
-// Питомцы: локальный кэш (мгновенно) + облако (синхронизация)
-const DB = {
-  getPets(){ try{return JSON.parse(localStorage.getItem('lubimka_pets')||'[]');}catch(e){return [];} },
-  savePets(p){ localStorage.setItem('lubimka_pets', JSON.stringify(p)); syncUp(); },
-  savePetsLocal(p){ localStorage.setItem('lubimka_pets', JSON.stringify(p)); },
-  addPet(pet){ const p=this.getPets(); pet.id=Date.now(); p.push(pet); this.savePets(p); return pet; },
-  seenWelcome(){ return localStorage.getItem('lubimka_welcomed')==='1'; },
-  setWelcomed(){ localStorage.setItem('lubimka_welcomed','1'); }
-};
-
-// ---------- Облачная синхронизация питомцев ----------
-let syncTimer=null, syncing=false;
-function syncUp(){                       // локально -> облако (с задержкой, чтобы не спамить)
-  clearTimeout(syncTimer);
-  syncTimer=setTimeout(pushPets, 700);
-}
-async function pushPets(){
-  if(!ME.id || syncing) return;
-  syncing=true;
-  try{
-    const pets=DB.getPets();
-    // сервер = зеркало телефона: стираем свои и пишем заново
-    await sbDel('pets?owner_id=eq.'+ME.id);
-    for(const p of pets){
-      const saved=await sbPost('pets',{
-        owner_id:ME.id, name:p.name, type:p.type||null, breed:p.breed||null,
-        gender:p.gender||null, birth:p.birth||null,
-        weight:(p.weight!==undefined&&p.weight!=='')?p.weight:null,
-        emoji:p.emoji||null, photo:p.photo||null
-      },true);
-      if(saved&&saved[0]&&p.history&&p.history.length){
-        const rows=p.history.map(h=>({pet_id:saved[0].id,type:h.type||null,emoji:h.emoji||null,
-          title:h.title||'',note:h.note||null,date:h.date||null}));
-        await sbPost('pet_records',rows);
-      }
-    }
-    localStorage.setItem('lubimka_synced',String(Date.now()));
-  }catch(e){ console.warn('pushPets',e); }
-  syncing=false;
-}
-async function pullPets(){               // облако -> телефон (при запуске)
-  if(!ME.id) return false;
-  const rows=await sbGet('pets?owner_id=eq.'+ME.id+'&select=*,pet_records(*)&order=created_at.asc');
-  if(!rows||!rows.length) return false;
-  const pets=rows.map((r,i)=>({
-    id: Date.now()+i, cloudId:r.id, name:r.name, type:r.type, breed:r.breed,
-    gender:r.gender, birth:r.birth, weight:r.weight, emoji:r.emoji, photo:r.photo,
-    history:(r.pet_records||[]).map((h,j)=>({id:Date.now()+i*1000+j,type:h.type,emoji:h.emoji,
-      title:h.title,note:h.note,date:h.date})).sort((a,b)=>(b.date||'').localeCompare(a.date||''))
-  }));
-  DB.savePetsLocal(pets);
-  return true;
-}
-
-// ================= Boot =================
-async function boot(){
-  await registerUser();
-  // миграция: возраст -> дата рождения
-  const mig=DB.getPets(); let ch=false;
-  mig.forEach(p=>{ if(!p.birth && p.age){ p.birth=(new Date().getFullYear()-parseInt(p.age))+'-01-01'; ch=true; } });
-  if(ch) DB.savePetsLocal(mig);
-  document.getElementById('welcomeGreeting').textContent = 'Здравствуйте, '+userName+'! 🐾';
-  let pets = DB.getPets();
-  if(DB.seenWelcome() || pets.length>0){ enterApp(); }
-  else { document.getElementById('welcome').style.display='flex'; }
-
-  // подтягиваем питомцев из облака (новый телефон / переустановка)
-  const local=DB.getPets();
-  const got=await pullPets();
-  if(got){
-    pets=DB.getPets();
-    if(document.getElementById('appBody').style.display==='block'){ renderHome(); renderProfile(); }
-    else if(pets.length>0){ DB.setWelcomed(); enterApp(); }
-  } else if(local.length>0){
-    pushPets();          // в облаке пусто, а на телефоне есть — заливаем
-  }
-}
+const DB={};
 function enterApp(){
   document.getElementById('welcome').style.display='none';
   setTimeout(refreshAlerts,1200);
@@ -1220,11 +1329,11 @@ function loadPhoto(ev){
     alertMsg('Не удалось загрузить это фото. Попробуйте другое из галереи.');
   });
 }
-function regNext(){
+async function regNext(){
   if(regStep===1) newPet.name=document.getElementById('petName').value.trim();
   if(regStep===2){ newPet.breed=document.getElementById('petBreed').value.trim(); }
   if(regStep===3){ newPet.birth=document.getElementById('petBirth').value; newPet.weight=document.getElementById('petWeight').value; }
-  if(regStep===4){ saveNewPet(); showStep(5); haptic('ok'); return; }
+  if(regStep===4){ await saveNewPet(); showStep(5); haptic('ok'); return; }
   showStep(regStep+1);
 }
 function regBack(){ if(regStep===0){ backToWelcomeOrApp(); } else { showStep(regStep-1); } }
@@ -1233,8 +1342,8 @@ function backToWelcomeOrApp(){
   if(DB.getPets().length>0 || DB.seenWelcome()){ enterApp(); }
   else { document.getElementById('welcome').style.display='flex'; }
 }
-function saveNewPet(){
-  DB.addPet({type:newPet.type,emoji:newPet.emoji,name:newPet.name,breed:newPet.breed,
+async function saveNewPet(){
+  await DB.addPet({type:newPet.type,emoji:newPet.emoji,name:newPet.name,breed:newPet.breed,
     gender:newPet.gender,birth:newPet.birth,weight:newPet.weight,photo:newPet.photo,created:Date.now()});
   DB.setWelcomed();
   document.getElementById('successName').textContent = newPet.name+' в семье! 🎉';
@@ -1274,9 +1383,9 @@ function renderHome(){
   pets.forEach(p=>{
     const av = p.photo ? `<img class="avatar" src="${p.photo}">` : `<div class="avatar">${p.emoji||'🐾'}</div>`;
     const meta=[p.breed||p.type, petAgeText(p), p.weight?p.weight+' кг':''].filter(Boolean).join(' · ');
-    html+=`<div class="card pet-card" onclick="openPet(${p.id})">
+    html+=`<div class="card pet-card" role="button" tabindex="0" onclick="openPet(${p.id})">
       ${av}
-      <div class="info"><h3>${p.name}</h3><p>${meta}</p>${p.gender?`<span class="badge">${p.gender}</span>`:''}</div>
+      <div class="info"><h3>${esc(p.name)}</h3><p>${esc(meta)}</p>${p.gender?`<span class="badge">${p.gender}</span>`:''}</div>
       <div class="chev">›</div></div>`;
   });
   c.innerHTML=html;
@@ -1289,23 +1398,12 @@ function renderHome(){
     +`<p class="rem-hint">Нажмите на строку, чтобы добавить запись</p>`;
   extra.innerHTML=`
     <div class="card">
-      <div class="section-title">Рейтинг здоровья</div>
-      <div class="health">
+      <div class="section-title">Здоровье питомцев</div>
+      <button type="button" class="health health-home-button" onclick="openHealth(null,'home')" aria-label="Открыть карты здоровья питомцев">
         <div class="ring"><svg width="76" height="76"><circle cx="38" cy="38" r="32" fill="none" stroke="#eee" stroke-width="8"/><circle cx="38" cy="38" r="32" fill="none" stroke="${col}" stroke-width="8" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="${off}"/></svg><div class="score"><b>${score}<span style="font-size:14px">/5</span></b></div></div>
-        <div class="txt">${healthTip(score)}</div>
-      </div>
-      ${pets.map(p=>{
-        const bt=breedTips(p);
-        const day=Math.floor(Date.now()/86400000);
-        const tip=bt.tips[day%bt.tips.length];
-        return `<div class="care-tip" onclick="toggleCare(this)">
-          <div class="ct-head"><span class="ct-pet">${p.photo?`<img src="${p.photo}">`:(p.emoji||'🐾')}</span>
-            <div><b>Уход · ${esc(p.name)}</b><small>${esc(bt.label)}</small></div>
-            <span class="ct-chev">›</span></div>
-          <div class="ct-today">💡 ${tip}</div>
-          <div class="ct-all">${bt.tips.map(t=>`<div class="ct-row">• ${t}</div>`).join('')}</div>
-        </div>`;
-      }).join('')}
+        <span class="txt">${pets.length>1?'Средняя оценка карт питомцев':'Полнота карты питомца'}<span class="health-link-label">${pets.length>1?'Выбрать питомца':'Посмотреть разбор'} ›</span></span>
+      </button>
+      ${pets.map(p=>careHomeEntry(p)).join('')}
     </div>
     <div class="card">
       <div class="section-title" style="margin:0 0 4px">Напоминания</div>
@@ -1401,43 +1499,6 @@ const BREEDS_BY_TYPE={
  'Кошка':['Британская','Шотландская вислоухая','Мейн-кун','Сфинкс','Сибирская','Русская голубая','Бенгальская','Персидская','Абиссинская','Дворянка 💛'],
  'Собака':['Лабрадор','Немецкая овчарка','Йоркширский терьер','Чихуахуа','Шпиц','Такса','Хаски','Корги','Французский бульдог','Дворняжка 💛']
 };
-const BREED_TIPS={
- 'британ':['Склонны к набору веса — кормите по норме, а не «по глазам»','Вычёсывайте 1–2 раза в неделю: плотный подшёрсток','Следите за сердцем: у породы бывает ГКМП, раз в год — осмотр у врача'],
- 'шотланд':['Берегите суставы — порода склонна к проблемам с хрящами, не допускайте прыжков с высоты','Чистите уши раз в 1–2 недели — сложенное ухо хуже проветривается','Не перекармливайте: лишний вес усиливает нагрузку на суставы'],
- 'мейн':['Крупной кошке — большой лоток и когтеточка повыше','Вычёсывайте 2–3 раза в неделю, особенно штаны и воротник','Раз в год проверяйте сердце — у породы встречается ГКМП'],
- 'сфинкс':['Купайте раз в 1–2 недели — кожа выделяет много себума','Зимой берегите от холода, летом — от прямого солнца (кожа обгорает!)','Кормите чуть больше нормы: голая кошка тратит много энергии на обогрев'],
- 'сибир':['Вычёсывайте 2 раза в неделю, в линьку — каждый день','Порода активная: нужны игры и место полазить','Шерсть защищает от холода, но колтуны сводят защиту на нет — следите'],
- 'русская голуб':['Деликатный желудок — переводите на новый корм постепенно, за 7–10 дней','Короткая шерсть: достаточно вычёсывать раз в неделю','Стеснительны с чужими — обеспечьте укрытие, где можно спрятаться'],
- 'бенгал':['Очень энергичны: минимум 2 активные игры в день, иначе разнесут дом','Многие бенгалы любят воду — не удивляйтесь и не ругайте','Чувствительное пищеварение: качественный корм с высоким содержанием мяса'],
- 'перс':['Ежедневное вычёсывание — без вариантов, колтуны образуются мгновенно','Протирайте глаза каждый день: плоская мордочка = слезотечение','Следите за дыханием в жару — брахицефалам тяжело дышать'],
- 'абиссин':['Самая активная из кошек: полки, игры, внимание — обязательно','Следите за зубами: порода склонна к гингивиту, приучайте к чистке','Раз в год сдавайте анализ мочи — бывают проблемы с почками'],
- 'лабрадор':['Не перекармливайте! Лабрадоры не знают меры — ожирение их главный враг','Минимум час активной прогулки в день','Проверяйте уши после купания и прогулок — висячее ухо любит отиты'],
- 'овчарк':['Нужна работа для головы: команды, поиск, игрушки-головоломки','Следите за тазобедренными суставами — не перегружайте щенка прыжками','Вычёсывайте 2–3 раза в неделю: линяют круглый год'],
- 'йорк':['Зубы — слабое место: чистите 2–3 раза в неделю, иначе камень','Маленькая печень — никаких кусков со стола','Стригите или вычёсывайте регулярно: шерсть растёт как волосы'],
- 'чихуа':['Мёрзнут даже дома — одёжка зимой это не блажь, а необходимость','Родничок может не зарастать — берегите голову от ударов','Дрожь — не всегда холод: может быть стресс или голод'],
- 'шпиц':['Не стригите машинкой — шерсть может не восстановиться (алопеция X)','Вычёсывайте через день, в линьку — ежедневно','Зубы мелкие и слабые: чистка и осмотры обязательны'],
- 'такс':['Берегите спину! Не давайте прыгать с дивана — у такс слабые межпозвонковые диски','Держите вес в норме: лишний кг = лишняя нагрузка на позвоночник','По лестнице вниз — лучше на руках, особенно щенка и пожилую'],
- 'хаски':['Нужно МНОГО движения: час-полтора активности в день минимум','Не перекармливайте — едят мало для своего размера, это норма','Линька два раза в год обильная: пуходёрка — ваш лучший друг'],
- 'корги':['Длинная спина как у таксы — берегите от прыжков с высоты','Склонны к обжорству и лишнему весу — строгая норма корма','Вычёсывайте 2–3 раза в неделю: подшёрсток очень плотный'],
- 'бульдог':['В жару гуляйте утром и вечером — брахицефалы перегреваются мгновенно','Чистите складки на морде 2–3 раза в неделю','Храп и хрюканье — норма, но одышка в покое — повод к врачу'],
- 'дворня':['Метисы обычно крепче породистых — но прививки и обработки нужны так же','Раз в год — профилактический осмотр у ветеринара','Вы дали дом тому, кто его не имел. Это лучшее, что можно сделать 💛'],
- 'дворян':['Метисы обычно крепче породистых — но прививки и обработки нужны так же','Раз в год — профилактический осмотр у ветеринара','Вы дали дом тому, кто его не имел. Это лучшее, что можно сделать 💛'],
-};
-const TYPE_TIPS={
- 'Кошка':['Миски для еды и воды держите в разных местах — кошки так пьют больше','Лоток мойте без хлорки: резкий запах отпугивает','Играйте хотя бы 15 минут в день — скука вредит здоровью'],
- 'Собака':['Гуляйте минимум дважды в день, одна прогулка — активная','Чистите зубы 2–3 раза в неделю или давайте дентал-лакомства','Обрабатывайте от клещей с весны до поздней осени'],
- 'Птица':['Клетку — подальше от сквозняков и кухни (пары тефлона опасны!)','Выпускайте полетать каждый день в безопасной комнате','Меняйте воду ежедневно, мойте поилку'],
- 'Грызун':['Точить зубы — жизненная необходимость: минеральный камень и веточки всегда в клетке','Клетку убирайте 1–2 раза в неделю','Резкие перепады температуры опасны — не ставьте клетку у окна'],
- 'Рыбка':['Подменивайте 20–25% воды раз в неделю, не всю сразу','Не перекармливайте: корм на 2–3 минуты, остатки убирайте','Следите за температурой — резкие скачки опаснее неидеальной'],
- 'Другой':['Найдите ветеринара, который работает именно с вашим видом животного','Изучите особенности вида: свет, температура, рацион','Карантин для новых соседей — минимум 2 недели'],
-};
-function breedTips(p){
-  const b=(p.breed||'').toLowerCase();
-  if(b){
-    for(const k in BREED_TIPS){ if(b.indexOf(k)>-1) return {label:p.breed, tips:BREED_TIPS[k]}; }
-  }
-  return {label:p.type||'Питомец', tips:TYPE_TIPS[p.type]||TYPE_TIPS['Другой']};
-}
 function toggleCare(el){ el.classList.toggle('open'); haptic(); }
 function healthTip(s){
   if(s>=5) return 'Отлично! Вы прекрасно заботитесь о своих любимцах 💛';
@@ -1578,7 +1639,7 @@ function editPhoto(ev){
     alertMsg('Не удалось загрузить это фото. Попробуйте другое из галереи.');
   });
 }
-function saveEdit(){
+async function saveEdit(){
   const name=document.getElementById('editName').value.trim();
   if(!name){ alertMsg('Кличка не может быть пустой'); return; }
   const pets=DB.getPets();
@@ -1587,14 +1648,11 @@ function saveEdit(){
   p.breed=document.getElementById('editBreed').value.trim();
   p.birth=document.getElementById('editBirth').value;
   const newW=document.getElementById('editWeight').value;
-  if(p.weight && newW && parseFloat(newW)!==parseFloat(p.weight)){
-    if(!p.history)p.history=[];
-    p.history.push({id:Date.now(),type:'Вес',emoji:'⚖️',title:'Вес обновлён: '+p.weight+' кг → '+newW+' кг',note:'',date:new Date().toISOString().slice(0,10)});
-  }
-  p.weight=newW;
+  if(!weightApplyProfile(p,newW))return;
+  p.weightBaseline=weightBaselines.get(p.id)??p.weightBaseline??'';
   p.type=editData.type; p.gender=editData.gender;
   p.emoji=editData.emoji; p.photo=editData.photo;
-  DB.savePets(pets);
+  await DB.savePets(pets);
   closeEdit(); renderPetScreen(); haptic('ok');
 }
 
@@ -2006,7 +2064,7 @@ async function savePost(){
   const city=document.getElementById('pfCity').value.trim();
   if(!city){ alertMsg('Укажите город'); return; }
   localStorage.setItem('lubimka_city',city);
-  sbPatch('users?id=eq.'+ME.id,{city:city});   // город в профиль — для пушей по городу
+  liveApi('city',{city}).catch(()=>{});   // город в профиль — для пушей по городу
   const btn=document.getElementById('pfSave'); btn.disabled=true; btn.textContent='Публикуем…';
   const body={author_id:ME.id,author_name:ME.name,author_uname:ME.uname,kind:curKind,status:'active',
     title:name,animal_type:pfData.type,
@@ -2358,6 +2416,684 @@ function shareApp(){
   } else if(navigator.share){ navigator.share({title:'Любимка',text:text,url:link}); }
   else { alertMsg('Ссылка: '+link); }
   haptic();
+}
+
+// Presentation-only changes to the pet account and its existing forms.
+const UI_PATHS={
+ back:'M15 18l-6-6 6-6',more:'M5 12h.01M12 12h.01M19 12h.01',
+ plus:'M12 5v14M5 12h14',edit:'M15 5l4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15v5z',
+ note:'M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6zM14 3v6h6M8 13h8M8 17h5',
+ vet:'M9 3h6v6h6v6h-6v6H9v-6H3V9h6z',
+ vaccine:'M15 3l6 6M18 6l-3 3M13 5l6 6M7 11l6-6 6 6-6 6zM7 11l-3 3 6 6 3-3M7 17l-4 4M12 10l3 3',
+ parasite:'M9 3c-5 3-5 7 0 8l6 1c5 1 4 7-2 8M10 6c-3 1-1 3 2 3l3 1M9 15c-2 2 0 4 3 3',
+ medicine:'M9 4a5 5 0 0 1 7 7l-5 5a5 5 0 0 1-7-7l5-5zM7 7l7 7',
+ grooming:'M6 6a3 3 0 1 0 0 .01M6 18a3 3 0 1 0 0 .01M8 8l12 12M8 16L20 4',
+ weight:'M6 7h12l3 14H3L6 7zM9 7V5a3 3 0 0 1 6 0v2M10 12h4',
+ trash:'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7'
+};
+function uiIcon(name){return '<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="'+(UI_PATHS[name]||UI_PATHS.note)+'"/></svg>';}
+function uiHeart(){return '<svg class="brand-heart" viewBox="0 0 100 100" aria-hidden="true"><path fill="#ED7B35" d="M50 88C30 74 12 60 12 40 12 26 22 18 33 18c8 0 14 5 17 11 3-6 9-11 17-11 11 0 21 8 21 22 0 20-18 34-38 48z"/><circle cx="35" cy="34" r="7" fill="#fff"/><circle cx="63" cy="34" r="7" fill="#fff"/></svg>';}
+const REC_PRESENTATION={
+ 'Прививка':{icon:'vaccine',label:'Прививка'},'Ветеринар':{icon:'vet',label:'Визит к ветеринару'},
+ 'Паразиты':{icon:'parasite',label:'Обработка от паразитов'},'Заметка':{icon:'note',label:'Заметка'},
+ 'Лекарство':{icon:'medicine',label:'Лекарство'},'Груминг':{icon:'grooming',label:'Груминг'},'Вес':{icon:'weight',label:'Вес'}
+};
+function uiDate(s){const d=new Date(s+'T12:00:00');return isNaN(d)?'Дата не указана':d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});}
+function uiMonth(s){const d=new Date(s+'T12:00:00');return isNaN(d)?'Без даты':d.toLocaleDateString('ru-RU',{month:'long',year:'numeric'}).replace(' г.','');}
+function uiCount(n){const a=n%10,b=n%100;return n+' '+(a===1&&b!==11?'запись':a>=2&&a<=4&&(b<12||b>14)?'записи':'записей');}
+function renderPetScreen(){
+ const p=getCurPet();if(!p)return;
+ const hist=(p.history||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+ let month='',history='';
+ hist.forEach(h=>{
+  const next=uiMonth(h.date);if(next!==month){month=next;history+='<h3 class="diary-month">'+esc(next)+'</h3>';}
+  const kind=REC_PRESENTATION[h.type]||{icon:'note',label:h.type||'Запись'};
+  history+=`<article class="diary-entry"><div class="diary-top"><span class="entry-icon ${esc(kind.icon)}">${uiIcon(kind.icon)}</span><div><span class="entry-type">${esc(kind.label)}</span><time class="entry-date" datetime="${esc(h.date||'')}">${esc(uiDate(h.date))}</time></div></div><h4 class="entry-title">${esc(h.title)}</h4>${h.note?`<p class="entry-note">${esc(h.note)}</p>`:''}${photoRecordMarkup(p,h)}<div class="entry-footer"><button type="button" class="entry-edit" onclick="openEditRecord(${Number(h.id)})" aria-label="Редактировать запись: ${esc(h.title)}">${uiIcon('edit')}Редактировать</button><button type="button" class="entry-delete" onclick="uiDeleteRecord(${Number(h.id)})" aria-label="Удалить запись: ${esc(h.title)}">${uiIcon('trash')}Удалить запись</button></div></article>`;
+ });
+ const count=hist.filter(h=>h.type==='Прививка').length;
+ const photo=p.photo?'<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'">':esc(p.emoji||'🐾');
+ document.getElementById('psBody').innerHTML=`
+  <section class="pet-identity" aria-label="Сведения о питомце">
+   <div class="pet-identity-row"><div class="pet-portrait">${photo}</div><div class="pet-title"><div class="pet-eyebrow">Мой питомец</div><h1>${esc(p.name)}</h1><p class="pet-breed">${esc(p.breed||p.type||'Питомец')}</p>${p.gender?`<span class="pet-sex">${esc(p.gender)}</span>`:''}<button type="button" class="pet-edit" onclick="openEdit()">${uiIcon('edit')}Редактировать</button></div></div>
+   <div class="pet-stat-row"><button class="pet-stat" type="button" onclick="uiEditField('editBirth')" aria-label="Изменить дату рождения"><strong>${esc(petAgeText(p)||'—')}</strong><span>возраст ›</span></button><button class="pet-stat" type="button" onclick="uiEditField('editWeight')" aria-label="Изменить вес"><strong>${p.weight?esc(String(p.weight).replace('.',','))+' кг':'—'}</strong><span>вес ›</span></button><div class="pet-stat"><strong>${count}</strong><span>прививок</span></div></div>
+  </section>
+  <button class="pet-primary" type="button" onclick="openRec()">${uiIcon('plus')}Добавить запись</button>
+  <section aria-labelledby="diary-title"><div class="diary-heading"><h2 id="diary-title">Дневник питомца</h2><span class="diary-total">${uiCount(hist.length)}</span></div><p class="diary-subtitle">Всё важное — в одной истории</p>${hist.length?history:`<div class="diary-empty">${uiIcon('note')}<h3>Здесь начнётся ваша история</h3><p>Нажми «Добавить запись», чтобы сохранить<br>визит к врачу, прививку или заметку.</p></div>`}</section>
+  <p class="pet-footnote">${uiHeart()}Рядом с теми, кого любишь</p>`;
+}
+function uiEditField(id){openEdit();setTimeout(()=>{const field=document.getElementById(id);field.scrollIntoView({block:'center',behavior:'smooth'});field.focus({preventScroll:true});},150);}
+function openPet(id){curPetId=id;renderPetScreen();document.getElementById('petScreen').classList.add('active');document.getElementById('psBody').scrollTop=0;haptic();}
+function closePet(){document.getElementById('petScreen').classList.remove('active');renderHome();renderProfile();}
+function openRec(){
+ document.getElementById('recTitle').value='';document.getElementById('recNote').value='';
+ const today=new Date();document.getElementById('recDate').value=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+ recType='Прививка';recEmoji='💉';document.querySelectorAll('#recTypes .rec-type').forEach((el,i)=>{el.classList.toggle('sel',i===0);el.setAttribute('aria-pressed',String(i===0));});
+ document.getElementById('recModal').classList.add('active');haptic();
+}
+function pickRecType(el,t,e){document.querySelectorAll('#recTypes .rec-type').forEach(x=>{x.classList.remove('sel');x.setAttribute('aria-pressed','false');});el.classList.add('sel');el.setAttribute('aria-pressed','true');recType=t;recEmoji=e;haptic();}
+let uiConfirmAction=null;
+function uiConfirm(title,detail,action){document.getElementById('confirmTitle').textContent=title;document.getElementById('confirmText').textContent=detail;uiConfirmAction=action;document.getElementById('uiConfirm').showModal();}
+function uiCancelConfirm(){document.getElementById('uiConfirm').close();uiConfirmAction=null;}
+function uiAcceptConfirm(){const action=uiConfirmAction;uiCancelConfirm();if(action)action();}
+function uiDeleteRecord(id){const p=getCurPet(),record=(p?.history||[]).find(h=>h.id===id);if(!record)return;uiConfirm('Удалить запись?',record.title+' — запись исчезнет из дневника.',()=>{removeRec(id);alertMsg('Запись удалена');});}
+function deletePet(){const p=getCurPet();if(!p)return;uiConfirm('Удалить аккаунт питомца?',p.name+' и все записи исчезнут из списка питомцев.',()=>{DB.savePets(DB.getPets().filter(x=>x.id!==curPetId));closeEdit();closeMenu();closePet();alertMsg('Аккаунт питомца удалён');});}
+function uiApplyPresentation(){
+ document.querySelector('.ps-head').innerHTML=`<button class="ps-back" type="button" onclick="closePet()">${uiIcon('back')}Питомцы</button><h2>Аккаунт питомца</h2><button class="ps-menu" type="button" onclick="openMenu()" aria-label="Меню питомца">${uiIcon('more')}</button>`;
+ document.querySelector('#recModal h3').textContent='Новая запись';
+ document.querySelector('#recModal h3').insertAdjacentHTML('afterend','<p class="sheet-subtitle">Сохрани то, что важно для питомца</p>');
+ document.querySelectorAll('#recTypes .rec-type').forEach(el=>{const key=el.getAttribute('onclick').match(/this,'([^']+)'/)[1];el.querySelector('.ic').innerHTML=uiIcon((REC_PRESENTATION[key]||{}).icon);});
+ document.getElementById('recTitle').insertAdjacentHTML('beforebegin','<label class="field-label" for="recTitle">Название записи</label>');
+ document.getElementById('recTitle').placeholder='Например, плановый осмотр';
+ document.getElementById('recDate').insertAdjacentHTML('beforebegin','<label class="field-label" for="recDate">Дата</label>');
+ document.getElementById('recNote').insertAdjacentHTML('beforebegin','<label class="field-label" for="recNote">Комментарий <span class="field-optional">· необязательно</span></label>');
+ document.getElementById('recNote').placeholder='Что было на приёме или что хочется запомнить';
+ document.querySelector('#editModal h3').textContent='О питомце';
+ document.querySelector('#editModal h3').insertAdjacentHTML('afterend','<p class="sheet-subtitle">Фото и основные сведения</p>');
+ ['recModal','editModal','menuModal'].forEach(id=>{const sheet=document.querySelector('#'+id+' .rec-sheet, #'+id+' .edit-sheet');sheet.setAttribute('role','dialog');sheet.setAttribute('aria-modal','true');sheet.setAttribute('aria-label',sheet.querySelector('h3').textContent);});
+}
+
+
+let demoToastTimer;
+function alertMsg(message){const toast=document.getElementById('demoToast');toast.textContent=message;toast.classList.add('show');clearTimeout(demoToastTimer);demoToastTimer=setTimeout(()=>toast.classList.remove('show'),4200);}
+document.addEventListener('keydown',event=>{
+ if((event.key==='Enter'||event.key===' ')&&event.target.matches('[role="button"]')){event.preventDefault();event.target.click();}
+ if(event.key==='Escape'){
+  if(document.getElementById('uiConfirm').open)return;
+  const ids=['menuModal','recModal','editModal','notifModal','addSheet'];
+  for(const id of ids){const el=document.getElementById(id);if(el?.classList.contains('active')){if(id==='recModal')closeRec();else el.classList.remove('active');event.preventDefault();event.stopImmediatePropagation();return;}}
+ }
+});
+let lastDialog=null,dialogTrigger=null;
+function uiCurrentDialog(){return ['menuModal','editModal','recModal'].map(id=>document.getElementById(id)).find(el=>el.classList.contains('active'))||null;}
+const dialogObserver=new MutationObserver(()=>{
+ const current=uiCurrentDialog();
+ if(current===lastDialog)return;
+ if(current){dialogTrigger=document.activeElement;setTimeout(()=>{const first=current.querySelector('button:not([disabled]),input');first?.focus({preventScroll:true});},0);}
+ else if(dialogTrigger?.isConnected)dialogTrigger.focus({preventScroll:true});
+ lastDialog=current;
+});
+['menuModal','editModal','recModal'].forEach(id=>dialogObserver.observe(document.getElementById(id),{attributes:true,attributeFilter:['class']}));
+document.addEventListener('keydown',event=>{
+ if(event.key!=='Tab'||document.getElementById('uiConfirm').open)return;
+ const modal=uiCurrentDialog();if(!modal)return;
+ const nodes=Array.from(modal.querySelectorAll('button:not([disabled]),input:not([type="file"]),textarea,[tabindex="0"]')).filter(el=>el.getClientRects().length);
+ const first=nodes[0],last=nodes[nodes.length-1];
+ if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+ else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+});
+
+// Stage 2: purely derived UI over the existing records. No persistent writes.
+UI_PATHS.check='M5 12l4 4L19 6';UI_PATHS.next='M9 6l6 6-6 6';UI_PATHS.minus='M7 12h10';
+const HEALTH_WINDOWS={vaccine:365,parasite:90};
+const healthState={open:false,id:null,originId:null,from:'pet',trigger:null};
+function healthToday(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function healthDay(s){
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(String(s||'')))return null;
+ const d=new Date(s+'T00:00:00Z');if(!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==s)return null;
+ return Math.floor(d.getTime()/86400000);
+}
+function healthRecordPoint(p,id,type,title,today){
+ const days=HEALTH_WINDOWS[id],now=healthDay(today);
+ const records=(p.history||[]).filter(h=>h.type===type&&healthDay(h.date)!==null);
+ const past=records.filter(h=>healthDay(h.date)<=now).sort((a,b)=>b.date.localeCompare(a.date))[0];
+ const future=records.filter(h=>healthDay(h.date)>now).sort((a,b)=>a.date.localeCompare(b.date))[0];
+ const ok=!!past&&now-healthDay(past.date)<days;
+ const detail=past?(ok?'Запись от '+uiDate(past.date):'Последняя запись: '+uiDate(past.date)+' · вне периода расчёта'):
+  future?'Есть запись на '+uiDate(future.date)+' · дата ещё не наступила':'В дневнике пока нет записи';
+ return {id,title,ok,detail,action:id==='vaccine'?'Добавить запись о прививке':'Добавить запись об обработке',hint:'Открыть дневник',type};
+}
+function healthDetails(p,today=healthToday()){
+ const breed=String(p.breed||'').trim(),weight=Number(String(p.weight??'').trim().replace(',','.'));
+ const birth=healthDay(p.birth),birthOk=birth!==null&&birth<=healthDay(today);
+ return [
+  {id:'breed',title:'Порода',ok:!!breed,detail:breed||'Порода пока не указана',action:'Указать породу питомца',hint:'Открыть сведения о питомце',field:'editBreed'},
+  {id:'weight',title:'Вес',ok:Number.isFinite(weight)&&weight>0,detail:Number.isFinite(weight)&&weight>0?String(weight).replace('.',',')+' кг · текущий вес':'Добавь вес больше нуля',action:'Указать текущий вес',hint:'Открыть поле веса',field:'editWeight'},
+  {id:'birth',title:'Дата рождения',ok:birthOk,detail:birthOk?uiDate(p.birth):(p.birth?'Проверь дату рождения':'Дата пока не указана'),action:p.birth?'Проверить дату рождения':'Указать дату рождения',hint:'Открыть сведения о питомце',field:'editBirth'},
+  healthRecordPoint(p,'vaccine','Прививка','Прививка',today),
+  healthRecordPoint(p,'parasite','Паразиты','Обработка от паразитов',today)
+ ];
+}
+healthScore=function(p){return healthDetails(p).filter(x=>x.ok).length;};
+function healthRing(score,decorative=true){const color=score>=4?'#7FA762':'#D4A15C';return `<span class="health-ring" ${decorative?'aria-hidden="true"':'role="img" aria-label="'+score+' из 5 пунктов заполнено"'}><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="33" fill="none" stroke="#E9EDE1" stroke-width="6"/><circle class="ring-progress" cx="40" cy="40" r="33" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-dasharray="207.35" stroke-dashoffset="${207.35*(1-score/5)}"/></svg><span class="ring-number">${score}<small>/5</small></span></span>`;}
+function healthEntry(p){const score=healthScore(p);return `<button class="pet-health-link" type="button" onclick="openHealth(${Number(p.id)},'pet')" aria-label="Здоровье: ${esc(p.name)}. ${score} из 5 пунктов. Посмотреть разбор">${healthRing(score)}<span class="pet-health-copy"><strong>Здоровье</strong><small>${score===5?'Все пять пунктов карты заполнены':'Заполнено '+score+' из 5 пунктов карты'}</small><span class="health-link-label">Посмотреть разбор ${uiIcon('next')}</span></span></button>`;}
+const healthBaseRenderPet=renderPetScreen;
+renderPetScreen=function(){
+ healthBaseRenderPet();const p=getCurPet();if(!p)return;
+ const primary=document.querySelector('#psBody .pet-primary');if(primary)primary.insertAdjacentHTML('beforebegin',healthEntry(p));
+ if(healthState.open&&healthState.id===p.id)renderHealth();
+};
+function healthLockBackground(on){document.getElementById('appBody').inert=on;document.getElementById('petScreen').inert=on;}
+function openHealth(id,from='pet'){
+ const pets=DB.getPets();if(!pets.length)return;
+ healthState.open=true;healthState.from=from;healthState.originId=curPetId;healthState.trigger=document.activeElement;
+ healthState.id=pets.some(p=>p.id===id)?id:(pets.length===1?pets[0].id:null);
+ document.getElementById('healthScreen').hidden=false;healthLockBackground(true);
+ renderHealth();document.getElementById('healthBody').scrollTop=0;document.getElementById('healthTitle').focus({preventScroll:true});haptic();
+}
+function closeHealth(){
+ const id=healthState.id||healthState.originId,from=healthState.from;healthState.open=false;
+ document.getElementById('healthScreen').hidden=true;document.getElementById('healthScreen').inert=false;healthLockBackground(false);
+ if(from==='pet'&&DB.getPets().some(p=>p.id===id))openPet(id);else{document.getElementById('petScreen').classList.remove('active');renderHome();renderProfile();}
+ const target=from==='pet'?document.querySelector('#psBody .pet-health-link'):document.querySelector('.health-home-button');target?.focus({preventScroll:true});haptic();
+}
+function healthChoose(id){if(!DB.getPets().some(p=>p.id===id))return;healthState.id=id;renderHealth();document.getElementById('healthBody').scrollTop=0;document.getElementById('healthTitle').focus({preventScroll:true});haptic();}
+function healthChooseAnother(){healthState.id=null;renderHealth();document.getElementById('healthBody').scrollTop=0;haptic();}
+function healthThumb(p){return p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="health-pet-thumb" aria-hidden="true">${esc(p.emoji||'🐾')}</span>`;}
+function renderHealth(){
+ if(!healthState.open)return;
+ const body=document.getElementById('healthBody'),scroll=body.scrollTop,pets=DB.getPets();
+ const p=pets.find(x=>x.id===healthState.id);
+ document.getElementById('healthBackText').textContent=healthState.from==='pet'?'К питомцу':'Главная';
+ if(!p){
+  body.innerHTML=`<h2 class="health-picker-title">Чью карту посмотрим?</h2><p class="health-picker-hint">У каждого питомца своя оценка и свой дневник.</p>${pets.map(x=>`<button class="health-pick" type="button" onclick="healthChoose(${Number(x.id)})" aria-label="Открыть здоровье: ${esc(x.name)}, ${healthScore(x)} из 5">${healthThumb(x)}<span class="health-pick-copy"><strong>${esc(x.name)}</strong><small>Посмотреть разбор ›</small></span>${healthRing(healthScore(x))}</button>`).join('')}`;return;
+ }
+ const details=healthDetails(p),missing=details.filter(x=>!x.ok),score=5-missing.length;
+ const checks=details.map(x=>`<li class="health-check ${x.ok?'':'missing'}"><span class="health-check-state" aria-label="${x.ok?'Заполнено':'Не хватает данных'}">${uiIcon(x.ok?'check':'minus')}</span><div class="health-check-copy"><b>${esc(x.title)}</b><p>${esc(x.detail)}</p></div><span class="health-point">${x.ok?'+1 балл':'0 баллов'}</span></li>`).join('');
+ const tasks=missing.map(x=>`<button class="health-task" id="health-task-${x.id}" type="button" onclick="healthComplete('${x.id}')">${uiIcon('plus')}<span class="health-task-copy"><strong>${esc(x.action)}</strong><small>${esc(x.hint)}</small></span>${uiIcon('next')}</button>`).join('');
+ const visits=(p.history||[]).filter(h=>h.type==='Ветеринар').slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+ const visitsHtml=visits.map(h=>`<details class="health-visit"><summary><span class="visit-ic">${uiIcon('vet')}</span><span class="visit-copy"><strong>${esc(h.title||'Визит к ветеринару')}</strong><time datetime="${esc(h.date||'')}">${esc(uiDate(h.date))}</time>${healthDay(h.date)>healthDay(healthToday())?'<em>Запланировано</em>':''}</span><span class="visit-chevron">${uiIcon('next')}</span></summary><p class="health-visit-note">${esc(h.note||'Комментарий к визиту не добавлен.')}</p>${photoRecordMarkup(p,h,'health')}<div class="visit-actions"><button type="button" class="entry-edit" onclick="healthEditVisit(${Number(h.id)})">${uiIcon('edit')}Редактировать запись</button></div></details>`).join('');
+ body.innerHTML=`
+  <button class="health-pet-switch" type="button" ${pets.length>1?'onclick="healthChooseAnother()"':'disabled'} aria-label="Выбрать другого питомца">${healthThumb(p)}<strong>${esc(p.name)}</strong>${pets.length>1?'<span class="health-switch-label">Сменить '+uiIcon('next')+'</span>':''}</button>
+  <section class="health-summary" id="healthSummary" tabindex="-1" aria-label="${score} из 5 пунктов карты заполнено"><div class="health-summary-top">${healthRing(score)}<div class="health-summary-copy"><p class="eyebrow">Полнота карты</p><h2>${score===5?'Все пункты заполнены':missing.length===1?'Остался один пункт':'Заполним пробелы'}</h2><p>${score} из 5 пунктов<br>есть в карте ${esc(p.name)}</p></div></div><p class="health-summary-note">Баллы отражают сведения в приложении. Это не медицинская оценка здоровья.</p></section>
+  <section class="health-panel"><div class="health-panel-title"><h2>Из чего складывается оценка</h2></div><ul class="health-checks">${checks}</ul><details class="score-explainer"><summary>Как считаются баллы</summary><p>По одному баллу за указанную породу, вес больше нуля и дату рождения, которая уже наступила. Ещё по баллу — за запись о прививке за последние 365 дней и об обработке от паразитов за последние 90 дней. Будущие даты пока не учитываются.</p><p>365 и 90 дней — условные интервалы расчёта в приложении. Сроки следующих процедур нужно уточнять у ветеринара с учётом питомца и препарата.</p></details></section>
+  <section class="health-panel" aria-labelledby="healthTasksTitle"><div class="health-panel-title"><h2 id="healthTasksTitle">${missing.length?'До 5/5':'Карта заполнена'}</h2><span class="tag">${missing.length?missing.length+' '+(missing.length===1?'шаг':missing.length<5?'шага':'шагов'):'5/5'}</span></div>${missing.length?tasks:'<div class="health-done">'+uiIcon('check')+'<p>Все пять пунктов на месте. Продолжай сохранять события и наблюдения в дневнике.</p></div>'}</section>
+  <section class="health-panel"><div class="health-panel-title"><h2>Визиты к ветеринару</h2><span class="tag">${visits.length}</span></div><p class="health-visits-sub">Даты и заметки из дневника питомца</p>${visits.length?visitsHtml:'<div class="health-empty-visits">Визитов пока нет.<br>Первый приём можно добавить здесь.</div>'}<button class="health-add-visit" type="button" onclick="healthNewRecord('Ветеринар')">${uiIcon('plus')}Добавить визит</button></section>`;
+ body.scrollTop=scroll;
+}
+function healthComplete(key){const p=DB.getPets().find(x=>x.id===healthState.id);if(!p)return;const item=healthDetails(p).find(x=>x.id===key);if(!item)return;curPetId=p.id;if(item.field)uiEditField(item.field);else healthNewRecord(item.type);}
+function healthNewRecord(type){
+ const p=DB.getPets().find(x=>x.id===healthState.id);if(!p)return;curPetId=p.id;openRec();
+ const emojis={'Прививка':'💉','Паразиты':'🪱','Ветеринар':'🏥'};
+ const buttons=Array.from(document.querySelectorAll('#recTypes .rec-type'));
+ const button=buttons.find(el=>(el.getAttribute('onclick')||'').includes("this,'"+type+"'"));
+ if(button)pickRecType(button,type,emojis[type]||'📝');
+}
+const healthBaseSaveRec=saveRec;
+saveRec=function(){const before=getCurPet()?.history?.length||0;healthBaseSaveRec();if(healthState.open&&(getCurPet()?.history?.length||0)>before){renderHealth();alertMsg('Запись добавлена · карта '+healthScore(getCurPet())+'/5');setTimeout(()=>document.getElementById('healthSummary')?.focus({preventScroll:true}),0);}};
+const healthBaseSaveEdit=saveEdit;
+saveEdit=async function(){await healthBaseSaveEdit();if(healthState.open&&!document.getElementById('editModal').classList.contains('active')){renderHealth();alertMsg('Сведения обновлены · карта '+healthScore(getCurPet())+'/5');setTimeout(()=>document.getElementById('healthSummary')?.focus({preventScroll:true}),0);}};
+const healthBaseClosePet=closePet;
+closePet=function(){if(healthState.open){healthState.open=false;document.getElementById('healthScreen').hidden=true;document.getElementById('healthScreen').inert=false;healthLockBackground(false);}healthBaseClosePet();};
+const healthModalObserver=new MutationObserver(()=>{
+ if(!healthState.open)return;
+ const isModal=!!uiCurrentDialog();document.getElementById('healthScreen').inert=isModal;
+});
+['recModal','editModal','menuModal'].forEach(id=>healthModalObserver.observe(document.getElementById(id),{attributes:true,attributeFilter:['class']}));
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&healthState.open&&!uiCurrentDialog()&&!document.getElementById('uiConfirm').open){closeHealth();}});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&healthState.open)renderHealth();});
+
+// Editing modifies the existing record in place, retaining id and any extra fields.
+let recordEditing=null;
+const recordBaseOpenRec=openRec;
+openRec=function(){
+ recordEditing=null;recordBaseOpenRec();
+ document.getElementById('recordFormHeading').textContent='Новая запись';
+ document.querySelector('#recModal .sheet-subtitle').textContent='Сохрани то, что важно для питомца';
+ document.getElementById('recordSaveButton').textContent='Сохранить запись';
+ document.getElementById('recordFormError').classList.remove('visible');
+};
+function openEditRecord(id){
+ const pet=getCurPet();const record=(pet?.history||[]).find(x=>x.id===id);if(!record)return;
+ openRec();recordEditing={id:record.id,petId:pet.id};
+ document.getElementById('recordFormHeading').textContent='Редактировать запись';
+ document.querySelector('#recModal .sheet-subtitle').textContent='Исправь тип события, дату или текст';
+ document.getElementById('recordSaveButton').textContent='Сохранить изменения';
+ document.getElementById('recTitle').value=record.title||'';
+ document.getElementById('recDate').value=record.date||'';
+ document.getElementById('recNote').value=record.note||'';
+ const buttons=Array.from(document.querySelectorAll('#recTypes .rec-type'));
+ const button=buttons.find(el=>(el.getAttribute('onclick')||'').includes("this,'"+record.type+"'"));
+ // A legacy type such as «Вес» remains intact even if it has no quick-choice button.
+ if(button)pickRecType(button,record.type,record.emoji||'📝');
+ else{recType=record.type;recEmoji=record.emoji||'📝';buttons.forEach(el=>{el.classList.remove('sel');el.setAttribute('aria-pressed','false');});}
+ haptic();
+}
+function recordFormError(message,field){const error=document.getElementById('recordFormError');error.textContent=message;error.classList.add('visible');if(field)document.getElementById(field).focus();}
+const recordBaseSaveRec=saveRec;
+saveRec=function(){
+ const title=document.getElementById('recTitle').value.trim(),date=document.getElementById('recDate').value;
+ if(!title){recordFormError('Добавь название записи.','recTitle');return;}
+ if(healthDay(date)===null){recordFormError('Укажи корректную дату записи.','recDate');return;}
+ if(!recordEditing){recordBaseSaveRec();return;}
+ const pets=DB.getPets(),pet=pets.find(x=>x.id===recordEditing.petId);
+ const record=(pet?.history||[]).find(x=>x.id===recordEditing.id);
+ if(!record){recordFormError('Эта запись уже удалена. Закрой форму и открой дневник снова.');return;}
+ Object.assign(record,{title,date,note:document.getElementById('recNote').value.trim(),type:recType,emoji:recEmoji});
+ DB.savePets(pets);curPetId=pet.id;recordEditing=null;closeRec();renderPetScreen();
+ if(healthState.open){renderHealth();setTimeout(()=>document.getElementById('healthSummary')?.focus({preventScroll:true}),0);}
+ alertMsg(healthState.open?'Изменения сохранены · карта '+healthScore(pet)+'/5':'Запись обновлена');haptic('ok');
+};
+function healthEditVisit(id){const pet=DB.getPets().find(x=>x.id===healthState.id);if(!pet)return;curPetId=pet.id;openEditRecord(id);}
+
+const CARE_DATA={"sources":{"play":{"org":"Cats Protection","title":"Игры с кошкой","url":"https://www.cats.org.uk/help-and-advice/cat-behaviour/cats-and-play"},"groom":{"org":"Cats Protection","title":"Уход за шерстью","url":"https://www.cats.org.uk/help-and-advice/cat-behaviour/grooming"},"enrich":{"org":"VCA Animal Hospitals","title":"Среда для домашней кошки","url":"https://vcahospitals.com/olympic/know-your-pet/cat-behavior-and-training---enrichment-for-indoor-cats"},"kitten":{"org":"Cats Protection","title":"Котёнок в новом доме","url":"https://www.cats.org.uk/help-and-advice/pregnancy-and-kitten-care/bringing-a-new-kitten-home"},"seniorcat":{"org":"Cats Protection","title":"Уход за пожилой кошкой","url":"https://www.cats.org.uk/help-and-advice/health/elderly-cats"},"intro":{"org":"Cats Protection","title":"Знакомство кошек","url":"https://www.cats.org.uk/help-and-advice/cat-behaviour/introducing-cats"},"train":{"org":"PDSA","title":"Обучение с поощрением","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/reward-based-training"},"cup":{"org":"PDSA","title":"Игра со стаканчиками","url":"https://www.pdsa.org.uk/what-we-do/blog/how-to-teach-your-dog-the-cup-game"},"puppy":{"org":"PDSA","title":"Активность щенка","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/exercising-your-puppy"},"seniordog":{"org":"PDSA","title":"Активность пожилой собаки","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/exercising-your-senior-dog"},"petgroom":{"org":"PDSA","title":"Как ухаживать за шерстью питомца","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/all-pets/grooming-pets"},"food":{"org":"PDSA","title":"Порции для кошек и собак","url":"https://www.pdsa.org.uk/what-we-do/blog/vet-qa-how-much-should-i-feed-my-dog-or-cat"},"spring":{"org":"PDSA","title":"Забота о питомцах весной","url":"https://www.pdsa.org.uk/what-we-do/blog/pet-care-advice-for-spring"},"summer":{"org":"Cats Protection","title":"Кошка в жаркую погоду","url":"https://www.cats.org.uk/help-and-advice/home-and-environment/cats-and-warm-weather"},"heat":{"org":"Cats Protection и Dogs Trust","title":"Кошки и собаки в жару","url":"https://www.cats.org.uk/mediacentre/pressreleases/pet-charities-unite-to-issue-hot-weather-warning-to-cat-and-dog-owners"},"autumn":{"org":"PDSA","title":"Забота о питомцах осенью","url":"https://www.pdsa.org.uk/what-we-do/blog/caring-for-your-pet-in-autumn"},"winter":{"org":"PDSA","title":"Забота о питомцах зимой","url":"https://www.pdsa.org.uk/what-we-do/blog/pet-care-advice-for-winter"},"moult":{"org":"PDSA","title":"Почему питомцы линяют","url":"https://www.pdsa.org.uk/what-we-do/blog/why-and-when-pets-moult"},"coldcat":{"org":"Cats Protection","title":"Безопасные прогулки кошки","url":"https://www.cats.org.uk/help-and-advice/home-and-environment/keeping-cats-safe-outside"},"aby":{"org":"VCA Animal Hospitals","title":"Абиссинская кошка","url":"https://vcahospitals.com/pet-doctor/know-your-pet/cat-breeds/abyssinian"},"bengal":{"org":"Purina","title":"Бенгальская кошка","url":"https://www.purina.co.uk/find-a-pet/cat-breeds/bengal"},"british":{"org":"Purina","title":"Британская короткошёрстная","url":"https://www.purina.co.uk/find-a-pet/cat-breeds/british-shorthair"},"maine":{"org":"VCA Animal Hospitals","title":"Мейн-кун","url":"https://vcahospitals.com/pet-doctor/know-your-pet/cat-breeds/maine-coon"},"siberian":{"org":"Purina","title":"Сибирская кошка","url":"https://www.purina.co.uk/find-a-pet/cat-breeds/siberian-forest"},"russian":{"org":"Purina","title":"Русская голубая","url":"https://www.purina.co.uk/find-a-pet/cat-breeds/russian-blue"},"scottish":{"org":"Purina","title":"Шотландская вислоухая","url":"https://www.purina.co.uk/find-a-pet/cat-breeds/scottish-fold"},"hairless":{"org":"Purina","title":"Уход за бесшёрстными кошками","url":"https://www.purina.co.uk/find-a-pet/articles/cat-types/fur-type/hairless-cat-breeds"},"flat":{"org":"PDSA","title":"Особенности плоскомордых пород","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/all-pets/flat-faced-breeds-what-you-need-to-know"},"lab":{"org":"PDSA","title":"Лабрадор-ретривер","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/large-dogs/labrador-retriever"},"shepherd":{"org":"PDSA","title":"Немецкая овчарка","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/large-dogs/german-shepherd"},"dachshund":{"org":"PDSA","title":"Такса","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/medium-dogs/dachshund"},"husky":{"org":"PDSA","title":"Сибирский хаски","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/large-dogs/siberian-husky"},"york":{"org":"PDSA","title":"Йоркширский терьер","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/small-dogs/yorkshire-terrier"},"chihuahua":{"org":"PDSA","title":"Чихуахуа","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/small-dogs/chihuahua"},"pom":{"org":"PDSA","title":"Померанский шпиц","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/small-dogs/pomeranian"},"french":{"org":"PDSA","title":"Французский бульдог","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/small-dogs/french-bulldog"},"flathome":{"org":"PDSA","title":"Уход за собакой с короткой мордой","url":"https://www.pdsa.org.uk/pet-help-and-advice/looking-after-your-pet/puppies-dogs/flat-faced-dogs-advice-for-owners"},"birds":{"org":"VCA Animal Hospitals","title":"Безопасность птицы дома","url":"https://vcahospitals.com/west-seattle/know-your-pet/household-hazards-and-dangers-to-birds"},"birdhome":{"org":"VCA Animal Hospitals","title":"Обустройство клетки небольшой птицы","url":"https://vcahospitals.com/know-your-pet/housing-small-birds"},"hamster":{"org":"RSPCA","title":"Особенности хомяков","url":"https://www.rspca.org.uk/adviceandwelfare/pets/rodents/hamsters"},"fish":{"org":"RSPCA","title":"Уход за аквариумными рыбами","url":"https://www.rspca.org.uk/adviceandwelfare/pets/fish"},"fishhome":{"org":"RSPCA","title":"Среда для аквариумных рыб","url":"https://www.rspca.org.uk/adviceandwelfare/pets/fish/environment"},"editorial":{"org":"Любимка","title":"Бытовые подсказки редакции","url":null},"corgi":{"org":"Woodgreen","title":"Вельш-корги пемброк","url":"https://ask.woodgreen.org.uk/pet-explorer/results/pembroke-welsh-corgi"}},"tips":[{"id":"tip-001","title":"Охота на игрушку","text":"Поиграй удочкой или мышкой вдали от рук и ног. Питомец сможет ловить «добычу», а пальцы останутся вне игры.","source":"play","types":["cat"],"cats":["type"]},{"id":"tip-002","title":"Коротко, но с интересом","text":"Предложи несколько коротких игр в течение дня. Наблюдай за интересом кошки и заканчивай, когда она устала.","source":"play","types":["cat"],"cats":["type"]},{"id":"tip-003","title":"Игрушки по очереди","text":"Часть игрушек убери и периодически меняй набор. Знакомая мышка после перерыва может снова заинтересовать питомца.","source":"play","types":["cat"],"cats":["type"]},{"id":"tip-004","title":"Удочку убираем после игры","text":"Не оставляй кошку одну с верёвками и игрушками, в которых можно запутаться. После совместной игры убери их.","source":"play","types":["cat"],"cats":["type"]},{"id":"tip-005","title":"Проверка любимой мышки","text":"Осмотри игрушки: нет ли отрывающихся деталей и разошедшихся швов. Повреждённые лучше заменить.","source":"play","types":["cat"],"cats":["type"]},{"id":"tip-006","title":"Укрытие на выбор","text":"Оставь доступное укрытие, где кошку никто не тревожит. Простая устойчивая коробка тоже может стать любимым местом.","source":"enrich","types":["cat"],"cats":["type"]},{"id":"tip-007","title":"Маршрут наверх","text":"Устойчивая когтеточка или безопасные полки дают возможность лазать и наблюдать за комнатой с высоты.","source":"enrich","types":["cat"],"cats":["type"]},{"id":"tip-008","title":"Ищи и находи","text":"Спрячь игрушку или часть обычной порции в доступных местах. Начни с лёгких находок, чтобы кошке было интересно.","source":"enrich","types":["cat"],"cats":["type"]},{"id":"tip-009","title":"Завтрак с задачкой","text":"Попробуй простую кормушку-головоломку с частью обычного корма. Покажи, как получить еду, и усложняй постепенно.","source":"enrich","types":["cat"],"cats":["type"]},{"id":"tip-010","title":"Знакомство с расчёской","text":"Сначала дай понюхать щётку, затем сделай пару мягких движений. Короткое спокойное знакомство лучше долгой процедуры через силу.","source":"groom","types":["cat"],"cats":["type","breed"],"excludeBreeds":["sphynx"]},{"id":"tip-011","title":"Щётка по шерсти","text":"Подбери инструмент под длину и густоту шерсти. Если не уверен, попроси ветеринара или грумера показать подходящий вариант.","source":"groom","types":["cat"],"cats":["type","breed"],"excludeBreeds":["sphynx"]},{"id":"tip-012","title":"Без борьбы с колтуном","text":"Плотный колтун не стоит выдёргивать или срезать у кожи самостоятельно. Попроси специалиста помочь с безопасным удалением.","source":"groom","types":["cat"],"cats":["type","breed"],"excludeBreeds":["sphynx"]},{"id":"tip-013","title":"Маленькие паузы","text":"Если кошка напряглась или пытается уйти во время вычёсывания, сделай перерыв. Уход должен оставаться спокойным.","source":"groom","types":["cat"],"cats":["type","breed"],"excludeBreeds":["sphynx"]},{"id":"tip-014","title":"Награда за удачу","text":"Поощряй нужное действие сразу после него: похвалой, игрой или маленьким лакомством. Так собаке проще понять, что получилось.","source":"train","types":["dog"],"cats":["type"]},{"id":"tip-015","title":"Одна команда — одно слово","text":"Договоритесь дома об одинаковых словах и жестах. Питомцу легче учиться, когда все объясняют задачу одинаково.","source":"train","types":["dog"],"cats":["type"]},{"id":"tip-016","title":"Учимся без наказаний","text":"Если что-то не получилось, упрости упражнение. Обучение с поощрением помогает собаке чувствовать себя увереннее.","source":"train","types":["dog"],"cats":["type"]},{"id":"tip-017","title":"Начни в тихом месте","text":"Новую команду сначала разучи там, где мало отвлекающих звуков и запахов. Более сложные условия добавляй постепенно.","source":"train","types":["dog"],"cats":["type"]},{"id":"tip-018","title":"Игра со стаканчиком","text":"Положи лакомство под лёгкий безопасный стаканчик на глазах у собаки. Помоги получить награду, если задача пока непонятна.","source":"cup","types":["dog"],"cats":["type"]},{"id":"tip-019","title":"От одного к трём","text":"Когда один стаканчик стал понятен, добавь второй, а затем третий. Усложняй поиск постепенно и играй под присмотром.","source":"cup","types":["dog"],"cats":["type"]},{"id":"tip-020","title":"Лакомства тоже считаются","text":"Учитывай угощения и награды за обучение в дневном рационе. Это еда в дополнение к основной миске.","source":"food","types":["cat","dog"],"cats":["life"]},{"id":"tip-021","title":"Порция без угадывания","text":"Начни с рекомендаций на упаковке и уточни порцию у ветеринара с учётом веса, возраста и активности питомца.","source":"food","types":["cat","dog"],"cats":["life"]},{"id":"tip-022","title":"Одинаковая мерка","text":"Отмеряй порции одним способом. Так легче заметить, что количество корма изменилось, и обсудить рацион на приёме.","source":"food","types":["cat","dog"],"cats":["life"]},{"id":"tip-023","title":"Груминг без спешки","text":"Раздели уход на короткие спокойные подходы. Поощряй собаку за сотрудничество и делай паузу при беспокойстве.","source":"petgroom","types":["dog"],"cats":["type","breed"]},{"id":"tip-024","title":"Инструмент под шубку","text":"Для разных типов шерсти нужны разные инструменты. Попроси грумера подобрать щётку и показать движения без натяжения кожи.","source":"petgroom","types":["dog"],"cats":["type","breed"]},{"id":"tip-025","title":"Проверка во время ухода","text":"Когда вычёсываешь собаку, обрати внимание на изменения кожи и шерсти. Необычные участки покажи ветеринару.","source":"petgroom","types":["dog"],"cats":["type","breed"]},{"id":"tip-026","title":"Сначала своя комната","text":"В новом доме начни с тихого пространства с водой, едой, лотком и укрытием. Осваивать весь дом можно постепенно.","source":"kitten","types":["cat"],"cats":["age"],"ages":["young"]},{"id":"tip-027","title":"Пальцы — не игрушка","text":"Для маленького охотника выбирай игрушку на расстоянии от рук. Привычки безопасной игры формируются с самого начала.","source":"kitten","types":["cat"],"cats":["age"],"ages":["young"]},{"id":"tip-028","title":"Дай выспаться","text":"Чередуй знакомство с домом и короткие игры со спокойным отдыхом. Не вытаскивай котёнка из укрытия ради общения.","source":"kitten","types":["cat"],"cats":["age"],"ages":["young"]},{"id":"tip-029","title":"Правила всей семьи","text":"Пусть все дома одинаково реагируют на поведение котёнка. Поощряй желаемые действия и мягко перенаправляй нежелательные.","source":"kitten","types":["cat"],"cats":["age"],"ages":["young"]},{"id":"tip-030","title":"Темп маленького исследователя","text":"Ориентируйся на самого щенка: если он устал или ложится, пора отдохнуть. Нагрузка зависит от возраста и размера.","source":"puppy","types":["dog"],"cats":["age"],"ages":["young"]},{"id":"tip-031","title":"Не марафон за один раз","text":"Раздели активность на короткие подходы с отдыхом. Длинная интенсивная прогулка не заменяет постепенное знакомство с миром.","source":"puppy","types":["dog"],"cats":["age"],"ages":["young"]},{"id":"tip-032","title":"Пока кости растут","text":"Избегай повторяющихся высоких прыжков и резких скольжений. Подходящие нагрузки для растущего щенка обсуди с ветеринаром.","source":"puppy","types":["dog"],"cats":["age"],"ages":["young"]},{"id":"tip-033","title":"Спокойное исследование","text":"Дай щенку время понюхать и рассмотреть новое место. Знакомство с миром тоже требует сил и внимания.","source":"puppy","types":["dog"],"cats":["age"],"ages":["young"]},{"id":"tip-034","title":"Взрослым тоже интересно","text":"Сохрани совместную игру в ежедневном распорядке. Даже взрослая домашняя кошка нуждается в возможности выслеживать и ловить игрушку.","source":"play","types":["cat"],"cats":["age"],"ages":["adult"]},{"id":"tip-035","title":"Новое упражнение для взрослого","text":"Возраст не мешает учиться. Разбей незнакомый навык на маленькие понятные шаги и отмечай успехи поощрением.","source":"train","types":["dog"],"cats":["age"],"ages":["adult"]},{"id":"tip-036","title":"Лоток с удобным входом","text":"Если кошке стало трудно перешагивать бортик, предложи лоток с низким входом в спокойном доступном месте.","source":"seniorcat","types":["cat"],"cats":["age"],"ages":["senior"]},{"id":"tip-037","title":"Всё нужное поближе","text":"Размести воду, еду и место отдыха так, чтобы до них было легко добраться. При необходимости добавь ресурсы на другом этаже.","source":"seniorcat","types":["cat"],"cats":["age"],"ages":["senior"]},{"id":"tip-038","title":"Мягкое место для сна","text":"Подготовь удобную мягкую лежанку в тёплом спокойном месте. Пусть кошка сама выбирает, где отдыхать.","source":"seniorcat","types":["cat"],"cats":["age"],"ages":["senior"]},{"id":"tip-039","title":"Игра в спокойном темпе","text":"Медленно двигай игрушкой рядом с кошкой. Даже наблюдение и осторожное касание лапой могут быть интересной активностью.","source":"seniorcat","types":["cat"],"cats":["age"],"ages":["senior"]},{"id":"tip-040","title":"Помощь с шерстью","text":"Пожилой кошке может быть сложнее вылизываться. Мягкое вычёсывание помогает ухаживать за шерстью и замечать изменения.","source":"seniorcat","types":["cat"],"cats":["age"],"ages":["senior"]},{"id":"tip-041","title":"Привычный распорядок","text":"Старайся сохранять знакомое расположение мебели и время кормления. Предсказуемость помогает старшей кошке чувствовать себя спокойнее.","source":"seniorcat","types":["cat"],"cats":["age"],"ages":["senior"]},{"id":"tip-042","title":"Знакомая короткая прогулка","text":"Выбери привычный маршрут с возможностью вернуться раньше. Иди в темпе собаки и разрешай остановки.","source":"seniordog","types":["dog"],"cats":["age"],"ages":["senior"]},{"id":"tip-043","title":"Коврик на скользком полу","text":"На пути к лежанке и мискам положи устойчивые нескользящие дорожки. Так собаке с менее уверенной походкой проще передвигаться.","source":"seniordog","types":["dog"],"cats":["age"],"ages":["senior"]},{"id":"tip-044","title":"Нос всё ещё любит задачи","text":"Предложи лёгкий поиск знакомой игрушки или корма. Для игры на нюх не нужны быстрые прыжки.","source":"seniordog","types":["dog"],"cats":["age"],"ages":["senior"]},{"id":"tip-045","title":"Отдых — часть прогулки","text":"Если собака остановилась, легла или перестала интересоваться игрой, дай ей передышку. Не пытайся заставить догонять прежний темп.","source":"seniordog","types":["dog"],"cats":["age"],"ages":["senior"]},{"id":"tip-046","title":"Внимание к погоде","text":"Старшей собаке может быть труднее переносить жару и холод. Подбирай время прогулки и длительность по её состоянию.","source":"seniordog","types":["dog"],"cats":["age"],"ages":["senior"]},{"id":"tip-047","title":"Снова маленький ученик","text":"Разучите простое спокойное упражнение дома. Короткое занятие с поощрением поддерживает интерес и ваше общение.","source":"seniordog","types":["dog"],"cats":["age"],"ages":["senior"]},{"id":"tip-048","title":"Высота для абиссинки","text":"Абиссинским кошкам часто нравится наблюдать сверху. Подготовь устойчивую высокую точку с удобным безопасным подъёмом.","source":"aby","types":["cat"],"cats":["breed"],"breeds":["aby"]},{"id":"tip-049","title":"Любопытные лапы","text":"Некоторые абиссинки умеют открывать шкафчики. Проверь дверцы там, где лежат хрупкие вещи и опасные предметы.","source":"aby","types":["cat"],"cats":["breed"],"breeds":["aby"]},{"id":"tip-050","title":"Маленький трюк","text":"Попробуй научить абиссинку простому действию с поощрением. Любознательной кошке может понравиться занятие вместе с тобой.","source":"aby","types":["cat"],"cats":["breed"],"breeds":["aby"]},{"id":"tip-051","title":"Вместе интереснее","text":"Абиссинке предложи совместную игру, а не только игрушки на полу. Наблюдай, какие занятия удерживают её внимание.","source":"aby","types":["cat"],"cats":["breed"],"breeds":["aby"]},{"id":"tip-052","title":"Место для разбега","text":"Освободи безопасный участок для игры с удочкой. Хрупкие предметы на пути активной кошки лучше переставить.","source":"aby","types":["cat"],"cats":["breed"],"breeds":["aby"]},{"id":"tip-053","title":"Задача для бенгала","text":"Бенгальским кошкам часто нужно много занятий. Чередуй поисковые игры, лазание и взаимодействие с человеком.","source":"bengal","types":["cat"],"cats":["breed"],"breeds":["bengal"]},{"id":"tip-054","title":"Наблюдательный пункт","text":"Предложи бенгалу несколько устойчивых уровней для наблюдения и движения. Проверь крепления и возможность спокойно спуститься.","source":"bengal","types":["cat"],"cats":["breed"],"breeds":["bengal"]},{"id":"tip-055","title":"Безопасный выход наружу","text":"Если бенгал бывает на улице, предпочтительнее защищённое пространство под контролем. Учитывай его любопытство и подвижность.","source":"bengal","types":["cat"],"cats":["breed"],"breeds":["bengal"]},{"id":"tip-056","title":"Охота по расписанию","text":"Выдели время на совместную игру, имитирующую охоту. Подбирай темп под конкретную кошку, а не под стереотип о породе.","source":"bengal","types":["cat"],"cats":["breed"],"breeds":["bengal"]},{"id":"tip-057","title":"Плотная короткая шубка","text":"У британской короткошёрстной густая шерсть. Регулярное мягкое вычёсывание помогает убрать выпавшие волоски.","source":"british","types":["cat"],"cats":["breed"],"breeds":["british"]},{"id":"tip-058","title":"Спокойное общение","text":"Предлагай британцу контакт и игру, но оставляй выбор за ним. Присутствие рядом тоже может быть любимым способом общения.","source":"british","types":["cat"],"cats":["breed"],"breeds":["british"]},{"id":"tip-059","title":"Осмотр во время расчёсывания","text":"Пока ухаживаешь за густой шерстью, проверь, нет ли непривычных участков кожи. Замеченные изменения обсуди с ветеринаром.","source":"british","types":["cat"],"cats":["breed"],"breeds":["british"]},{"id":"tip-060","title":"Место по размеру","text":"Для крупного мейн-куна выбирай устойчивые площадки и просторное место отдыха. Проверь, что питомец помещается свободно.","source":"maine","types":["cat"],"cats":["breed"],"breeds":["maine"]},{"id":"tip-061","title":"Вода без опрокидываний","text":"Если мейн-кун играет лапой в воде, поставь устойчивую миску на легко моющуюся поверхность.","source":"maine","types":["cat"],"cats":["breed"],"breeds":["maine"]},{"id":"tip-062","title":"Кошачий ученик","text":"Мейн-куну может понравиться простое обучение с поощрением. Начни с короткой понятной задачи и спокойного общения.","source":"maine","types":["cat"],"cats":["breed"],"breeds":["maine"]},{"id":"tip-063","title":"Расчёска для длинной шерсти","text":"Регулярно проверяй шерсть мейн-куна на спутывание. Подходящий гребень и технику поможет выбрать грумер.","source":"maine","types":["cat"],"cats":["breed"],"breeds":["maine"]},{"id":"tip-064","title":"Уход за сибирской шубкой","text":"Полудлинную шерсть сибирской кошки нужно регулярно прочёсывать. Уделяй внимание участкам, где она начинает спутываться.","source":"siberian","types":["cat"],"cats":["breed"],"breeds":["siberian"]},{"id":"tip-065","title":"Крепкие опоры","text":"Крупная сибирская кошка может быть очень ловкой. Проверь устойчивость полок и игровых комплексов под её весом.","source":"siberian","types":["cat"],"cats":["breed"],"breeds":["siberian"]},{"id":"tip-066","title":"Задачки для исследователя","text":"Попробуй простую головоломку или поиск игрушки. Любопытной сибирской кошке может понравиться самостоятельно находить решение.","source":"siberian","types":["cat"],"cats":["breed"],"breeds":["siberian"]},{"id":"tip-067","title":"Знакомство без спешки","text":"Дай кошке время осмотреть нового человека с расстояния. Общение лучше начинать тогда, когда она сама проявит интерес.","source":"siberian","types":["cat"],"cats":["breed"],"breeds":["siberian"]},{"id":"tip-068","title":"Гостям — немного терпения","text":"Русская голубая может сначала наблюдать за гостями издали. Не настаивай на знакомстве и оставь путь к укрытию.","source":"russian","types":["cat"],"cats":["breed"],"breeds":["russian"]},{"id":"tip-069","title":"Тихий уголок","text":"Для чувствительной к суете кошки выдели спокойное место вдали от прохода. Пусть туда не заходят ради поглаживания.","source":"russian","types":["cat"],"cats":["breed"],"breeds":["russian"]},{"id":"tip-070","title":"Плюшевая шерсть","text":"Мягко вычёсывай короткую густую шерсть русской голубой. Выбирай момент, когда питомец расслаблен.","source":"russian","types":["cat"],"cats":["breed"],"breeds":["russian"]},{"id":"tip-071","title":"Игра без шумной компании","text":"Предложи спокойное занятие один на один. Характер конкретной кошки важнее общего описания породы.","source":"russian","types":["cat"],"cats":["breed"],"breeds":["russian"]},{"id":"tip-072","title":"Обрати внимание на движения","text":"Если вислоухая кошка стала меньше двигаться или избегает привычных действий, обсуди это с ветеринаром.","source":"scottish","types":["cat"],"cats":["breed"],"breeds":["scottish"]},{"id":"tip-073","title":"Ушки без экспериментов","text":"При необычном запахе, выделениях или беспокойстве попроси ветеринара показать безопасный уход. Не начинай глубокую чистку самостоятельно.","source":"scottish","types":["cat"],"cats":["breed"],"breeds":["scottish"]},{"id":"tip-074","title":"Нежное вычёсывание","text":"Густой короткой шерсти полезен спокойный уход подходящей щёткой. Делай небольшие паузы, если кошка устала.","source":"scottish","types":["cat"],"cats":["breed"],"breeds":["scottish"]},{"id":"tip-075","title":"Личное пространство","text":"Попроси домашних уважать желание кошки побыть одной. Контакт должен оставаться приятным и добровольным.","source":"scottish","types":["cat"],"cats":["breed"],"breeds":["scottish"]},{"id":"tip-076","title":"Тепло для сфинкса","text":"Подготовь мягкое тёплое место без сквозняка. У бесшёрстной кошки меньше естественной защиты от холода.","source":"hairless","types":["cat"],"cats":["breed"],"breeds":["sphynx"]},{"id":"tip-077","title":"Уход за кожей индивидуален","text":"Для сфинкса согласуй средство и частоту ухода за кожей с ветеринаром. Обычная схема для пушистых кошек ему не подходит.","source":"hairless","types":["cat"],"cats":["breed"],"breeds":["sphynx"]},{"id":"tip-078","title":"Солнце через окно","text":"Для бесшёрстной кошки оставь затенённое место. Долгое пребывание под прямыми лучами не заменяет уютного тёплого уголка.","source":"hairless","types":["cat"],"cats":["breed"],"breeds":["sphynx"]},{"id":"tip-079","title":"Внимание каждый день","text":"Сфинксы часто тянутся к общению. Запланируй спокойную совместную игру и контакт, если кошке это нравится.","source":"hairless","types":["cat"],"cats":["breed"],"breeds":["sphynx"]},{"id":"tip-080","title":"Прохлада для короткой мордочки","text":"Персидской кошке особенно важно иметь прохладное место в жару. Активную игру лучше перенести на более прохладное время.","source":"flat","types":["cat"],"cats":["breed"],"breeds":["persian"]},{"id":"tip-081","title":"Заметить перемены","text":"Изменение дыхания, состояния глаз или активности перса стоит обсудить с ветеринаром. Не списывай всё на особенности породы.","source":"flat","types":["cat"],"cats":["breed"],"breeds":["persian"]},{"id":"tip-082","title":"Длинная шерсть по участкам","text":"Шерсть перса удобнее разбирать небольшими участками, не натягивая кожу. Если питомцу неприятно, прервись и уточни технику у грумера.","source":"groom","types":["cat"],"cats":["breed"],"breeds":["persian"]},{"id":"tip-083","title":"Свой набор вещей","text":"Для кошки без указанной породы так же важны личные миски, лоток и место отдыха. В доме с несколькими кошками добавь запасные ресурсы.","source":"intro","types":["cat"],"cats":["breed"],"breeds":["mixedcat"]},{"id":"tip-084","title":"Новый сосед постепенно","text":"Знакомь кошек поэтапно: сначала отдельное пространство и запахи, затем спокойный контролируемый контакт. Не своди их сразу нос к носу.","source":"intro","types":["cat"],"cats":["breed"],"breeds":["mixedcat"]},{"id":"tip-085","title":"Не только километры","text":"Лабрадору предложи разные занятия: прогулку, поиск, игру и обучение. Объём подбирай под возраст и самочувствие.","source":"lab","types":["dog"],"cats":["breed"],"breeds":["lab"]},{"id":"tip-086","title":"Принести любимую игрушку","text":"Если лабрадор любит приносить предметы, включи спокойную игру в распорядок. Остановись до заметной усталости.","source":"lab","types":["dog"],"cats":["breed"],"breeds":["lab"]},{"id":"tip-087","title":"Работа носом","text":"Дай лабрадору возможность искать и обнюхивать. Умственная нагрузка дополняет движение, а не сводится к быстрому бегу.","source":"lab","types":["dog"],"cats":["breed"],"breeds":["lab"]},{"id":"tip-088","title":"Короткая шерсть тоже требует ухода","text":"Регулярно проходись по шерсти лабрадора подходящей щёткой. Это удобный момент для спокойного осмотра кожи.","source":"lab","types":["dog"],"cats":["breed"],"breeds":["lab"]},{"id":"tip-089","title":"Дело для овчарки","text":"Чередуй прогулку с поиском игрушки и коротким обучением. Задачи для головы помогают разнообразить день активной собаки.","source":"shepherd","types":["dog"],"cats":["breed"],"breeds":["shepherd"]},{"id":"tip-090","title":"Правила без противоречий","text":"Договоритесь в семье об одинаковых командах и границах. Овчарке проще учиться, когда требования последовательны.","source":"shepherd","types":["dog"],"cats":["breed"],"breeds":["shepherd"]},{"id":"tip-091","title":"Движение в течение дня","text":"Распредели подходящую активность на несколько выходов. Не пытайся вместить всю нагрузку в один длинный рывок.","source":"shepherd","types":["dog"],"cats":["breed"],"breeds":["shepherd"]},{"id":"tip-092","title":"Густая шерсть под контролем","text":"Регулярно вычёсывай овчарку, особенно при выраженной линьке. Инструмент выбирай с учётом длины шерсти.","source":"shepherd","types":["dog"],"cats":["breed"],"breeds":["shepherd"]},{"id":"tip-093","title":"Игра ближе к земле","text":"Для таксы выбирай занятия без высоких прыжков. Её длинная спина требует внимательного отношения к нагрузкам.","source":"dachshund","types":["dog"],"cats":["breed"],"breeds":["dachshund"]},{"id":"tip-094","title":"Нюхательный маршрут","text":"Оставь на прогулке время на исследование запахов. Таксе могут особенно понравиться спокойные поисковые задачи.","source":"dachshund","types":["dog"],"cats":["breed"],"breeds":["dachshund"]},{"id":"tip-095","title":"Короткая понятная задача","text":"Обучай таксу терпеливо, с поощрением. Если интересный запах отвлёк питомца, вернись к более простой задаче.","source":"dachshund","types":["dog"],"cats":["breed"],"breeds":["dachshund"]},{"id":"tip-096","title":"Расчёска под разновидность","text":"Гладкая, длинная и жёсткая шерсть таксы требуют разного ухода. Выбирай инструмент именно для своей собаки.","source":"dachshund","types":["dog"],"cats":["breed"],"breeds":["dachshund"]},{"id":"tip-097","title":"Прохладное время для хаски","text":"Активные прогулки планируй с учётом жары. В тёплый день раннее утро или вечер обычно удобнее полудня.","source":"husky","types":["dog"],"cats":["breed"],"breeds":["husky"]},{"id":"tip-098","title":"Двойная шубка","text":"У хаски густой подшёрсток. Регулярное вычёсывание особенно пригодится во время заметной сезонной линьки.","source":"husky","types":["dog"],"cats":["breed"],"breeds":["husky"]},{"id":"tip-099","title":"Купание без спешки","text":"Густую шерсть хаски бывает сложно промыть и высушить дома. При необходимости купания можно обратиться к грумеру.","source":"husky","types":["dog"],"cats":["breed"],"breeds":["husky"]},{"id":"tip-100","title":"Занятия вместе","text":"Активному хаски нужны подходящие ежедневные занятия и общение. Выбирай разнообразие по возможностям именно своей собаки.","source":"husky","types":["dog"],"cats":["breed"],"breeds":["husky"]},{"id":"tip-101","title":"Йорк и ежедневный уход","text":"Длинную шерсть йорка регулярно разбирай и расчёсывай. Не жди, пока небольшое спутывание станет плотным колтуном.","source":"york","types":["dog"],"cats":["breed"],"breeds":["york"]},{"id":"tip-102","title":"Терпение в обучении","text":"Йорку подходят понятные короткие занятия с поощрением. Маленький размер не отменяет потребности учиться.","source":"york","types":["dog"],"cats":["breed"],"breeds":["york"]},{"id":"tip-103","title":"Компания по желанию","text":"Уделяй йорку внимание и совместное время. При знакомстве с людьми следи, чтобы контакт оставался спокойным.","source":"york","types":["dog"],"cats":["breed"],"breeds":["york"]},{"id":"tip-104","title":"Прогулки нужны и маленьким","text":"Чихуахуа тоже важно гулять и исследовать запахи. Подбирай спокойный маршрут под размер и выносливость питомца.","source":"chihuahua","types":["dog"],"cats":["breed"],"breeds":["chihuahua"]},{"id":"tip-105","title":"Игрушка по размеру пасти","text":"Выбирай игрушки, которыми чихуахуа удобно пользоваться. Маленькая собака должна легко захватывать игрушку, не рискуя её проглотить.","source":"chihuahua","types":["dog"],"cats":["breed"],"breeds":["chihuahua"]},{"id":"tip-106","title":"Две короткие встречи с миром","text":"Разделяй подходящую прогулочную нагрузку на небольшие выходы. Оставляй время на игру и отдых дома.","source":"chihuahua","types":["dog"],"cats":["breed"],"breeds":["chihuahua"]},{"id":"tip-107","title":"Учиться понемногу","text":"Предложи чихуахуа короткую тренировку в спокойном месте. Отмечай успех и заканчивай занятие до усталости.","source":"chihuahua","types":["dog"],"cats":["breed"],"breeds":["chihuahua"]},{"id":"tip-108","title":"Несколько спокойных прогулок","text":"Французскому бульдогу удобнее подходящая нагрузка с перерывами. Следи за дыханием и не торопи уставшего питомца.","source":"french","types":["dog"],"cats":["breed"],"breeds":["french"]},{"id":"tip-109","title":"Задачка вместо гонки","text":"Предложи бульдогу несложную головоломку или обучение. Интересное занятие не обязательно требует быстрого бега.","source":"french","types":["dog"],"cats":["breed"],"breeds":["french"]},{"id":"tip-110","title":"Жару переждём дома","text":"У французского бульдога может быть затруднено охлаждение. В жаркие часы выбирай прохладу и отдых.","source":"french","types":["dog"],"cats":["breed"],"breeds":["french"]},{"id":"tip-111","title":"Угощение входит в порцию","text":"Для бульдога учитывай лакомства в общей еде за день. Подходящий рацион и вес обсуди на ветеринарном приёме.","source":"french","types":["dog"],"cats":["breed"],"breeds":["french"]},{"id":"tip-112","title":"Спокойный осмотр складок","text":"Замечай покраснение и влажные участки в складках кожи. При изменениях попроси ветеринара подобрать уход.","source":"flathome","types":["dog"],"cats":["breed"],"breeds":["french"]},{"id":"tip-113","title":"Глаза без привычных оправданий","text":"Необычные выделения или дискомфорт глаз у короткомордой собаки — повод обсудить их с ветеринаром.","source":"flathome","types":["dog"],"cats":["breed"],"breeds":["french"]},{"id":"tip-114","title":"Весенний сад без сюрпризов","text":"Убери луковицы и садовые средства из доступа питомца. Прежде чем посадить новое растение, проверь его безопасность.","source":"spring","types":["cat","dog"],"cats":["season"],"seasons":["spring"]},{"id":"tip-115","title":"Сладости повыше","text":"Шоколадные угощения храни в закрытом недоступном месте. Питомец может заинтересоваться и сладостью, и упаковкой.","source":"spring","types":["cat","dog"],"cats":["season"],"seasons":["spring"]},{"id":"tip-116","title":"Проверка записей об обработках","text":"Весной посмотри, когда была последняя обработка. Подходящее средство и срок следующей процедуры уточни у ветеринара.","source":"spring","types":["cat","dog"],"cats":["season"],"seasons":["spring"]},{"id":"tip-117","title":"Вода в нескольких местах","text":"В жару поставь свежую воду в нескольких доступных точках. Кошке не придётся далеко идти от любимого места отдыха.","source":"summer","types":["cat"],"cats":["season"],"seasons":["summer"]},{"id":"tip-118","title":"Место в тени","text":"Оставь дома затенённые прохладные места. Пусть кошка сама выбирает, где ей комфортнее лежать.","source":"summer","types":["cat"],"cats":["season"],"seasons":["summer"]},{"id":"tip-119","title":"Миска отдельно от еды","text":"Если кошка пьёт неохотно, попробуй переставить воду подальше от еды и лотка. Следи, какой вариант ей удобнее.","source":"summer","types":["cat"],"cats":["season"],"seasons":["summer"]},{"id":"tip-120","title":"На прогулку в прохладу","text":"В жару сокращай активность и выбирай более прохладное время. Возьми свежую воду и делай остановки в тени.","source":"heat","types":["dog"],"cats":["season"],"seasons":["summer"]},{"id":"tip-121","title":"Проверь покрытие","text":"Разогретый асфальт может обжечь лапы. Выбирай более прохладный маршрут и переноси прогулку, если поверхность горячая.","source":"heat","types":["dog"],"cats":["season"],"seasons":["summer"]},{"id":"tip-122","title":"Питомец едет с тобой","text":"Не оставляй собаку одну в припаркованной машине в жару. Приоткрытое окно не делает ожидание безопасным.","source":"heat","types":["dog"],"cats":["season"],"seasons":["summer"]},{"id":"tip-123","title":"Полотенце у двери","text":"После мокрой прогулки вытри лапы и шерсть. Заранее положенное у входа полотенце сделает это проще.","source":"autumn","types":["cat","dog"],"cats":["season"],"seasons":["autumn"]},{"id":"tip-124","title":"Уют к прохладному вечеру","text":"Проверь, что место отдыха сухое и защищено от сквозняка. Чистый плед пригодится в прохладную погоду.","source":"autumn","types":["cat","dog"],"cats":["season"],"seasons":["autumn"]},{"id":"tip-125","title":"Новый распорядок постепенно","text":"Если осенью меняется твой график, помогай питомцу привыкать постепенно. Сохраняй время для привычных совместных занятий.","source":"autumn","types":["cat","dog"],"cats":["season"],"seasons":["autumn"]},{"id":"tip-126","title":"Вода с собой и осенью","text":"Возьми питьевую воду на прогулку. Не позволяй собаке пить из сомнительных стоячих луж и водоёмов.","source":"autumn","types":["dog"],"cats":["season"],"seasons":["autumn"]},{"id":"tip-127","title":"Находки в листьях","text":"Следи, чтобы собака не подбирала грибы, жёлуди и каштаны. Под листвой могут скрываться и острые предметы.","source":"autumn","types":["dog"],"cats":["season"],"seasons":["autumn"]},{"id":"tip-128","title":"Линька без паники","text":"Весной и осенью шерсти может становиться больше. Мягко вычёсывай питомца и наблюдай за его обычным состоянием.","source":"moult","types":["cat","dog"],"cats":["season"],"seasons":["spring","autumn"],"excludeBreeds":["sphynx"]},{"id":"tip-129","title":"Запомни обычную шубку","text":"Следи, как меняется шерсть именно у твоего питомца. Проплешины, зуд и необычные изменения стоит показать ветеринару.","source":"moult","types":["cat","dog"],"cats":["season"],"seasons":["spring","autumn"],"excludeBreeds":["sphynx"]},{"id":"tip-130","title":"После реагентов","text":"Если питомец прошёл по соли или дорожным реагентам, промой лапы и высуши их. Не оставляй остатки на шерсти.","source":"winter","types":["cat","dog"],"cats":["season"],"seasons":["winter"]},{"id":"tip-131","title":"Лежанка без сквозняка","text":"Переставь место сна подальше от холодного потока воздуха. Питомец должен иметь возможность спокойно согреться.","source":"winter","types":["cat","dog"],"cats":["season"],"seasons":["winter"]},{"id":"tip-132","title":"Лоток и для гуляющей кошки","text":"Зимой оставь доступный лоток дома, даже если кошка обычно ходит наружу. В плохую погоду ей будет проще остаться в тепле.","source":"winter","types":["cat"],"cats":["season"],"seasons":["winter"]},{"id":"tip-133","title":"Проверка уличной воды","text":"Если кошка пьёт воду на улице, проверяй, не замёрзла ли она. Доступ к свежей воде нужен и зимой.","source":"coldcat","types":["cat"],"cats":["season"],"seasons":["winter"]},{"id":"tip-134","title":"Игрушка без острых деталей","text":"Проверь игрушки птицы на острые края, ненадёжные застёжки и отрывающиеся детали. Осматривай их перед использованием.","source":"birds","types":["bird"],"cats":["type"]},{"id":"tip-135","title":"Закрытая бытовая химия","text":"Средства для уборки и другие химические продукты убери в закрытое недоступное место. Не оставляй их в зоне прогулки птицы.","source":"birds","types":["bird"],"cats":["type"]},{"id":"tip-136","title":"Миски по размеру птицы","text":"Выбирай устойчивые миски подходящего размера. Слишком глубокая посуда может быть неудобной или опасной для небольшой птицы.","source":"birdhome","types":["bird"],"cats":["type"]},{"id":"tip-137","title":"Чистые кормушки","text":"Расположи корм и воду так, чтобы в них не попадал помёт с жердочек. Регулярно мой доступную для птицы посуду.","source":"birdhome","types":["bird"],"cats":["type"]},{"id":"tip-138","title":"Сначала уточни вид","text":"У хомяка, крысы и морской свинки разные потребности. Уточни рекомендации именно для своего вида, прежде чем менять уход.","source":"hamster","types":["rodent"],"cats":["type"]},{"id":"tip-139","title":"Общение бережно","text":"Маленького грызуна легко травмировать неосторожным обращением. Помогай детям общаться с питомцем спокойно и под присмотром взрослого.","source":"hamster","types":["rodent"],"cats":["type"]},{"id":"tip-140","title":"Сосед подходит не всем","text":"Не подселяй другого грызуна только ради компании. Сначала узнай потребности вида: например, сирийские хомяки живут поодиночке.","source":"hamster","types":["rodent"],"cats":["type"]},{"id":"tip-141","title":"Соседи с похожими потребностями","text":"Прежде чем подселять рыбу, проверь совместимость видов и условия содержания. Красивая внешность не гарантирует мирного соседства.","source":"fish","types":["fish"],"cats":["type"]},{"id":"tip-142","title":"Наблюдение каждый день","text":"Отмечай изменения плавания, аппетита и внешнего вида рыб. Это помогает раньше заметить, что условия стоит проверить.","source":"fish","types":["fish"],"cats":["type"]},{"id":"tip-143","title":"Условия под конкретный вид","text":"Объём аквариума, температуру и оборудование выбирай под своих рыб. Универсальных условий для всех видов нет.","source":"fishhome","types":["fish"],"cats":["type"]},{"id":"tip-144","title":"Проверка воды по плану","text":"Следи за качеством воды подходящими тестами. График обслуживания и параметры уточни для своего аквариума у специалиста.","source":"fishhome","types":["fish"],"cats":["type"]},{"id":"tip-145","title":"Вопросы к следующему приёму","text":"Заведи в дневнике заметку «Спросить ветеринара». Добавляй вопросы по мере появления, чтобы не вспоминать их в кабинете.","source":"editorial","types":["all"],"cats":["life"]},{"id":"tip-146","title":"Понятное название записи","text":"Вместо «Были у врача» укажи, что это был за приём. Так нужное событие будет легче найти позже.","source":"editorial","types":["all"],"cats":["life"]},{"id":"tip-147","title":"Одна заметка — одно наблюдение","text":"Записывай конкретно: что заметил и когда. Короткая понятная запись удобнее длинного текста обо всём сразу.","source":"editorial","types":["all"],"cats":["life"]},{"id":"tip-148","title":"Дата имеет значение","text":"Перед сохранением записи проверь дату события. Это особенно удобно, если заполняешь дневник спустя несколько дней.","source":"editorial","types":["all"],"cats":["life"]},{"id":"tip-149","title":"Контакты под рукой","text":"Сохрани номер своей клиники и круглосуточной ветеринарной помощи в контактах телефона. Так их проще найти при необходимости.","source":"editorial","types":["all"],"cats":["life"]},{"id":"tip-150","title":"Для того, кто присмотрит","text":"Подготовь короткую памятку с привычным распорядком питомца и контактами. Обновляй её, когда что-то меняется.","source":"editorial","types":["all"],"cats":["life"]},{"id":"tip-151","title":"Вещи в одном месте","text":"Выдели место для принадлежностей ухода. Подготовить нужное перед процедурой будет легче, если всё лежит рядом.","source":"editorial","types":["all"],"cats":["life"]},{"id":"tip-152","title":"Короткая отметка после приёма","text":"Сразу после визита сохрани в дневнике дату и главные выводы. Подробности можно дописать позже через «Редактировать».","source":"editorial","types":["all"],"cats":["life"]},{"id":"tip-153","title":"Густая шубка без колтунов","text":"Регулярно расчёсывай померанского шпица, а в период линьки уделяй шерсти больше внимания. Подходящий инструмент поможет выбрать грумер.","source":"pom","types":["dog"],"cats":["breed"],"breeds":["pom"]},{"id":"tip-154","title":"Игра для любопытного шпица","text":"Предложи питомцу совместную игру. Померанцы часто любопытны и игривы — выбирай занятие, которое нравится именно твоему.","source":"pom","types":["dog"],"cats":["breed"],"breeds":["pom"]},{"id":"tip-155","title":"Учимся с терпением","text":"Обучай шпица через поощрение и короткие понятные задания. Дай время на освоение и отмечай удачные попытки.","source":"pom","types":["dog"],"cats":["breed"],"breeds":["pom"]},{"id":"tip-156","title":"Маленький рост, много интереса","text":"Корги пемброк — активная пастушья порода. Оставляй в распорядке место для прогулок и занятий с учётом возраста и состояния собаки.","source":"corgi","types":["dog"],"cats":["breed"],"breeds":["corgi"]},{"id":"tip-157","title":"Внимание подшёрстку","text":"У корги пемброка густая двойная шерсть. Регулярное расчёсывание помогает убрать выпавшие волоски и поддерживать её в порядке.","source":"corgi","types":["dog"],"cats":["breed"],"breeds":["corgi"]},{"id":"tip-158","title":"Занятие для сообразительного друга","text":"Попробуй короткое обучение с поощрением. Небольшое понятное задание даёт корги пемброку возможность поработать головой вместе с тобой.","source":"corgi","types":["dog"],"cats":["breed"],"breeds":["corgi"]}]};
+// Stage 3: deterministic daily advice and a local, attributed care library.
+UI_PATHS.spark='M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3z';
+UI_PATHS.refresh='M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1';
+UI_PATHS.leaf='M20 3C9 2 3 7 5 14c2 7 14 8 15-11zM4 21L15 10';
+const CARE_CATS={all:'Все',breed:'По породе',type:'По виду',age:'По возрасту',season:'По сезону',life:'Лайфхаки'};
+const CARE_SEASONS={spring:'Весна',summer:'Лето',autumn:'Осень',winter:'Зима'};
+const careState={open:false,id:null,from:'pet',filter:'all',season:'auto',trigger:null};
+const careBrowse=new Map();
+function careHash(s){let n=2166136261;for(const c of String(s)){n=Math.imul(n^c.charCodeAt(0),16777619);}return n>>>0;}
+function careNormalize(s){return String(s||'').normalize('NFKC').toLowerCase().replace(/ё/g,'е').replace(/[^a-zа-я0-9]/g,'');}
+function careType(p){return ({кошка:'cat',кот:'cat',cat:'cat',собака:'dog',dog:'dog',птица:'bird',bird:'bird',грызун:'rodent',rodent:'rodent',рыбка:'fish',рыба:'fish',fish:'fish'})[careNormalize(p.type)]||'other';}
+function careBreed(p){
+ const b=careNormalize(p.breed),t=careType(p);
+ const maps=t==='cat'?[
+  ['aby',/абисс|абик|abyss/],['bengal',/бенгал|bengal/],['british',/британ|british/],['maine',/мейнкун|mainecoon/],['siberian',/сибирск|siberian/],['russian',/русскаяголубая|russianblue/],['scottish',/шотландскаявислоух|scottishfold/],['sphynx',/сфинкс|sphynx/],['persian',/персид|persian/],['mixedcat',/дворян|беспород|метис|mixed/]
+ ]:t==='dog'?[
+  ['lab',/лабрадор|labrador/],['shepherd',/немецкаяовчар|germanshepherd/],['dachshund',/такса|dachshund/],['husky',/хаски|husky/],['york',/йорк|yorkshire/],['chihuahua',/чихуахуа|chihuahua/],['pom',/померан|pomeranian/],['corgi',/пемброк|pembroke/],['french',/французскийбульдог|frenchbulldog/],['mixeddog',/дворян|беспород|метис|mixed/]
+ ]:[];
+ return maps.find(x=>x[1].test(b))?.[0]||null;
+}
+function careAge(p,date=healthToday()){
+ if(!['cat','dog'].includes(careType(p))||healthDay(p.birth)===null||healthDay(p.birth)>healthDay(date))return null;
+ const [y,m,d]=date.split('-').map(Number),[by,bm,bd]=p.birth.split('-').map(Number);
+ const years=y-by-(m<bm||m===bm&&d<bd?1:0);
+ return years<1?'young':years>=(careType(p)==='cat'?11:7)?'senior':'adult';
+}
+function careSeason(date=healthToday()){const m=Number(date.slice(5,7));return m>=3&&m<=5?'spring':m>=6&&m<=8?'summer':m>=9&&m<=11?'autumn':'winter';}
+function careCategories(t,p){return t.cats.filter(c=>c!=='breed'||!!careBreed(p));}
+function carePool(p,date=healthToday(),season=careSeason(date)){
+ const type=careType(p),breed=careBreed(p),age=careAge(p,date);
+ return CARE_DATA.tips.filter(t=>(t.types.includes('all')||t.types.includes(type))&&(!t.breeds||t.breeds.includes(breed))&&(!t.excludeBreeds||!t.excludeBreeds.includes(breed))&&(!t.ages||t.ages.includes(age))&&(!t.seasons||t.seasons.includes(season)));
+}
+function careDaily(p,date=healthToday()){
+ const day=healthDay(date),pool=carePool(p,date);
+ // Adjacent calendar days use disjoint ID buckets, including season/age boundaries.
+ const half=pool.filter(t=>careHash(t.id)%2===((day%2)+2)%2);
+ const categories=['breed','type','age','life','season'];
+ const preferred=categories[(day+careHash(p.id))%categories.length];
+ const focused=half.filter(t=>careCategories(t,p).includes(preferred));
+ const choices=focused.length?focused:half;
+ return choices[careHash(p.id+':'+date)%choices.length];
+}
+function careSession(p,date=healthToday()){
+ const daily=careDaily(p,date),pool=carePool(p,date),key=String(p.id);
+ let state=careBrowse.get(key);
+ if(!state||state.date!==date||state.daily!==daily.id){state={date,daily:daily.id,current:daily.id,seen:new Set([daily.id]),step:0};careBrowse.set(key,state);}
+ if(!pool.some(t=>t.id===state.current))state.current=daily.id;
+ return state;
+}
+function careCurrent(p){const s=careSession(p);return carePool(p).find(t=>t.id===s.current)||careDaily(p);}
+function careStep(p,date=healthToday()){
+ const s=careSession(p,date),pool=carePool(p,date);let choices=pool.filter(t=>!s.seen.has(t.id));
+ if(!choices.length){s.seen=new Set([s.current]);choices=pool.filter(t=>t.id!==s.current);}
+ const next=choices[careHash(p.id+':'+date+':'+s.step++)%choices.length];
+ if(next){s.current=next.id;s.seen.add(next.id);}return next;
+}
+function careSource(t){
+ const s=CARE_DATA.sources[t.source];
+ return `<details class="care-source"><summary>${s.url?'Источник: ':'Подсказка: '}${esc(s.org)}</summary><p>${esc(s.title)}${s.url?` · <a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">Читать материал ↗</a><small>Материал на английском, откроется отдельно.</small>`:''}</p></details>`;
+}
+function careBadge(t,p){const c=careCategories(t,p).find(x=>x==='breed')||careCategories(t,p)[0];return `<span class="care-badge">${esc(CARE_CATS[c]||'Уход')}</span>`;}
+function careDailyMarkup(p,mode='pet'){
+ const t=careCurrent(p),daily=careSession(p).daily===t.id;
+ return `<div class="care-card-top"><span class="care-spark">${uiIcon('spark')}</span><span class="care-kicker">${daily?'Совет дня':'Ещё для питомца'}<small>${esc(new Date(healthToday()+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'}))}</small></span>${careBadge(t,p)}</div><div class="care-current" aria-live="polite" aria-atomic="true"><h3>${esc(t.title)}</h3><p>${esc(t.text)}</p></div>${careSource(t)}<div class="care-card-actions"><button type="button" class="care-next" onclick="careNext(${Number(p.id)},'${mode}')">${uiIcon('refresh')}Ещё совет</button>${mode==='pet'?`<button type="button" class="care-all" onclick="openCare(${Number(p.id)},'pet')">Все советы ${uiIcon('next')}</button>`:`<button type="button" class="care-all" onclick="careReset(${Number(p.id)})" ${daily?'disabled':''}>К совету дня</button>`}</div>`;
+}
+function carePetEntry(p){return `<section id="petCareCard" class="care-daily-card" aria-label="Совет по уходу">${careDailyMarkup(p)}</section>`;}
+function careHomeEntry(p){const tip=careDaily(p);return `<button class="care-home-entry" type="button" onclick="openCare(${Number(p.id)},'home')">${healthThumb(p)}<span><small>Совет дня · ${esc(p.name)}</small><strong>${esc(tip.title)}</strong></span>${uiIcon('next')}</button>`;}
+function careHealthEntry(p){const season=careSeason(),tips=carePool(p).filter(t=>t.cats.includes('season'));if(!tips.length)return '';const t=tips[careHash(p.id)%tips.length];return `<section class="care-season-teaser"><div class="care-season-label">${uiIcon('leaf')}${CARE_SEASONS[season]} · забота по сезону</div><h2>${esc(t.title)}</h2><p>${esc(t.text)}</p><button type="button" class="care-all" onclick="openCare(${Number(p.id)},'health','season')">Все сезонные советы ${uiIcon('next')}</button></section>`;}
+function careNext(id,mode){const p=DB.getPets().find(x=>x.id===id);if(!p)return;careStep(p);if(mode==='screen'){document.getElementById('careDaily').innerHTML=careDailyMarkup(p,'screen');document.querySelector('#careDaily .care-next')?.focus({preventScroll:true});}else{document.getElementById('petCareCard').innerHTML=careDailyMarkup(p);document.querySelector('#petCareCard .care-next')?.focus({preventScroll:true});}haptic();}
+function careReset(id){const p=DB.getPets().find(x=>x.id===id);if(!p)return;careSession(p).current=careDaily(p).id;document.getElementById('careDaily').innerHTML=careDailyMarkup(p,'screen');document.querySelector('#careDaily .care-next')?.focus({preventScroll:true});haptic();}
+function openCare(id,from='pet',filter='all'){
+ if(!DB.getPets().some(p=>p.id===id))return;
+ Object.assign(careState,{open:true,id,from,filter,season:'auto',trigger:document.activeElement});
+ document.getElementById('careScreen').hidden=false;
+ ['appBody','petScreen','healthScreen'].forEach(id=>document.getElementById(id).inert=true);
+ renderCare();document.getElementById('careBody').scrollTop=0;document.getElementById('careTitle').focus({preventScroll:true});haptic();
+}
+function closeCare(){
+ const {from,trigger}=careState;careState.open=false;document.getElementById('careScreen').hidden=true;
+ document.getElementById('healthScreen').inert=false;healthLockBackground(healthState.open);
+ if(from==='health'&&healthState.open)renderHealth();else if(from==='pet')renderPetScreen();else renderHome();
+ if(trigger?.isConnected)trigger.focus({preventScroll:true});else document.querySelector(from==='pet'?'#petCareCard .care-all':from==='health'?'.care-season-teaser .care-all':'.care-home-entry')?.focus({preventScroll:true});haptic();
+}
+function careSelect(filter){if(!(filter in CARE_CATS))return;careState.filter=filter;renderCareCollection();document.getElementById('care-filter-'+filter)?.focus({preventScroll:true});haptic();}
+function careSelectSeason(season){if(season!=='auto'&&!(season in CARE_SEASONS))return;careState.season=season;renderCareCollection();document.getElementById('care-season-'+season)?.focus({preventScroll:true});haptic();}
+function careChosenSeason(){return careState.season==='auto'?careSeason():careState.season;}
+function careProfileNote(p){
+ const age=careAge(p),breed=careBreed(p),type=careType(p);
+ const ageLabel=age==='young'?'до года':age==='senior'?(type==='cat'?'11 лет и старше':'7 лет и старше'):'взрослый питомец';
+ return `${breed?'Учтена указанная порода.':'Для указанной породы отдельной подборки пока нет — показываем подходящие общие советы.'} ${age?'Возрастная подборка: '+ageLabel+'.':'Возрастная подборка появится, когда для кошки или собаки будет указана дата рождения.'} Сезон определяется по календарю Северного полушария. Во вкладке «По сезону» его можно сменить. Возрастные границы условные: потребности зависят от самого питомца. Это подсказки для повседневного ухода; план лечения определяет ветеринар.`;
+}
+function renderCare(){
+ if(!careState.open)return;const p=DB.getPets().find(x=>x.id===careState.id);if(!p){closeCare();return;}
+ document.getElementById('careBackText').textContent=careState.from==='health'?'Здоровье':careState.from==='home'?'Главная':'К питомцу';
+ document.getElementById('careBody').innerHTML=`<div class="care-intro"><div class="care-for">${healthThumb(p)}<span>Подобрано для<strong>${esc(p.name)}</strong></span><span class="care-intro-heart">${uiHeart()}</span></div><h2>Маленькая забота.<br>Каждый день.</h2><p>Идеи для спокойной и счастливой жизни рядом.</p></div><section class="care-daily-card care-feature" id="careDaily" aria-label="Совет по уходу">${careDailyMarkup(p,'screen')}</section><details class="care-how"><summary>Как подобраны советы</summary><p>${esc(careProfileNote(p))}</p></details><section class="care-library" aria-labelledby="careLibraryTitle"><div class="care-library-head"><h2 id="careLibraryTitle">Библиотека заботы</h2><span>Для твоего питомца</span></div><div id="careCollection"></div></section><p class="pet-footnote">${uiHeart()}Рядом с теми, кого любишь</p>`;
+ renderCareCollection();
+}
+function renderCareCollection(){
+ const p=DB.getPets().find(x=>x.id===careState.id);if(!p)return;
+ // A manual season only changes the seasonal collection; today's advice stays tied to today.
+ const pool=carePool(p,healthToday(),careState.filter==='season'?careChosenSeason():careSeason());
+ const counts=Object.keys(CARE_CATS).map(c=>[c,c==='all'?pool.length:pool.filter(t=>careCategories(t,p).includes(c)).length]);
+ const tips=pool.filter(t=>careState.filter==='all'||careCategories(t,p).includes(careState.filter));
+ const filters=counts.map(([key,count])=>`<button id="care-filter-${key}" type="button" aria-pressed="${careState.filter===key}" onclick="careSelect('${key}')">${CARE_CATS[key]}<span>${count}</span></button>`).join('');
+ const seasons=careState.filter==='season'?`<div class="care-season-controls"><p>Выбери сезон для своей погоды</p><div role="group" aria-label="Сезон">${[['auto','Сейчас · '+CARE_SEASONS[careSeason()]],...Object.entries(CARE_SEASONS)].map(([k,v])=>`<button id="care-season-${k}" type="button" aria-pressed="${careState.season===k}" onclick="careSelectSeason('${k}')">${v}</button>`).join('')}</div></div>`:'';
+ const empty=careState.filter==='breed'?'Для этой породы отдельной подборки пока нет. Во вкладках «По виду» и «Лайфхаки» есть общие идеи.':careState.filter==='age'?'Для кошек и собак возрастные советы подбираются по дате рождения в карточке. Для других животных пока доступны общие подборки.':'Для этого питомца в разделе пока нет советов. Посмотри «Лайфхаки» — они подходят всем.';
+ const list=tips.map(t=>`<article class="care-library-card">${careBadge(t,p)}<h3>${esc(t.title)}</h3><p>${esc(t.text)}</p>${careSource(t)}</article>`).join('');
+ document.getElementById('careCollection').innerHTML=`<div class="care-filters" role="group" aria-label="Категория советов">${filters}</div>${seasons}<p class="care-result-count" role="status">${tips.length?'В подборке: '+tips.length:'Подборка пока пуста'}</p><div class="care-results">${tips.length?list:`<div class="care-empty">${uiIcon('spark')}<h3>Добавим заботы постепенно</h3><p>${empty}</p><button type="button" class="care-next" onclick="careSelect('life')">Открыть лайфхаки</button></div>`}</div>`;
+}
+const careBaseRenderPet=renderPetScreen;
+renderPetScreen=function(){careBaseRenderPet();const p=getCurPet();if(p)document.querySelector('#psBody .pet-primary')?.insertAdjacentHTML('afterend',carePetEntry(p));};
+const careBaseRenderHealth=renderHealth;
+renderHealth=function(){careBaseRenderHealth();const p=DB.getPets().find(x=>x.id===healthState.id);if(healthState.open&&p)document.getElementById('healthBody').insertAdjacentHTML('beforeend',careHealthEntry(p));};
+// Capture Escape before the underlying health screen's handler sees it.
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&careState.open){event.preventDefault();event.stopImmediatePropagation();closeCare();}},true);
+let careLastDate=healthToday();
+function careRefreshDate(){if(document.hidden||healthToday()===careLastDate)return;careLastDate=healthToday();if(careState.open)renderCare();else if(healthState.open)renderHealth();else if(document.getElementById('petScreen').classList.contains('active'))renderPetScreen();else renderHome();}
+document.addEventListener('visibilitychange',careRefreshDate);setInterval(careRefreshDate,60000);
+
+// Demo-only attachment assets. Blob URLs never leave this tab or enter persistent storage.
+UI_PATHS.camera='M4 7h4l2-3h4l2 3h4v14H4V7zM16 13a4 4 0 1 0-8 0 4 4 0 0 0 8 0z';
+UI_PATHS.close='M6 6l12 12M18 6L6 18';UI_PATHS.zoom='M10 6v8M6 10h8M16 16l5 5M18 10a8 8 0 1 0-16 0 8 8 0 0 0 16 0z';
+const PHOTO_LIMITS={count:8,fileBytes:12*1024*1024,totalBytes:48*1024*1024,pixels:60000000};
+const photoAssets=new Map();let photoSequence=0;
+const photoDraft={token:0,petId:null,recordId:null,items:[],busy:false};
+const photoGallery={open:false,origin:'record',petId:null,recordId:null,index:0,zoom:1,trigger:null,touch:null};
+function photoItem(asset){return {id:asset.id,name:asset.name,size:asset.size,mime:asset.mime};}
+function photoAvailable(items){return (Array.isArray(items)?items:[]).map(item=>photoAssets.get(item?.id)).filter(Boolean);}
+function photoGarbageCollect(){
+ const keep=new Set();DB.getPets().forEach(p=>(p.history||[]).forEach(r=>(Array.isArray(r.attachments)?r.attachments:[]).forEach(a=>{if(a?.id)keep.add(a.id);})));photoDraft.items.forEach(a=>{if(a?.id)keep.add(a.id);});
+ for(const [id,asset] of photoAssets)if(!keep.has(id)){URL.revokeObjectURL(asset.url);photoAssets.delete(id);}
+}
+function photoResetDraft(petId=null,recordId=null,items=[]){delete photoDraft.newRecordId;photoDraft.token++;Object.assign(photoDraft,{petId,recordId,items:JSON.parse(JSON.stringify(Array.isArray(items)?items:[])),busy:false});const input=document.getElementById('recordPhotos');if(input)input.value='';photoStatus('');photoRenderDraft();photoGarbageCollect();}
+function photoStatus(message,isError=false){const e=document.getElementById('photoStatus');e.textContent=message;e.classList.toggle('error',isError);}
+function photoRenderDraft(){
+ const items=photoAvailable(photoDraft.items),total=photoDraft.items.length;
+ document.getElementById('photoDraftList').innerHTML=items.map((a,i)=>`<div class="photo-draft-item"><button type="button" class="photo-draft-preview" onclick="photoOpenDraft(${i})" aria-label="Открыть фото ${i+1}: ${esc(a.name)}"><img src="${esc(a.url)}" alt="${esc(a.name)}"><span>${i+1}</span></button><button type="button" class="photo-draft-remove" onclick="photoRemoveDraft('${a.id}')" aria-label="Убрать фото ${i+1}: ${esc(a.name)}">${uiIcon('close')}</button></div>`).join('');
+ document.getElementById('photoCount').textContent=total+' / '+PHOTO_LIMITS.count;
+ const pick=document.getElementById('photoPick');pick.disabled=photoDraft.busy||total>=PHOTO_LIMITS.count;
+ pick.innerHTML=uiIcon('camera')+(photoDraft.busy?'Подготавливаем фото…':total?'Добавить ещё фото':'Прикрепить фото');
+ document.getElementById('recordSaveButton').disabled=photoDraft.busy;
+ document.getElementById('photoDraftList').setAttribute('aria-busy',String(photoDraft.busy));
+}
+function photoPickFiles(){if(photoDraft.busy||photoDraft.items.length>=PHOTO_LIMITS.count)return;document.getElementById('recordPhotos').click();}
+function photoValidateFile(file,total){
+ if(!file||!file.size)return 'Файл пустой. Выбери другой снимок.';
+ const mime=String(file.type||'').toLowerCase(),known=/^image\/(jpeg|png|webp|heic|heif)$/.test(mime),extension=/\.(jpe?g|png|webp|heic|heif)$/i.test(file.name||'');
+ if(!known&&!(mime===''&&extension))return 'Выбери фото JPG, PNG, WebP или HEIC. PDF пока не поддерживается.';
+ if(file.size>PHOTO_LIMITS.fileBytes)return 'Фото больше 12 МБ. Выбери файл поменьше.';
+ if(total+file.size>PHOTO_LIMITS.totalBytes)return 'Для одной записи можно выбрать фото общим размером до 48 МБ.';
+ return '';
+}
+function photoDecode(url){return new Promise((resolve,reject)=>{const img=new Image();let finished=false;const finish=(error)=>{if(finished)return;finished=true;clearTimeout(timer);img.onload=null;img.onerror=null;error?reject(error):resolve();};const timer=setTimeout(()=>finish(new Error('Фото не открылось. Попробуй другой файл.')),15000);img.onload=()=>finish(!img.naturalWidth||!img.naturalHeight?new Error('Не удалось прочитать фото.'):img.naturalWidth*img.naturalHeight>PHOTO_LIMITS.pixels?new Error('У фото слишком большое разрешение. Выбери уменьшенную копию.'):null);img.onerror=()=>finish(new Error('Этот браузер не смог открыть фото. Для HEIC попробуй копию в JPG или снимок экрана.'));img.src=url;});}
+async function photoChoose(input){
+ const files=Array.from(input.files||[]);input.value='';if(!files.length||photoDraft.busy||photoDraft.petId===null)return;
+ const token=photoDraft.token;photoDraft.busy=true;photoStatus('Подготавливаем фото…');photoRenderDraft();let added=0;const errors=[];
+ try{for(const file of files){
+  if(token!==photoDraft.token)break;
+  if(photoDraft.items.length>=PHOTO_LIMITS.count){errors.push('В одной записи помещается до 8 фото.');break;}
+  const error=photoValidateFile(file,photoDraft.items.reduce((n,a)=>n+(Number(a?.size)||0),0));if(error){errors.push(file.name+': '+error);continue;}
+  let url=null;
+  try{url=URL.createObjectURL(file);await photoDecode(url);if(token!==photoDraft.token){URL.revokeObjectURL(url);break;}
+   const a={file,id:'photo-'+crypto.randomUUID(),url,name:String(file.name||'Фото'),size:file.size,mime:file.type};photoAssets.set(a.id,a);photoDraft.items.push(photoItem(a));added++;
+  }catch(e){if(url)URL.revokeObjectURL(url);if(token===photoDraft.token)errors.push(file.name+': '+e.message);}
+ }}finally{if(token===photoDraft.token){photoDraft.busy=false;photoRenderDraft();photoStatus((added?'Добавлено фото: '+added+'. ':'')+errors.join(' '),errors.length>0);}}
+}
+function photoRemoveDraft(id){photoDraft.items=photoDraft.items.filter(a=>a?.id!==id);photoRenderDraft();photoGarbageCollect();photoStatus('Фото убрано из формы. Изменения сохранятся вместе с записью.');haptic();}
+function photoRecordMarkup(p,h,context='pet'){
+ const photos=photoAvailable(h.attachments);
+ if(!photos.length)return `<button type="button" class="entry-photo-add" onclick="photoEditRecord(${Number(p.id)},${Number(h.id)})">${uiIcon('camera')}Добавить фото</button>`;
+ return `<div class="entry-photos" aria-label="Фото к записи">${photos.slice(0,3).map((a,i)=>`<button type="button" class="entry-photo" onclick="photoOpenRecord(${Number(p.id)},${Number(h.id)},${i})" aria-label="Открыть фото ${i+1} из ${photos.length}"><img src="${esc(a.url)}" alt="${esc(a.name)}" loading="lazy">${i===2&&photos.length>3?`<span class="photo-more">+${photos.length-3}</span>`:''}</button>`).join('')}</div><p class="entry-photo-hint">${photos.length} фото · нажми, чтобы увеличить</p>`;
+}
+function photoEditRecord(petId,recordId){if(!DB.getPets().some(p=>p.id===petId))return;curPetId=petId;openEditRecord(recordId);setTimeout(()=>document.getElementById('photoSection').scrollIntoView({block:'center',behavior:'smooth'}),0);}
+const photoBaseOpenRec=openRec;
+openRec=function(){photoBaseOpenRec();photoResetDraft(curPetId);};
+const photoBaseOpenEditRecord=openEditRecord;
+openEditRecord=function(id){photoBaseOpenEditRecord(id);if(!recordEditing)return;const p=DB.getPets().find(x=>x.id===recordEditing.petId),r=p?.history?.find(x=>x.id===id);if(r)photoResetDraft(p.id,r.id,r.attachments);};
+const photoBaseCloseRec=closeRec;
+closeRec=function(){if(photoGallery.open&&photoGallery.origin==='draft')photoCloseGallery();photoBaseCloseRec();photoResetDraft();};
+function photoNextRecordId(p){let id=Date.now();while((p.history||[]).some(h=>h.id===id))id++;return id;}
+// One save applies both text and attachments. Cancel never changes a stored record.
+saveRec=async function(){
+ if(photoDraft.busy){recordFormError('Подожди, пока фото подготовятся.');return;}
+ const title=document.getElementById('recTitle').value.trim(),date=document.getElementById('recDate').value;
+ if(!title){recordFormError('Добавь название записи.','recTitle');return;}
+ if(healthDay(date)===null){recordFormError('Укажи корректную дату записи.','recDate');return;}
+ const petId=recordEditing?.petId??photoDraft.petId??curPetId,pets=DB.getPets(),pet=pets.find(p=>p.id===petId);
+ if(!pet){recordFormError('Питомец уже удалён. Закрой форму и открой дневник снова.');return;}
+ let record=recordEditing?(pet.history||[]).find(r=>r.id===recordEditing.id):(pet.history||[]).find(r=>r.id===photoDraft.newRecordId)||null;
+ if(recordEditing&&!record){recordFormError('Эта запись уже удалена. Закрой форму и открой дневник снова.');return;}
+ const editing=!!record,patch={title,date,note:document.getElementById('recNote').value.trim(),type:recType,emoji:recEmoji,attachments:JSON.parse(JSON.stringify(photoDraft.items))};
+ if(typeof weightPrepareRecord==='function'&&!weightPrepareRecord(patch,record))return;
+ if(!record){if(!photoDraft.newRecordId)photoDraft.newRecordId=photoNextRecordId(pet);record={id:photoDraft.newRecordId};if(!pet.history)pet.history=[];pet.history.push(record);}
+ const previousType=record.type;
+ Object.assign(record,patch);if(record.type!=='Вес')delete record.weightKg;
+ if(typeof weightSyncPet==='function'&&(previousType==='Вес'||record.type==='Вес'))weightSyncPet(pet);
+ await liveUploadDraft(pet);record.attachments=liveClone(photoDraft.items);
+ await DB.savePets(pets);curPetId=pet.id;recordEditing=null;closeRec();renderPetScreen();
+ if(healthState.open)renderHealth();photoGarbageCollect();alertMsg(editing?'Запись обновлена':'Запись добавлена');haptic('ok');
+};
+function photoGalleryItems(){
+ if(photoGallery.origin==='draft')return photoAvailable(photoDraft.items);
+ const p=DB.getPets().find(p=>p.id===photoGallery.petId),r=p?.history?.find(r=>r.id===photoGallery.recordId);return photoAvailable(r?.attachments);
+}
+function photoOpenDraft(index){Object.assign(photoGallery,{origin:'draft',petId:photoDraft.petId,recordId:photoDraft.recordId});photoShowGallery(index);}
+function photoOpenRecord(petId,recordId,index){Object.assign(photoGallery,{origin:'record',petId,recordId});photoShowGallery(index);}
+function photoShowGallery(index){if(!photoGalleryItems().length)return;Object.assign(photoGallery,{index,zoom:1,open:true,trigger:document.activeElement});photoRenderGallery();const dialog=document.getElementById('photoViewer');if(!dialog.open)dialog.showModal();document.getElementById('photoClose').focus();haptic();}
+function photoRenderGallery(){
+ const items=photoGalleryItems();if(!items.length){photoCloseGallery();return;}
+ photoGallery.index=Math.min(Math.max(photoGallery.index,0),items.length-1);const asset=items[photoGallery.index];
+ document.getElementById('photoViewerCount').textContent=(photoGallery.index+1)+' / '+items.length;
+ document.getElementById('photoViewerName').textContent=asset.name;
+ document.getElementById('photoCanvas').innerHTML=`<img src="${esc(asset.url)}" alt="${esc(asset.name)}" draggable="false" onerror="photoViewError()">`;
+ document.getElementById('photoPrevious').disabled=photoGallery.index===0;document.getElementById('photoNext').disabled=photoGallery.index===items.length-1;
+ photoGallery.zoom=1;photoApplyZoom();document.getElementById('photoStage').scrollTop=0;document.getElementById('photoStage').scrollLeft=0;
+}
+function photoViewError(){document.getElementById('photoCanvas').innerHTML='<p class="photo-view-error">Не удалось открыть фото.<br>Закрой просмотр и попробуй прикрепить его заново.</p>';}
+ function photoApplyZoom(){const canvas=document.getElementById('photoCanvas');canvas.style.setProperty('--photo-zoom',String(photoGallery.zoom));document.getElementById('photoZoomButton').textContent=photoGallery.zoom===1?'Увеличить':photoGallery.zoom===2?'Ещё крупнее':'Уместить';document.getElementById('photoZoomButton').setAttribute('aria-label',photoGallery.zoom===1?'Увеличить фото в 2 раза':photoGallery.zoom===2?'Увеличить фото в 3 раза':'Уместить фото на экране');document.getElementById('photoViewerHint').textContent=photoGallery.zoom===1?'Листай стрелками или смахивай фото':'Двигай фото, чтобы прочитать детали';}
+function photoZoom(){photoGallery.zoom=photoGallery.zoom===3?1:photoGallery.zoom+1;photoApplyZoom();haptic();}
+function photoMove(delta){const next=photoGallery.index+delta;if(next<0||next>=photoGalleryItems().length)return;photoGallery.index=next;photoRenderGallery();haptic();}
+function photoCloseGallery(){photoGallery.open=false;const dialog=document.getElementById('photoViewer');if(dialog.open)dialog.close();document.getElementById('photoCanvas').innerHTML='';photoGallery.trigger?.isConnected&&photoGallery.trigger.focus({preventScroll:true});photoGarbageCollect();}
+function photoDeleteCurrent(){
+ const asset=photoGalleryItems()[photoGallery.index];if(!asset)return;const context={origin:photoGallery.origin,petId:photoGallery.petId,recordId:photoGallery.recordId,id:asset.id};
+ uiConfirm('Удалить фото?','Остальные фото и текст записи останутся.',()=>{
+  if(context.origin==='draft'){photoRemoveDraft(context.id);}else{
+   const pets=DB.getPets(),p=pets.find(p=>p.id===context.petId),r=p?.history?.find(r=>r.id===context.recordId);if(r){r.attachments=(r.attachments||[]).filter(a=>a?.id!==context.id);DB.savePets(pets);renderPetScreen();if(healthState.open)renderHealth();alertMsg('Фото удалено');}
+  }
+  photoGarbageCollect();photoRenderGallery();
+ });
+}
+document.getElementById('photoViewer').addEventListener('cancel',event=>{event.preventDefault();photoCloseGallery();});
+document.addEventListener('keydown',event=>{
+ if(!photoGallery.open||document.getElementById('uiConfirm').open)return;
+ if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();photoCloseGallery();}
+ if(photoGallery.zoom===1&&['ArrowLeft','ArrowRight'].includes(event.key)){event.preventDefault();event.stopImmediatePropagation();photoMove(event.key==='ArrowLeft'?-1:1);}
+},true);
+document.getElementById('photoStage').addEventListener('touchstart',event=>{photoGallery.touch=event.touches.length===1?{x:event.touches[0].clientX,y:event.touches[0].clientY}:null;},{passive:true});
+document.getElementById('photoStage').addEventListener('touchend',event=>{const start=photoGallery.touch;photoGallery.touch=null;if(!start||photoGallery.zoom!==1||event.touches.length||event.changedTouches.length!==1)return;const dx=event.changedTouches[0].clientX-start.x,dy=event.changedTouches[0].clientY-start.y;if(Math.abs(dx)>65&&Math.abs(dy)<Math.abs(dx)*.6)photoMove(dx<0?1:-1);},{passive:true});
+const photoModalObserver=new MutationObserver(()=>{if(!document.getElementById('recModal').classList.contains('active')&&photoDraft.petId!==null)photoResetDraft();});
+photoModalObserver.observe(document.getElementById('recModal'),{attributes:true,attributeFilter:['class']});
+const photoBaseRemoveRec=removeRec;removeRec=function(id){photoBaseRemoveRec(id);photoGarbageCollect();};
+const photoBaseClosePet=closePet;closePet=function(){photoBaseClosePet();photoGarbageCollect();};
+
+// Numeric measurements are kept in demo diary records. Legacy titles are read conservatively.
+const weightBaselines=new Map();
+function weightNumber(value){const s=String(value??'').trim().replace(',','.');if(!/^\d+(?:\.\d{1,3})?$/.test(s))return null;const n=Number(s);return Number.isFinite(n)&&n>=.001&&n<=10000?n:null;}
+function weightFormat(n){return Number(n).toLocaleString('ru-RU',{maximumFractionDigits:3});}
+function weightRecordValue(record){
+ if(record.type!=='Вес')return null;
+ if(Object.prototype.hasOwnProperty.call(record,'weightKg'))return weightNumber(record.weightKg);
+ const match=String(record.title||'').match(/^Вес обновлён:\s*(\d+(?:[.,]\d{1,3})?)\s*кг\s*→\s*(\d+(?:[.,]\d{1,3})?)\s*кг\s*$/i);
+ return match?weightNumber(match[2]):null;
+}
+function weightMeasurements(p,today=healthToday()){
+ return (p.history||[]).map((record,index)=>({record,index,day:healthDay(record.date),value:weightRecordValue(record)})).filter(x=>x.record.type==='Вес').map(x=>({...x,valid:x.value!==null&&x.day!==null&&x.day<=healthDay(today)}));
+}
+function weightPoints(p,today=healthToday()){
+ const byDay=new Map();weightMeasurements(p,today).filter(x=>x.valid).forEach(x=>byDay.set(x.day,x));return Array.from(byDay.values()).sort((a,b)=>a.day-b.day);
+}
+function weightRememberBaseline(p){if(!weightBaselines.has(p.id))weightBaselines.set(p.id,p.weight||'');}
+function weightSyncPet(p){weightRememberBaseline(p);const points=weightPoints(p);p.weight=points.length?String(points.at(-1).value):weightBaselines.get(p.id);}
+function weightPrepareRecord(patch){
+ if(patch.type!=='Вес')return true;
+ const n=weightNumber(document.getElementById('recordWeight').value);
+ if(n===null){recordFormError('Укажи вес от 0,001 до 10 000 кг, не больше трёх цифр после запятой.','recordWeight');return false;}
+ if(healthDay(patch.date)>healthDay(healthToday())){recordFormError('Для взвешивания выбери сегодняшнюю или прошедшую дату.','recDate');return false;}
+ patch.weightKg=n;return true;
+}
+function weightToggleField(){document.getElementById('recordWeightField').hidden=recType!=='Вес';}
+const weightBasePickRecType=pickRecType;
+pickRecType=function(el,type,emoji){const previous=recType;weightBasePickRecType(el,type,emoji);weightToggleField();const title=document.getElementById('recTitle');if(type==='Вес'&&!title.value.trim())title.value='Взвешивание';else if(previous==='Вес'&&type!=='Вес'&&title.value==='Взвешивание')title.value='';};
+const weightBaseOpenRec=openRec;
+openRec=function(){weightBaseOpenRec();document.getElementById('recordWeight').value='';weightToggleField();};
+const weightBaseOpenEditRecord=openEditRecord;
+openEditRecord=function(id){weightBaseOpenEditRecord(id);const r=getCurPet()?.history?.find(x=>x.id===id);if(r&&recordEditing){const n=weightRecordValue(r);document.getElementById('recordWeight').value=n===null?'':String(n).replace('.',',');weightToggleField();}};
+function weightOpenRecord(){const p=DB.getPets().find(x=>x.id===healthState.id);if(!p)return;curPetId=p.id;openRec();pickRecType(document.getElementById('recordWeightType'),'Вес','⚖️');setTimeout(()=>document.getElementById('recordWeight').focus(),0);}
+function weightEditRecord(petId,id){if(!DB.getPets().some(p=>p.id===petId))return;curPetId=petId;openEditRecord(id);}
+function weightApplyProfile(p,value){
+ const text=String(value??'').trim(),number=text?weightNumber(text):null;
+ if(text&&number===null){alertMsg('Укажи вес больше нуля, не больше трёх цифр после запятой');document.getElementById('editWeight').focus();return false;}
+ weightRememberBaseline(p);
+ if(!text){p.weight='';weightBaselines.set(p.id,'');return true;}
+ if(weightNumber(p.weight)!==number){if(!p.history)p.history=[];p.history.push({id:photoNextRecordId(p),type:'Вес',emoji:'⚖️',title:p.weight?'Вес обновлён: '+p.weight+' кг → '+number+' кг':'Первое взвешивание',weightKg:number,note:'',date:healthToday()});}
+ p.weight=String(number);return true;
+}
+function weightChart(points){
+ const left=46,right=340,top=18,bottom=153,w=right-left,h=bottom-top;
+ const values=points.map(p=>p.value),low=Math.min(...values),high=Math.max(...values),padding=Math.max(.1,(high-low)*.2),min=Math.max(0,low-padding),max=high+padding;
+ const first=points[0].day,last=points.at(-1).day;
+ const xy=points.map(p=>({x:points.length===1?(left+right)/2:left+(p.day-first)/Math.max(1,last-first)*w,y:bottom-(p.value-min)/(max-min)*h,p}));
+ const yTicks=[min,(min+max)/2,max].map(v=>{const y=bottom-(v-min)/(max-min)*h;return `<line x1="${left}" x2="${right}" y1="${y}" y2="${y}" stroke="#EAE2D6" stroke-dasharray="3 5"/><text x="${left-8}" y="${y+4}" text-anchor="end" fill="#84715D" font-size="10">${weightFormat(v)}</text>`;}).join('');
+ const path=xy.map((p,i)=>(i?'L':'M')+p.x.toFixed(2)+','+p.y.toFixed(2)).join(' ');
+ const dots=xy.map(({x,y,p},i)=>`<circle cx="${x}" cy="${y}" r="${i===xy.length-1?5:3}" fill="#C35A23" stroke="#FFF" stroke-width="2"><title>${esc(uiDate(p.record.date))}: ${weightFormat(p.value)} кг</title></circle>`).join('');
+ const spansYears=points[0].record.date.slice(0,4)!==points.at(-1).record.date.slice(0,4);
+ const dateLabel=s=>new Date(s+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short',...(spansYears?{year:'2-digit'}:{})});
+ const xLabels=points.length===1?`<text x="${(left+right)/2}" y="181" text-anchor="middle">${esc(dateLabel(points[0].record.date))}</text>`:`<text x="${left}" y="181">${esc(dateLabel(points[0].record.date))}</text><text x="${right}" y="181" text-anchor="end">${esc(dateLabel(points.at(-1).record.date))}</text>`;
+ return `<svg class="weight-chart" viewBox="0 0 360 195" role="img" aria-label="График веса. ${points.length} измерений по дням. Последнее: ${weightFormat(points.at(-1).value)} кг. Все значения доступны в списке ниже."><text x="10" y="12" fill="#84715D" font-size="10">кг</text>${yTicks}${points.length>1?`<path d="${path} L${right},${bottom} L${left},${bottom} Z" fill="#F9E6D3" opacity=".5"/><path d="${path}" fill="none" stroke="#C35A23" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`:''}${dots}<g fill="#84715D" font-size="10">${xLabels}</g></svg>`;
+}
+function weightHealthPanel(p){
+ const measures=weightMeasurements(p),points=weightPoints(p),last=points.at(-1),delta=last?last.value-points[0].value:0;
+ const summary=last?`<div class="weight-summary"><div><strong>${weightFormat(last.value)}<span> кг</span></strong><small>Последнее взвешивание · ${esc(uiDate(last.record.date))}</small></div>${points.length>1?`<span class="weight-change">${delta>0?'+':''}${weightFormat(delta)} кг<small>за период на графике</small></span>`:''}</div>`:`<div class="weight-empty">${uiIcon('weight')}<h3>Начнём с первого взвешивания</h3><p>${p.weight?'В карточке указан вес '+esc(String(p.weight).replace('.',','))+' кг. ':''}Для графика нужна запись с датой и весом.</p></div>`;
+ const rows=measures.slice().sort((a,b)=>(b.record.date||'').localeCompare(a.record.date||'')||b.index-a.index).map(x=>`<li class="weight-measurement"><div><strong>${x.value!==null?weightFormat(x.value)+' кг':'Вес не распознан'}</strong><time>${esc(uiDate(x.record.date))}</time>${!x.valid?`<small>${x.day!==null&&x.day>healthDay(healthToday())?'Будущая дата · не на графике':'Проверь вес и дату · не на графике'}</small>`:''}</div><button type="button" onclick="weightEditRecord(${Number(p.id)},${Number(x.record.id)})" aria-label="Редактировать вес от ${esc(uiDate(x.record.date))}">${uiIcon('edit')}Изменить</button></li>`).join('');
+ return `<section class="health-panel weight-panel" id="weightPanel" aria-labelledby="weightPanelTitle"><div class="health-panel-title"><h2 id="weightPanelTitle">Динамика веса</h2>${uiIcon('weight')}</div>${summary}${points.length?weightChart(points):''}${points.length===1?'<p class="weight-note">Первая точка на месте. После следующего взвешивания появится линия.</p>':''}${points.length>1?'<p class="weight-note">Точки соединяют измерения. Изменение веса между ними неизвестно.</p>':''}<button type="button" class="weight-add" onclick="weightOpenRecord()">${uiIcon('plus')}Добавить взвешивание</button>${measures.length?`<details class="weight-history"><summary>Все взвешивания <span>${measures.length}</span></summary><ul>${rows}</ul></details><p class="weight-footnote">Если за день несколько записей, на графике показана последняя добавленная. Вес в карточке обновляется по последнему измерению при сохранении.</p>`:''}</section>`;
+}
+const weightBaseRenderHealth=renderHealth;
+renderHealth=function(){weightBaseRenderHealth();const p=DB.getPets().find(x=>x.id===healthState.id);if(healthState.open&&p)document.getElementById('healthBody').insertAdjacentHTML('beforeend',weightHealthPanel(p));};
+const weightBaseRemoveRec=removeRec;
+removeRec=function(id){const p=getCurPet(),wasWeight=p?.history?.find(r=>r.id===id)?.type==='Вес';if(wasWeight)weightRememberBaseline(p);weightBaseRemoveRec(id);if(wasWeight){const pets=DB.getPets(),pet=pets.find(x=>x.id===p.id);if(pet){weightSyncPet(pet);DB.savePets(pets);renderPetScreen();if(healthState.open)renderHealth();}}};
+
+// Live persistence: Telegram verifies identity; the server owns all private writes.
+const APP_RELEASE='2026-09-11.1';
+const liveState={pets:[],pending:null,busy:false,ready:false,photoExpiresAt:0,ids:new Map()};
+const liveClone=value=>JSON.parse(JSON.stringify(value));
+const liveId=id=>parseInt(id.replaceAll('-','').slice(0,13),16);
+function livePendingKey(){return 'lubimka_pending_v2_'+ME.id;}
+async function liveApi(action,body={}){
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),45000);
+ try{
+  const r=await fetch(SB_URL+'/functions/v1/lubimka-api',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json','x-telegram-init-data':tg?.initData||''},body:JSON.stringify({action,...body}),signal:controller.signal});
+  const data=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(data.error||'Сервис временно недоступен. Попробуй ещё раз');e.status=r.status;throw e;}return data;
+ }catch(e){if(!e.status)throw new Error('Не удалось связаться с сервером. Проверь интернет и повтори сохранение');throw e;}finally{clearTimeout(timer);}
+}
+function liveHydratePhotos(pets,urls,expires){
+ for(const p of pets)for(const r of p.history||[])for(const a of r.attachments||[]){const old=photoAssets.get(a.id);if(urls[a.path]){if(old?.url?.startsWith('blob:'))URL.revokeObjectURL(old.url);photoAssets.set(a.id,{...a,url:urls[a.path]});}else if(!old)photoAssets.set(a.id,{...a,url:'',unavailable:true});}
+ liveState.photoExpiresAt=expires||0;
+}
+function liveAcceptLoad(data){
+ ME={id:data.user.id,uname:data.user.username||'',name:data.user.first_name||'Друг'};userName=ME.name;
+ const previous=new Map(liveState.pets.map(p=>[p.cloudId,p]));
+ const localIds=new Map(Array.from(liveState.ids,([key,id])=>[id,Number(key.split(':').at(-1))]));
+ liveState.pets=data.pets.map(p=>{const old=previous.get(p.id),rids=new Map((old?.history||[]).map(r=>[r.cloudId,r.id]));return {
+  id:old?.id??localIds.get(p.id)??liveId(p.id),cloudId:p.id,version:p.version,name:p.name,type:p.type,breed:p.breed,gender:p.gender,birth:p.birth||'',weight:p.weight==null?'':String(p.weight),weightBaseline:p.weight_baseline==null?'':String(p.weight_baseline),emoji:p.emoji,photo:p.photo,
+  history:(p.pet_records||[]).sort((a,b)=>(a.created_at||'').localeCompare(b.created_at||'')||a.id.localeCompare(b.id)).map(r=>({id:rids.get(r.id)??localIds.get(r.id)??liveId(r.id),cloudId:r.id,type:r.type,emoji:r.emoji,title:r.title,note:r.note||'',date:r.date||'',...(r.weight_kg==null?{}:{weightKg:Number(r.weight_kg)}),attachments:r.attachments||[]}))
+ };});
+ weightBaselines.clear();liveState.pets.forEach(p=>weightBaselines.set(p.id,p.weightBaseline));
+ liveHydratePhotos(liveState.pets,data.photoUrls||{},data.photoExpiresAt);
+}
+async function liveLoad(){liveAcceptLoad(await liveApi('load'));}
+function livePetFields(p){return {name:p.name,type:p.type||'',breed:p.breed||'',gender:p.gender||'',birth:p.birth||null,weight:p.weight===''||p.weight==null?null:Number(String(p.weight).replace(',','.')),weightBaseline:p.weightBaseline===''||p.weightBaseline==null?null:Number(p.weightBaseline),emoji:p.emoji||'',photo:p.photo||''};}
+function liveRecordFields(r){return {id:r.cloudId,type:r.type||'',emoji:r.emoji||'',title:r.title||'',note:r.note||'',date:r.date||null,weightKg:weightRecordValue(r),attachments:(r.attachments||[]).map(a=>({id:a.id,path:a.path,name:a.name,size:a.size,mime:a.mime}))};}
+function liveNormalize(pets){
+ for(const p of pets){if(!p.cloudId){const key='pet:'+p.id;if(!liveState.ids.has(key))liveState.ids.set(key,crypto.randomUUID());p.cloudId=liveState.ids.get(key);p.version=0;}if(p.weightBaseline===undefined)p.weightBaseline=weightBaselines.get(p.id)??p.weight??'';
+  for(const r of p.history||[]){if(!r.cloudId){const key=p.cloudId+':'+r.id;if(!liveState.ids.has(key))liveState.ids.set(key,crypto.randomUUID());r.cloudId=liveState.ids.get(key);}}
+ }return pets;
+}
+function liveDiff(before,after){
+ const ops=[],old=new Map(before.map(p=>[p.cloudId,p]));
+ for(const p of after){const b=old.get(p.cloudId),pet=livePetFields(p),records=[],deleteRecords=[],previous=new Map((b?.history||[]).map(r=>[r.cloudId,r]));
+  for(const r of p.history||[]){const prev=previous.get(r.cloudId);if(!prev||JSON.stringify(liveRecordFields(prev))!==JSON.stringify(liveRecordFields(r)))records.push(liveRecordFields(r));previous.delete(r.cloudId);}
+  previous.forEach(r=>deleteRecords.push(r.cloudId));
+  const changed=!b||JSON.stringify(livePetFields(b))!==JSON.stringify(pet);
+  if(changed||records.length||deleteRecords.length)ops.push({id:p.cloudId,baseVersion:b?.version||0,...(changed?{pet}:{}),records,deleteRecords});old.delete(p.cloudId);
+ }old.forEach(p=>ops.push({id:p.cloudId,baseVersion:p.version,delete:true}));return ops;
+}
+function liveClearPending(){liveState.pending=null;try{localStorage.removeItem(livePendingKey());}catch{}}
+async function liveFlushPending(){
+ if(!liveState.pending)return null;
+ try{const result=await liveApi('sync',liveState.pending);liveClearPending();return result;}
+ catch(e){if([400,404,409].includes(e.status)){liveClearPending();try{await liveLoad();liveRender();}catch{}if(e.status===409)e.message='Данные обновились на другом устройстве. Мы загрузили свежую карту. Проверь свои изменения и нажми «Сохранить» ещё раз';}throw e;}
+}
+Object.assign(DB,{
+ getPets(){return liveClone(liveState.pets);},
+ async savePets(input){
+  if(!liveState.ready)throw new Error('Сначала дождись загрузки приложения');
+  const pets=liveNormalize(liveClone(input));
+  if(liveState.pending){const same=JSON.stringify(liveDiff(liveState.pets,pets))===JSON.stringify(liveState.pending.ops);await liveFlushPending();await liveLoad();if(same)return;throw new Error('Предыдущее сохранение подтверждено. Проверь открытые изменения и нажми «Сохранить» ещё раз');}
+  const ops=liveDiff(liveState.pets,pets);if(!ops.length)return;
+  liveState.pending={mutationId:crypto.randomUUID(),ops};
+  try{localStorage.setItem(livePendingKey(),JSON.stringify(liveState.pending));}catch{liveState.pending=null;throw new Error('Недостаточно места для сохранения. Освободи немного памяти на устройстве и повтори');}
+  const result=await liveFlushPending(),versions=new Map(result.pets.map(p=>[p.id,p.version]));
+  pets.forEach(p=>{if(versions.has(p.cloudId))p.version=versions.get(p.cloudId);});liveState.pets=pets;
+  pets.forEach(p=>weightBaselines.set(p.id,p.weightBaseline));
+ },
+ async addPet(p){if(!newPet.liveCloudId)newPet.liveCloudId=crypto.randomUUID();p.cloudId=newPet.liveCloudId;p.id=liveId(p.cloudId);p.version=0;p.history=[];p.weightBaseline=p.weight||'';const pets=this.getPets();if(!pets.some(x=>x.cloudId===p.cloudId))pets.push(p);await this.savePets(pets);return p;},
+ seenWelcome(){try{return localStorage.getItem('lubimka_welcomed')==='1';}catch{return false;}},
+ setWelcomed(){try{localStorage.setItem('lubimka_welcomed','1');}catch{}}
+});
+function liveRender(){renderHome();renderProfile();if(getCurPet())renderPetScreen();if(healthState.open)renderHealth();}
+async function liveAction(action,message='Сохраняем…',record=false){
+ if(liveState.busy)return;liveState.busy=true;const dialog=document.getElementById('liveBusy');document.getElementById('liveBusyText').textContent=message;dialog.showModal();
+ try{await action();}catch(e){if(record)recordFormError(e.message);else alertMsg(e.message);}finally{liveState.busy=false;if(dialog.open)dialog.close();}
+}
+document.getElementById('liveBusy').addEventListener('cancel',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{if(liveState.busy){e.preventDefault();e.stopImmediatePropagation();}},true);
+async function liveUploadDraft(pet){
+ for(let i=0;i<photoDraft.items.length;i++){
+  const item=photoDraft.items[i],a=photoAssets.get(item.id);if(item.path)continue;
+  if(!a?.file)throw new Error('Не удалось прочитать выбранное фото. Прикрепи его ещё раз');
+  document.getElementById('liveBusyText').textContent='Загружаем фото '+(i+1)+' из '+photoDraft.items.length+'…';
+  const mime=a.mime||({'jpg':'image/jpeg','jpeg':'image/jpeg','png':'image/png','webp':'image/webp','heic':'image/heic','heif':'image/heif'}[a.name.split('.').at(-1).toLowerCase()]);
+  const signed=await liveApi('upload',{petId:pet.cloudId,mime,size:a.size});
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),120000);
+  try{const r=await fetch(signed.signedUrl,{method:'PUT',headers:{'Content-Type':mime,'x-upsert':'false'},body:a.file,signal:controller.signal});if(!r.ok)throw new Error('Не удалось загрузить фото. Повтори сохранение');}catch{throw new Error('Не удалось загрузить фото. Проверь интернет и повтори сохранение');}
+  finally{clearTimeout(timer);}
+  Object.assign(a,{path:signed.path,mime});Object.assign(item,{path:signed.path,mime});
+ }
+ document.getElementById('liveBusyText').textContent='Сохраняем запись…';
+}
+const liveSaveRec=saveRec;
+saveRec=()=>liveAction(liveSaveRec,'Сохраняем запись…',true);
+const liveSaveEdit=saveEdit;
+saveEdit=()=>liveAction(liveSaveEdit);
+const liveRegNext=regNext;
+regNext=()=>liveAction(liveRegNext);
+removeRec=async function(id){const pets=DB.getPets(),pet=pets.find(p=>p.id===curPetId),r=pet?.history?.find(r=>r.id===id);if(!r)return;pet.history=pet.history.filter(r=>r.id!==id);if(r.type==='Вес')weightSyncPet(pet);await DB.savePets(pets);liveRender();photoGarbageCollect();haptic();};
+uiDeleteRecord=function(id){const p=getCurPet(),r=p?.history?.find(r=>r.id===id);if(!r)return;uiConfirm('Удалить запись?',r.title+' — запись и прикреплённые фото исчезнут из дневника.',()=>liveAction(async()=>{await removeRec(id);alertMsg('Запись удалена');}));};
+deletePet=function(){const p=getCurPet();if(!p)return;uiConfirm('Удалить аккаунт питомца?',p.name+' и весь дневник с фотографиями будут удалены.',()=>liveAction(async()=>{await DB.savePets(DB.getPets().filter(x=>x.id!==p.id));closeEdit();closeMenu();closePet();photoGarbageCollect();alertMsg('Аккаунт питомца удалён');}));};
+photoDeleteCurrent=function(){const a=photoGalleryItems()[photoGallery.index];if(!a)return;const c={origin:photoGallery.origin,petId:photoGallery.petId,recordId:photoGallery.recordId,id:a.id};
+ uiConfirm('Удалить фото?','Текст записи и остальные фото останутся.',()=>liveAction(async()=>{if(c.origin==='draft')photoRemoveDraft(c.id);else{const pets=DB.getPets(),p=pets.find(p=>p.id===c.petId),r=p?.history?.find(r=>r.id===c.recordId);if(!r)return;r.attachments=(r.attachments||[]).filter(a=>a.id!==c.id);await DB.savePets(pets);liveRender();alertMsg('Фото удалено');}photoGarbageCollect();photoRenderGallery();}));
+};
+const livePhotoOpenRecord=photoOpenRecord;
+photoOpenRecord=async function(petId,recordId,index){try{const p=DB.getPets().find(p=>p.id===petId);if(!p)return;if(Date.now()>liveState.photoExpiresAt){const data=await liveApi('photos',{petId:p.cloudId});liveHydratePhotos([p],data.photoUrls,data.photoExpiresAt);}livePhotoOpenRecord(petId,recordId,index);}catch(e){alertMsg(e.message);}};
+photoViewError=function(){document.getElementById('photoCanvas').innerHTML='<p class="photo-view-error">Фото пока не загрузилось.<br>Проверь интернет, закрой просмотр и открой фото снова.</p>';liveState.photoExpiresAt=0;};
+const liveCloseRec=closeRec;
+closeRec=function(){const pet=DB.getPets().find(p=>p.id===photoDraft.petId),saved=new Set((pet?.history||[]).flatMap(r=>(r.attachments||[]).map(a=>a.path))),paths=photoDraft.items.map(a=>a.path).filter(path=>path&&!saved.has(path));liveCloseRec();if(pet&&paths.length&&!liveState.pending)liveApi('discardUploads',{petId:pet.cloudId,paths}).catch(()=>{});};
+function liveBootMessage(title,text,retry=false){const el=document.getElementById('liveStart');el.hidden=false;document.getElementById('liveStartTitle').textContent=title;document.getElementById('liveStartText').textContent=text;document.getElementById('liveRetry').hidden=!retry;document.getElementById('liveTelegram').hidden=retry;}
+let livePresentationApplied=false;
+async function boot(){
+ if(!livePresentationApplied){uiApplyPresentation();livePresentationApplied=true;}
+ if(!tg?.initData){liveBootMessage('Любимка живёт в Telegram','Открой приложение через бота — так мы найдём твоих питомцев и дневник.');return;}
+ liveBootMessage('Загружаем твоих питомцев','Ещё немного — и мы на месте.',false);document.getElementById('liveTelegram').hidden=true;
+ try{
+  await liveLoad();try{liveState.pending=JSON.parse(localStorage.getItem(livePendingKey())||'null');}catch{liveState.pending=null;}
+  if(liveState.pending){await liveFlushPending();await liveLoad();}
+  liveState.ready=true;document.getElementById('liveStart').hidden=true;
+  document.getElementById('welcomeGreeting').textContent='Здравствуйте, '+userName+'! 🐾';
+  if(DB.seenWelcome()||DB.getPets().length)enterApp();else document.getElementById('welcome').style.display='flex';
+ }catch(e){liveBootMessage('Не удалось загрузить дневник',e.message,true);}
 }
 
 boot();
