@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Любимка — дневник питомца</title>
-<meta name="lubimka-release" content="2026-09-15.2">
+<meta name="lubimka-release" content="2026-09-23.1">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -838,6 +838,17 @@ body{padding-top:0;}
 .rem-telegram strong{font-size:15px}.rem-telegram p{font-size:13px;line-height:1.6;color:#75644f;margin:8px 0 12px}.rem-telegram small{display:block;font-size:11px;line-height:1.5;color:#857866;margin-top:12px}
 .rem-telegram-actions{display:flex;flex-wrap:wrap;gap:8px}.rem-telegram button{min-height:44px;border:0;border-radius:12px;background:#fff;color:#aa561d;font:inherit;font-weight:700;font-size:13px;padding:10px 14px;cursor:pointer}
 
+.post-contact-card{margin:18px 0 14px;padding:16px;border-radius:20px;border:1px solid #EEDAC4;background:#FFF8EF;}
+.post-contact-heading{display:flex;align-items:center;gap:8px;font-size:15px;color:#513827;}.post-contact-heading .ui-icon{width:20px;height:20px;color:#BA571D;flex-shrink:0;}
+.post-contact-card p{color:#796657;font-size:13px;line-height:1.6;margin:9px 0;}
+.post-contact-value{font-weight:700;font-size:14px;overflow-wrap:anywhere;margin:4px 0;color:#6D4930;}
+.post-contact-button{display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;width:100%;padding:12px 14px;margin:12px 0 0;border:1px solid #C45518;border-radius:14px;background:#C45518;color:#fff;text-decoration:none;font:inherit;font-size:14px;font-weight:750;cursor:pointer;text-align:center;line-height:1.4;}
+.post-contact-button .ui-icon{width:19px;height:19px;flex-shrink:0;}.post-contact-button.secondary{color:#975025;border-color:#E4C8AF;background:#fff;}
+.post-contact-button:focus-visible{outline:3px solid #D08249;outline-offset:3px;}.post-contact-button:active{transform:scale(.98);}
+.post-contact-error{background:#FBECE5;color:#A13D24;font-size:13px;line-height:1.5;padding:12px;border-radius:12px;margin:8px 0;}.post-contact-error[hidden]{display:none;}
+#pfContact[aria-invalid="true"]{border:2px solid #B34B2C;}
+@media(max-width:360px){.post-contact-card{padding:13px}.post-contact-heading{font-size:14px}.post-contact-button{font-size:13px}}
+
 </style>
 </head>
 <body>
@@ -1117,9 +1128,9 @@ body{padding-top:0;}
       <input class="field" id="pfCity" placeholder="Москва">
       <input class="field" id="pfDistrict" placeholder="Район, метро">
     </div>
-    <label class="edit-label" for="pfContact">Как с вами связаться?</label>
-<input class="field" id="pfContact" placeholder="@ник, телефон или как удобно">
-    <div class="field-hint">Это увидят все, кто откроет объявление. Оставьте пустым, если не хотите — тогда люди смогут только поделиться вашим объявлением.</div>
+    <label class="edit-label" for="pfContact" id="pfContactLabel">Как с вами связаться?</label>
+<input class="field" id="pfContact" maxlength="200" autocomplete="off" placeholder="@имя или +7 999 123-45-67" aria-describedby="pfContactHint pfContactError" oninput="postContactClearError()">
+    <div class="field-hint" id="pfContactHint">Контакт будет виден в объявлении.</div><p class="post-contact-error" id="pfContactError" role="alert" hidden></p>
     <div id="pfDateWrap">
       <div class="edit-label" id="pfDateLbl">Дата пропажи</div>
       <input class="field" id="pfDate" type="date">
@@ -1137,7 +1148,7 @@ body{padding-top:0;}
     <div style="height:16px"></div>
     <button class="btn" id="pfSave" onclick="savePost()">Опубликовать</button>
     <p style="font-size:11.5px;color:var(--text-soft);text-align:center;margin-top:12px;line-height:1.5">
-      Публикуя объявление, вы соглашаетесь, что информация достоверна.<br>С вами свяжутся в Telegram.</p>
+      Публикуя объявление, вы соглашаетесь, что информация достоверна.<br>С вами смогут связаться по указанному контакту.</p>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -2068,10 +2079,10 @@ function renderBoard(){
         <button class="b-gy" onclick="sharePost('${p.id}')">📣</button></div>`;
     } else {
       btns=`<div class="btns">
-        <button class="b-tg" style="flex:1" onclick="sharePost('${p.id}')">📣 Рассказать друзьям</button>
+        <button class="${p.kind==='adopt'?'b-gy':'b-tg'}" style="flex:1" onclick="sharePost('${p.id}')">📣 Рассказать друзьям</button>
         <button class="b-gy" onclick="reportPost('${p.id}')">⚠️</button></div>`;
     }
-    const contactBox=p.contact
+    const contactBox=p.kind==='adopt'?postContactHtml(p,mine):p.contact
       ? `<div class="contact-box"><div class="lb">📞 Связаться с автором</div><div class="vl">${esc(p.contact)}</div></div>`
       : '';
     return `<div class="post">${ph}<div class="bd">
@@ -2309,6 +2320,9 @@ function renderPhotoBox(busy){
 }
 function delPfPhoto(i){ pfData.photos.splice(i,1); renderPhotoBox(); haptic(); }
 async function savePost(){
+  const contact=document.getElementById('pfContact').value.trim();
+  if(contact.length>200||(curKind==='adopt'&&!postContactParse(contact))){postContactShowError('Укажи @имя в Telegram, ссылку t.me/имя или номер телефона, чтобы с тобой могли связаться.');return;}
+  postContactClearError();
   const name=document.getElementById('pfName').value.trim();
   if(!name){ alertMsg('Укажите кличку или заголовок'); return; }
   const city=document.getElementById('pfCity').value.trim();
@@ -2327,24 +2341,18 @@ async function savePost(){
     reward:curKind==='lost'?document.getElementById('pfReward').value.trim():null,
     price:curKind==='boarding'?document.getElementById('pfPrice').value.trim():null,
     photos:pfData.photos&&pfData.photos.length?pfData.photos:null};
-  const contact=document.getElementById('pfContact').value.trim();
   body.contact=contact||null;
-  if(contact) localStorage.setItem('lubimka_contact',contact);
+  if(contact){try{localStorage.setItem('lubimka_contact',contact);}catch{}}
   let r, wasEdit=!!editingPost;
-  const retryNoContact=async(fn)=>{      // если колонки contact ещё нет в базе — не теряем объявление
-    let res=await fn(body);
-    if(!res && body.contact!==undefined){ const b2=Object.assign({},body); delete b2.contact; res=await fn(b2); }
-    return res;
-  };
   if(wasEdit){
     // редактирование: обновляем существующую запись, автора и тип не трогаем
     delete body.author_id; delete body.author_name; delete body.author_uname;
     delete body.kind; delete body.status;
-    r=await retryNoContact(bd=>sbPatch('posts?id=eq.'+editingPost.id, bd));
+    r=await sbPatch('posts?id=eq.'+editingPost.id, body);
   } else {
-    r=await retryNoContact(bd=>sbPost('posts',bd,true));
+    r=await sbPost('posts',body,true);
   }
-  btn.disabled=false; btn.textContent='Опубликовать';
+  btn.disabled=false; btn.textContent=wasEdit?'💾 Сохранить изменения':'Опубликовать';
   if(r){ editingPost=null; closePostForm(); haptic('ok'); loadBoard();
     if(!wasEdit&&(curKind==='lost'||curKind==='found')){
       const saved=Array.isArray(r)?r[0]:null;
@@ -3227,7 +3235,7 @@ const weightBaseRemoveRec=removeRec;
 removeRec=function(id){const p=getCurPet(),wasWeight=p?.history?.find(r=>r.id===id)?.type==='Вес';if(wasWeight)weightRememberBaseline(p);weightBaseRemoveRec(id);if(wasWeight){const pets=DB.getPets(),pet=pets.find(x=>x.id===p.id);if(pet){weightSyncPet(pet);DB.savePets(pets);renderPetScreen();if(healthState.open)renderHealth();}}};
 
 // Live persistence: Telegram verifies identity; the server owns all private writes.
-const APP_RELEASE='2026-09-15.2';
+const APP_RELEASE='2026-09-23.1';
 const liveState={pets:[],pending:null,busy:false,ready:false,photoExpiresAt:0,ids:new Map()};
 const liveClone=value=>JSON.parse(JSON.stringify(value));
 const liveId=id=>parseInt(id.replaceAll('-','').slice(0,13),16);
@@ -3818,6 +3826,62 @@ boot=async function(){
   if(pet)openPet(pet.id);
  }
 };
+
+// Public, author-provided contact only. Never derive a chat link from a numeric user ID.
+function postContactParse(value,allowBareUsername=false){
+ const text=String(value||'').trim();if(!text||text.length>200)return null;
+ const handle=text.match(/^@([A-Za-z0-9_]{5,32})$/)||text.match(/^(?:https?:\/\/)?(?:www\.)?(?:t\.me|telegram\.me)\/([A-Za-z0-9_]{5,32})\/?$/i)||(allowBareUsername?text.match(/^([A-Za-z0-9_]{5,32})$/):null);
+ if(handle&&!['share','joinchat','addstickers','addemoji','proxy','socks','login','confirmphone'].includes(handle[1].toLowerCase()))return {type:'telegram',value:'@'+handle[1],href:'https://t.me/'+handle[1]};
+ if(/^\+?[\d\s().-]+$/.test(text)){
+  const digits=text.replace(/\D/g,'');if(digits.length>=10&&digits.length<=15)return {type:'phone',value:text,href:'tel:'+(text.startsWith('+')?'+':'')+digits};
+ }
+ return null;
+}
+function postContactOptions(post){
+ const preferred=postContactParse(post.contact),author=postContactParse(post.author_uname,true);
+ const items=preferred?[preferred]:[];
+ if(author?.type==='telegram'&&!items.some(c=>c.type==='telegram'))items.push(author);
+ return items;
+}
+function postContactHtml(post,mine){
+ const items=postContactOptions(post),hasContact=items.length>0;
+ const actions=items.map((c,i)=>`<a class="post-contact-button ${i?'secondary':''}" href="${esc(c.href)}" ${c.type==='telegram'?`target="_blank" rel="noopener noreferrer" onclick="postContactTelegram(event,'${esc(post.id)}')"`:''}>${c.type==='telegram'?uiIcon('chat'):uiIcon('phone')}<span>${c.type==='telegram'?'Написать автору':'Позвонить автору'}</span></a>`).join('');
+ return `<section class="post-contact-card" aria-label="Связаться с автором"><div class="post-contact-heading">${uiIcon('chat')}<strong>${mine?'Контакт в твоём объявлении':'Связаться с автором'}</strong></div><p>${hasContact?(mine?'Люди смогут связаться с тобой по этому контакту.':'Уточни, где сейчас животное и как с ним познакомиться.'):(mine?'Добавь Telegram или телефон, чтобы с тобой могли связаться.':'Автор пока не оставил контакт для связи.')}</p>${items.map(c=>`<div class="post-contact-value">${esc(c.value)}</div>`).join('')}${mine?`<button type="button" class="post-contact-button secondary" onclick="postContactEdit('${esc(post.id)}')">${uiIcon('edit')}<span>${hasContact?'Изменить контакт':'Добавить контакт'}</span></button>`:actions}</section>`;
+}
+function postContactTelegram(event,id){
+ const post=boardCache.find(p=>String(p.id)===String(id));
+ const contact=post&&postContactOptions(post).find(c=>c.type==='telegram');
+ if(!contact){event.preventDefault();return;}
+ // This only opens the chat. A message is sent by the visitor themselves.
+ if(tg?.openTelegramLink){try{tg.openTelegramLink(contact.href);event.preventDefault();haptic();}catch{}}
+}
+function postContactEdit(id){
+ const p=boardCache.find(p=>String(p.id)===String(id));if(!p||String(p.author_id)!==String(ME.id))return;
+ actionsPost=p;actEdit();const input=document.getElementById('pfContact');input.scrollIntoView({block:'center'});input.focus();
+}
+function postContactClearError(){
+ const error=document.getElementById('pfContactError');error.hidden=true;error.textContent='';document.getElementById('pfContact').removeAttribute('aria-invalid');
+}
+function postContactShowError(message){
+ const input=document.getElementById('pfContact'),error=document.getElementById('pfContactError');
+ error.textContent=message;error.hidden=false;input.setAttribute('aria-invalid','true');input.scrollIntoView({block:'center'});input.focus();
+}
+function postContactSetup(){
+ const input=document.getElementById('pfContact'),adopt=curKind==='adopt';postContactClearError();
+ input.required=adopt;input.setAttribute('aria-required',String(adopt));
+ document.getElementById('pfContactLabel').textContent=adopt?'Как с тобой связаться? *':'Как с вами связаться?';
+ document.getElementById('pfContactHint').textContent=adopt?'Укажи @имя в Telegram, ссылку t.me или телефон. Контакт будет виден всем в объявлении.':'Этот контакт будет виден всем, кто откроет объявление.';
+ if(adopt&&!input.value.trim()){
+  const fallback=postContactParse(ME.uname,true)||postContactParse(editingPost?.author_uname,true);
+  if(fallback?.type==='telegram')input.value=fallback.value;
+ }
+}
+const postContactBaseOpen=openPostForm;
+openPostForm=function(){postContactBaseOpen();postContactSetup();};
+const postContactBaseEdit=actEdit;
+actEdit=function(){postContactBaseEdit();if(editingPost)postContactSetup();};
+UI_PATHS.chat='M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z';
+UI_PATHS.phone='M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3.1 5.2 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L9 11a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z';
 
 boot();
 </script>
