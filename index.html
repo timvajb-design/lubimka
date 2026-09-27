@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Любимка — дневник питомца</title>
-<meta name="lubimka-release" content="2026-09-23.1">
+<title>Любимка — рядом с любимыми</title>
+<meta name="lubimka-release" content="2026-09-26.1">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -849,10 +849,15 @@ body{padding-top:0;}
 #pfContact[aria-invalid="true"]{border:2px solid #B34B2C;}
 @media(max-width:360px){.post-contact-card{padding:13px}.post-contact-heading{font-size:14px}.post-contact-button{font-size:13px}}
 
+.family-dialog{width:calc(100% - 28px);max-width:440px;max-height:calc(100dvh - 32px);margin:auto;padding:24px;border:1px solid #E8DED2;border-radius:28px;background:#FFFDF9;color:#302A25;overflow-y:auto;box-shadow:0 24px 80px #38201030;}
+.family-dialog::backdrop{background:#2E231C66;backdrop-filter:blur(3px)}.family-heading{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}.family-heading h2{font-size:26px;line-height:1.2;margin:3px 0 16px;letter-spacing:-.5px}.family-eyebrow{font-size:11px;font-weight:750;letter-spacing:.9px;text-transform:uppercase;color:#AC571E;margin:0 0 8px}.family-close{border:1px solid #E9DFD4;background:#fff;color:#766355;width:44px;height:44px;border-radius:14px;font:inherit;font-size:24px;flex-shrink:0;cursor:pointer}.family-intro{font-size:15px;line-height:1.65;color:#76685A;margin:0 0 20px}.family-choice{display:flex;align-items:center;gap:14px;width:100%;padding:19px 15px;border:1px solid #E6DACB;background:#fff;border-radius:20px;margin:12px 0;text-align:left;font:inherit;cursor:pointer}.family-choice>span:nth-child(2){flex:1;min-width:0}.family-choice strong{display:block;font-size:19px}.family-choice small{display:block;font-size:13px;color:#837364;margin-top:5px;line-height:1.5}.family-choice-icon{display:grid;place-items:center;width:51px;height:55px;background:#FFF1E0;border-radius:16px;font-size:28px;flex-shrink:0}.family-choice:active{transform:scale(.985)}.family-choice:focus-visible,.family-close:focus-visible{outline:3px solid #D9864E;outline-offset:3px}.family-private{font-size:12px;color:#87745F;line-height:1.65;margin:18px 0}.human-avatar-row{display:flex;align-items:center;gap:17px;margin:10px 0 24px}.human-avatar{display:grid;place-items:center;overflow:hidden;width:88px;height:96px;border-radius:25px;background:#FFEDD5;font-size:42px;flex-shrink:0}.human-avatar img{width:100%;height:100%;object-fit:cover}.human-photo-button,.human-photo-remove{display:block;min-height:44px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}.human-photo-button{background:#fff;border:1px solid #E7D5BC;border-radius:13px;padding:9px 14px;color:#98501D}.human-photo-remove{background:none;border:none;color:#85715C;padding:7px 0}.human-photo-remove[hidden]{display:none}.family-dialog .field{margin-bottom:17px;min-width:0;width:100%}.family-dialog .field-label{display:block;margin:0 0 8px}.human-error{font-size:13px;line-height:1.6;color:#A64025;background:#FCECE5;padding:13px;border-radius:13px}.human-error[hidden]{display:none}.family-private-card{display:flex;align-items:center;gap:12px;background:#FFF4E3;border:1px solid #EDDDC4;border-radius:20px;padding:18px;margin:18px 0;color:#7B6042;font-size:13px;line-height:1.6}.family-private-card .ui-icon{flex-shrink:0;width:23px;height:23px}.family-human .pet-portrait{background:#FFF0DC}.family-human .pet-title{min-width:0}.family-human .pet-title h1{overflow-wrap:anywhere}.family-human .pet-stat-row{margin-top:22px}
+@media(max-width:360px){.family-dialog{padding:19px;border-radius:23px}.family-heading h2{font-size:23px}.family-choice{padding:15px 12px;gap:10px}.family-choice strong{font-size:17px}.family-choice small{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.family-choice:active{transform:none}}
+
 </style>
 </head>
 <body>
-<section class="live-start" id="liveStart" role="status"><div><h1 id="liveStartTitle">Любимка</h1><p id="liveStartText">Загружаем твоих питомцев…</p><button class="btn" id="liveRetry" type="button" onclick="boot()" hidden>Попробовать снова</button><a class="btn" id="liveTelegram" href="https://t.me/lubimkaa1_bot" hidden>Открыть в Telegram</a></div></section><dialog class="live-busy" id="liveBusy" aria-labelledby="liveBusyText"><span class="live-spinner" aria-hidden="true"></span><p id="liveBusyText" role="status">Сохраняем…</p></dialog>
+<section class="live-start" id="liveStart" role="status"><div><h1 id="liveStartTitle">Любимка</h1><p id="liveStartText">Загружаем твоих любимок…</p><button class="btn" id="liveRetry" type="button" onclick="boot()" hidden>Попробовать снова</button><a class="btn" id="liveTelegram" href="https://t.me/lubimkaa1_bot" hidden>Открыть в Telegram</a></div></section><dialog class="live-busy" id="liveBusy" aria-labelledby="liveBusyText"><span class="live-spinner" aria-hidden="true"></span><p id="liveBusyText" role="status">Сохраняем…</p></dialog>
 <div class="demo-toast" id="demoToast" role="status" aria-live="polite"></div>
 
 <!-- ==================== LOGO (кот + пёс + сердце) ==================== -->
@@ -886,9 +891,9 @@ body{padding-top:0;}
     </div>
   </div>
   <div class="welcome-actions">
-    <div class="hint">Давайте начнём с самого главного —<br>создайте аккаунт для вашего питомца 💛</div>
-    <button class="btn-big" onclick="startRegister()">➕ Создать аккаунт питомцу</button>
-    <button class="btn-skip" onclick="skipWelcome()">Пока нет питомца — пропустить</button>
+    <div class="hint">Давайте начнём с самого главного —<br>добавьте питомца или близкого человека 💛</div>
+    <button class="btn-big" onclick="startRegister()">➕ Добавить любимку</button>
+    <button class="btn-skip" onclick="skipWelcome()">Пока пропустить</button>
   </div>
 </div>
 
@@ -1159,7 +1164,7 @@ body{padding-top:0;}
     <div class="back" id="backBtn" style="display:none" onclick="goHome()">‹</div>
     <div class="logo-row">
       <svg class="logo-mark" viewBox="0 0 100 100"><path fill="#F47B20" d="M50 88C30 74 12 60 12 40 12 26 22 18 33 18c8 0 14 5 17 11 3-6 9-11 17-11 11 0 21 8 21 22 0 20-18 34-38 48z"/><circle cx="35" cy="34" r="7" fill="#fff"/><circle cx="63" cy="34" r="7" fill="#fff"/></svg>
-      <h1 id="pageTitle">Мой питомец</h1>
+      <h1 id="pageTitle">Мои любимки</h1>
     </div>
     <div class="icon-btn bell" onclick="openNotif()">🔔<span id="notifDot" class="dot" style="display:none">0</span></div>
   </div>
@@ -1373,7 +1378,7 @@ body{padding-top:0;}
       <h3>Что добавим? 🐾</h3>
       <button class="add-opt" onclick="addChoice('pet')">
         <span class="em">🐱</span>
-        <span class="tx"><b>Аккаунт питомца</b><span>Профиль, прививки, вес и вся история</span></span>
+        <span class="tx"><b>Моя любимка</b><span>Питомец или человек — карточка и дневник</span></span>
         <span class="ar">›</span></button>
       <button class="add-opt" onclick="addChoice('lost')">
         <span class="em">🔍</span>
@@ -1405,12 +1410,32 @@ body{padding-top:0;}
 <dialog class="photo-viewer" id="photoViewer" aria-labelledby="photoViewerTitle"><header class="photo-viewer-head"><div class="photo-viewer-heading"><h2 id="photoViewerTitle">Фото к записи</h2><p id="photoViewerName"></p></div><span class="photo-viewer-count" id="photoViewerCount" aria-live="polite"></span><button type="button" id="photoClose" class="photo-close" onclick="photoCloseGallery()" aria-label="Закрыть фото"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header><div class="photo-stage" id="photoStage" tabindex="0" aria-label="Фотография, можно прокручивать после увеличения"><div class="photo-canvas" id="photoCanvas"></div></div><div class="photo-viewer-controls"><button type="button" id="photoPrevious" class="photo-arrow" onclick="photoMove(-1)" aria-label="Предыдущее фото"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button><button type="button" id="photoZoomButton" onclick="photoZoom()">Увеличить</button><button type="button" id="photoNext" class="photo-arrow" onclick="photoMove(1)" aria-label="Следующее фото"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div><p class="photo-viewer-hint" id="photoViewerHint"></p><button type="button" class="photo-delete" onclick="photoDeleteCurrent()"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>Удалить фото</button></dialog>
 <dialog class="ui-confirm" id="uiConfirm" aria-labelledby="confirmTitle" aria-describedby="confirmText"><h3 id="confirmTitle"></h3><p id="confirmText"></p><div class="confirm-actions"><button class="confirm-cancel" type="button" onclick="uiCancelConfirm()" autofocus>Оставить</button><button class="confirm-remove" type="button" onclick="uiAcceptConfirm()">Удалить</button></div></dialog>
 <dialog class="rem-screen" id="remEditor" aria-labelledby="remEditorTitle">
- <header class="rem-screen-head"><button type="button" class="rem-back" aria-label="Назад к питомцу" onclick="remClose()" autofocus><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button><div class="rem-screen-title"><h2 id="remEditorTitle">Новое напоминание</h2><small id="remEditorPet"></small></div><button type="submit" class="rem-save" form="remEditorBody">Готово</button></header>
+ <header class="rem-screen-head"><button type="button" class="rem-back" aria-label="Назад к карточке" onclick="remClose()" autofocus><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button><div class="rem-screen-title"><h2 id="remEditorTitle">Новое напоминание</h2><small id="remEditorPet"></small></div><button type="submit" class="rem-save" form="remEditorBody">Готово</button></header>
  <form class="rem-form" id="remEditorBody" novalidate></form>
 </dialog>
 <dialog class="ui-confirm" id="remConfirmDialog" aria-labelledby="remConfirmTitle" aria-describedby="remConfirmText"><h3 id="remConfirmTitle"></h3><p id="remConfirmText"></p><div class="confirm-actions"><button type="button" class="confirm-cancel" onclick="remCancelConfirm()" autofocus>Оставить</button><button type="button" class="confirm-remove" id="remConfirmProceed" onclick="remAcceptConfirm()">Удалить</button></div></dialog>
 <dialog class="rem-screen" id="remHistory" aria-labelledby="remHistoryTitle">
  <header class="rem-screen-head"><button type="button" class="rem-back" aria-label="Назад к напоминаниям" onclick="remCloseHistory()" autofocus><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button><div class="rem-screen-title"><h2 id="remHistoryTitle">История отметок</h2><small id="remHistoryPet"></small></div></header><div class="rem-history-body" id="remHistoryBody"></div>
+</dialog>
+
+<dialog class="family-dialog" id="familyPicker" aria-labelledby="familyPickerTitle">
+ <div class="family-heading"><div><p class="family-eyebrow">Рядом с теми, кого любишь</p><h2 id="familyPickerTitle">Кого добавим?</h2></div><button type="button" class="family-close" onclick="familyClosePicker()" aria-label="Закрыть выбор">×</button></div>
+ <p class="family-intro">У каждой любимки — своя карточка, дневник и напоминания.</p>
+ <button type="button" class="family-choice" onclick="familyChoosePet()"><span class="family-choice-icon">🐾</span><span><strong>Питомец</strong><small>Здоровье, уход и ваша история</small></span><span>›</span></button>
+ <button type="button" class="family-choice" onclick="familyChooseHuman()"><span class="family-choice-icon">💛</span><span><strong>Человек</strong><small>Близкий человек или ты сам</small></span><span>›</span></button>
+ <p class="family-private">Личные карточки видны только в твоём аккаунте.</p>
+</dialog>
+<dialog class="family-dialog" id="humanEditor" aria-labelledby="humanEditorTitle">
+ <form onsubmit="event.preventDefault();humanSave()" novalidate>
+  <div class="family-heading"><div><p class="family-eyebrow">Человек · личная карточка</p><h2 id="humanEditorTitle">Новая любимка</h2></div><button type="button" class="family-close" id="humanCloseButton" onclick="humanClose()" aria-label="Закрыть карточку">×</button></div>
+  <div class="human-avatar-row"><div class="human-avatar" id="humanAvatar">💛</div><div><input type="file" id="humanPhoto" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden onchange="humanChoosePhoto(this)"><button type="button" class="human-photo-button" id="humanPhotoButton" onclick="document.getElementById('humanPhoto').click()">Добавить фото</button><button type="button" class="human-photo-remove" id="humanPhotoRemove" onclick="humanRemovePhoto()" hidden>Убрать фото</button></div></div>
+  <label class="field-label" for="humanName">Имя <span aria-hidden="true">*</span></label><input class="field" id="humanName" maxlength="200" autocomplete="off" placeholder="Например, Маша или мама" required>
+  <label class="field-label" for="humanBirth">Дата рождения <span class="field-optional">· необязательно</span></label><input class="field" id="humanBirth" type="date">
+  <label class="field-label" for="humanWeight">Вес, кг <span class="field-optional">· необязательно</span></label><input class="field" id="humanWeight" type="text" inputmode="decimal" autocomplete="off" placeholder="Например, 65,5">
+  <p class="family-private">Фото, дневник и напоминания сохранятся в твоём аккаунте. Эта карточка не публикуется в разделе помощи.</p>
+  <p class="human-error" id="humanError" role="alert" hidden></p>
+  <button type="submit" class="btn" id="humanSaveButton">Создать карточку</button><button type="button" class="btn-skip" id="humanCancelButton" onclick="humanClose()">Отмена</button>
+ </form>
 </dialog>
 
 <script>
@@ -1613,10 +1638,10 @@ function finishRegister(){ enterApp(); }
 
 // ================= Render =================
 function renderHome(){
-  const pets=DB.getPets();
+  const everyone=DB.getPets(),pets=everyone.filter(p=>!isHuman(p));
   const c=document.getElementById('petsContainer');
   const extra=document.getElementById('homeExtra');
-  const bd=pets.find(isBirthday);
+  const bd=everyone.find(isBirthday);
   if(bd){
     const y=petAge(bd);
     document.getElementById('heroHi').textContent='У '+bd.name+' день рождения! 🎂';
@@ -1625,13 +1650,13 @@ function renderHome(){
     document.getElementById('heroHi').textContent='Привет, '+userName+'! 👋';
     document.getElementById('heroSub').textContent='Рады видеть вас в Любимке. Заботьтесь о тех, кого любите 🐾';
   }
-  if(pets.length===0){
+  if(everyone.length===0){
     c.innerHTML='';
     extra.innerHTML=`<div class="empty-state">
       <div class="emoji">🐾</div>
-      <h3>Питомцев пока нет</h3>
-      <p>Создайте аккаунт для своего любимца —<br>заведём дневник, напоминания и карту здоровья</p>
-      <button class="btn" onclick="startRegister()">➕ Добавить питомца</button>
+      <h3>Кого добавим в Любимку?</h3>
+      <p>Добавь питомца или близкого человека.<br>Для каждого будет свой дневник и напоминания.</p>
+      <button class="btn" onclick="startRegister()">➕ Добавить любимку</button>
     </div>
     <div style="height:12px"></div>
     <button class="sup-mini" onclick="goSupport()">
@@ -1641,16 +1666,16 @@ function renderHome(){
     return;
   }
   let html='';
-  pets.forEach(p=>{
-    const av = p.photo ? `<img class="avatar" src="${p.photo}">` : `<div class="avatar">${p.emoji||'🐾'}</div>`;
-    const meta=[p.breed||p.type, petAgeText(p), p.weight?p.weight+' кг':''].filter(Boolean).join(' · ');
+  everyone.forEach(p=>{
+    const av = p.photo ? `<img class="avatar" src="${p.photo}">` : `<div class="avatar">${p.emoji||(isHuman(p)?'💛':'🐾')}</div>`;
+    const meta=[isHuman(p)?'Человек':p.breed||p.type, petAgeText(p), p.weight?p.weight+' кг':''].filter(Boolean).join(' · ');
     html+=`<div class="card pet-card" role="button" tabindex="0" onclick="openPet(${p.id})">
       ${av}
       <div class="info"><h3>${esc(p.name)}</h3><p>${esc(meta)}</p>${p.gender?`<span class="badge">${p.gender}</span>`:''}</div>
       <div class="chev">›</div></div>`;
   });
   c.innerHTML=html;
-  const score=Math.round(pets.reduce((a,p)=>a+healthScore(p),0)/pets.length);
+  const score=pets.length?Math.round(pets.reduce((a,p)=>a+healthScore(p),0)/pets.length):0;
   const col=score>=4?'#7CC576':(score>=2?'#F5A623':'#E05A5A');
   const off=201-201*score/5;
   let rems=[]; pets.forEach(p=>rems=rems.concat(petReminders(p)));
@@ -1658,6 +1683,7 @@ function renderHome(){
   const remHtml=rems.slice(0,4).map(r=>`<div class="reminder tap" onclick="remTap(${r.pid},'${r.type}')"><span>${r.emoji}</span> ${r.text} <span class="when">${daysText(r.days)}</span><span class="chev-s">›</span></div>`).join('')
     +`<p class="rem-hint">Нажмите на строку, чтобы добавить запись</p>`;
   extra.innerHTML=`
+    ${pets.length?`
     <div class="card">
       <div class="section-title">Здоровье питомцев</div>
       <button type="button" class="health health-home-button" onclick="openHealth(null,'home')" aria-label="Открыть карты здоровья питомцев">
@@ -1670,7 +1696,8 @@ function renderHome(){
       <div class="section-title" style="margin:0 0 4px">Напоминания</div>
       ${remHtml}
     </div>
-    <button class="btn btn-outline" onclick="startRegister()">➕ Добавить ещё питомца</button>
+    `:''}
+    <button class="btn btn-outline" onclick="startRegister()">➕ Добавить любимку</button>
     <div style="height:12px"></div>
     <button class="sup-mini" onclick="goSupport()">
       <span class="e">💛</span>
@@ -1680,7 +1707,7 @@ function renderHome(){
 function renderProfile(){
   const pets=DB.getPets();
   document.getElementById('userName').textContent=userName;
-  document.getElementById('userPets').textContent='Питомцев: '+pets.length;
+  const humans=pets.filter(isHuman).length;document.getElementById('userPets').textContent=humans?'Питомцев: '+(pets.length-humans)+' · Людей: '+humans:'Питомцев: '+pets.length;
   const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
   if(u && u.photo_url){ document.getElementById('userAvatar').innerHTML='<img src="'+u.photo_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'; }
 }
@@ -2535,7 +2562,7 @@ function showMatchSheet(ms,kind){
 function closeMatchSheet(){ document.getElementById('matchSheet').classList.remove('active'); }
 
 // ================= Navigation =================
-const titles={home:'Мой питомец',help:'Помощь животным',shop:'Магазин',support:'Поддержать',about:'Профиль'};
+const titles={home:'Мои любимки',help:'Помощь животным',shop:'Магазин',support:'Поддержать',about:'Профиль'};
 let curScreen='home';
 function openScreen(id){
   if(curScreen==='help'&&id!=='help')boardReq++;
@@ -2701,7 +2728,9 @@ function uiDate(s){const d=new Date(s+'T12:00:00');return isNaN(d)?'Дата н�
 function uiMonth(s){const d=new Date(s+'T12:00:00');return isNaN(d)?'Без даты':d.toLocaleDateString('ru-RU',{month:'long',year:'numeric'}).replace(' г.','');}
 function uiCount(n){const a=n%10,b=n%100;return n+' '+(a===1&&b!==11?'запись':a>=2&&a<=4&&(b<12||b>14)?'записи':'записей');}
 function renderPetScreen(){
- const p=getCurPet();if(!p)return;
+ const p=getCurPet();if(!p)return;const person=isHuman(p);
+ document.querySelector('.ps-head h2').textContent=person?'Карточка человека':'Аккаунт питомца';
+ document.querySelector('.ps-head .ps-menu').setAttribute('aria-label',person?'Меню карточки':'Меню питомца');
  const hist=(p.history||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
  let month='',history='';
  hist.forEach(h=>{
@@ -2712,12 +2741,13 @@ function renderPetScreen(){
  const count=hist.filter(h=>h.type==='Прививка').length;
  const photo=p.photo?'<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'">':esc(p.emoji||'🐾');
  document.getElementById('psBody').innerHTML=`
-  <section class="pet-identity" aria-label="Сведения о питомце">
-   <div class="pet-identity-row"><div class="pet-portrait">${photo}</div><div class="pet-title"><div class="pet-eyebrow">Мой питомец</div><h1>${esc(p.name)}</h1><p class="pet-breed">${esc(p.breed||p.type||'Питомец')}</p>${p.gender?`<span class="pet-sex">${esc(p.gender)}</span>`:''}<button type="button" class="pet-edit" onclick="openEdit()">${uiIcon('edit')}Редактировать</button></div></div>
-   <div class="pet-stat-row"><button class="pet-stat" type="button" onclick="uiEditField('editBirth')" aria-label="Изменить дату рождения"><strong>${esc(petAgeText(p)||'—')}</strong><span>возраст ›</span></button><button class="pet-stat" type="button" onclick="uiEditField('editWeight')" aria-label="Изменить вес"><strong>${p.weight?esc(String(p.weight).replace('.',','))+' кг':'—'}</strong><span>вес ›</span></button><div class="pet-stat"><strong>${count}</strong><span>прививок</span></div></div>
+  <section class="pet-identity ${person?'family-human':''}" aria-label="${person?'Сведения о человеке':'Сведения о питомце'}">
+   <div class="pet-identity-row"><div class="pet-portrait">${photo}</div><div class="pet-title"><div class="pet-eyebrow">${person?'Моя любимка':'Мой питомец'}</div><h1>${esc(p.name)}</h1><p class="pet-breed">${esc(person?'Человек':p.breed||p.type||'Питомец')}</p>${p.gender?`<span class="pet-sex">${esc(p.gender)}</span>`:''}<button type="button" class="pet-edit" onclick="openEdit()">${uiIcon('edit')}Редактировать</button></div></div>
+   <div class="pet-stat-row"><button class="pet-stat" type="button" onclick="uiEditField('editBirth')" aria-label="Изменить дату рождения"><strong>${esc(petAgeText(p)||'—')}</strong><span>возраст ›</span></button><button class="pet-stat" type="button" onclick="uiEditField('editWeight')" aria-label="Изменить вес"><strong>${p.weight?esc(String(p.weight).replace('.',','))+' кг':'—'}</strong><span>вес ›</span></button><div class="pet-stat"><strong>${person?hist.length:count}</strong><span>${person?uiCount(hist.length).split(' ').slice(1).join(' '):'прививок'}</span></div></div>
   </section>
   <button class="pet-primary" type="button" onclick="openRec()">${uiIcon('plus')}Добавить запись</button>
-  <section aria-labelledby="diary-title"><div class="diary-heading"><h2 id="diary-title">Дневник питомца</h2><span class="diary-total">${uiCount(hist.length)}</span></div><p class="diary-subtitle">Всё важное — в одной истории</p>${hist.length?history:`<div class="diary-empty">${uiIcon('note')}<h3>Здесь начнётся ваша история</h3><p>Нажми «Добавить запись», чтобы сохранить<br>визит к врачу, прививку или заметку.</p></div>`}</section>
+  <section aria-labelledby="diary-title"><div class="diary-heading"><h2 id="diary-title">${person?'Личный дневник':'Дневник питомца'}</h2><span class="diary-total">${uiCount(hist.length)}</span></div><p class="diary-subtitle">${person?'События, здоровье и тёплые воспоминания':'Всё важное — в одной истории'}</p>${hist.length?history:`<div class="diary-empty">${uiIcon('note')}<h3>Здесь начнётся ваша история</h3><p>Нажми «Добавить запись», чтобы сохранить<br>визит к врачу, прививку или заметку.</p></div>`}</section>
+  ${person?'<div class="family-private-card">'+uiIcon('person')+'<span>Личная карточка. Дневник и фотографии видны только в твоём аккаунте.</span></div>':''}
   <p class="pet-footnote">${uiHeart()}Рядом с теми, кого любишь</p>`;
 }
 function uiEditField(id){openEdit();setTimeout(()=>{const field=document.getElementById(id);field.scrollIntoView({block:'center',behavior:'smooth'});field.focus({preventScroll:true});},150);}
@@ -2737,7 +2767,7 @@ function uiAcceptConfirm(){const action=uiConfirmAction;uiCancelConfirm();if(act
 function uiDeleteRecord(id){const p=getCurPet(),record=(p?.history||[]).find(h=>h.id===id);if(!record)return;uiConfirm('Удалить запись?',record.title+' — запись исчезнет из дневника.',()=>{removeRec(id);alertMsg('Запись удалена');});}
 function deletePet(){const p=getCurPet();if(!p)return;uiConfirm('Удалить аккаунт питомца?',p.name+' и все записи исчезнут из списка питомцев.',()=>{DB.savePets(DB.getPets().filter(x=>x.id!==curPetId));closeEdit();closeMenu();closePet();alertMsg('Аккаунт питомца удалён');});}
 function uiApplyPresentation(){
- document.querySelector('.ps-head').innerHTML=`<button class="ps-back" type="button" onclick="closePet()">${uiIcon('back')}Питомцы</button><h2>Аккаунт питомца</h2><button class="ps-menu" type="button" onclick="openMenu()" aria-label="Меню питомца">${uiIcon('more')}</button>`;
+ document.querySelector('.ps-head').innerHTML=`<button class="ps-back" type="button" onclick="closePet()">${uiIcon('back')}Любимки</button><h2>Аккаунт питомца</h2><button class="ps-menu" type="button" onclick="openMenu()" aria-label="Меню питомца">${uiIcon('more')}</button>`;
  document.querySelector('#recModal h3').textContent='Новая запись';
  document.querySelector('#recModal h3').insertAdjacentHTML('afterend','<p class="sheet-subtitle">Сохрани то, что важно для питомца</p>');
  document.querySelectorAll('#recTypes .rec-type').forEach(el=>{const key=el.getAttribute('onclick').match(/this,'([^']+)'/)[1];el.querySelector('.ic').innerHTML=uiIcon((REC_PRESENTATION[key]||{}).icon);});
@@ -2823,7 +2853,7 @@ renderPetScreen=function(){
 };
 function healthLockBackground(on){document.getElementById('appBody').inert=on;document.getElementById('petScreen').inert=on;}
 function openHealth(id,from='pet'){
- const pets=DB.getPets();if(!pets.length)return;
+ const pets=animalCards();if(!pets.length)return;
  healthState.open=true;healthState.from=from;healthState.originId=curPetId;healthState.trigger=document.activeElement;
  healthState.id=pets.some(p=>p.id===id)?id:(pets.length===1?pets[0].id:null);
  document.getElementById('healthScreen').hidden=false;healthLockBackground(true);
@@ -2840,7 +2870,7 @@ function healthChooseAnother(){healthState.id=null;renderHealth();document.getEl
 function healthThumb(p){return p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="health-pet-thumb" aria-hidden="true">${esc(p.emoji||'🐾')}</span>`;}
 function renderHealth(){
  if(!healthState.open)return;
- const body=document.getElementById('healthBody'),scroll=body.scrollTop,pets=DB.getPets();
+ const body=document.getElementById('healthBody'),scroll=body.scrollTop,pets=animalCards();
  const p=pets.find(x=>x.id===healthState.id);
  document.getElementById('healthBackText').textContent=healthState.from==='pet'?'К питомцу':'Главная';
  if(!p){
@@ -3235,7 +3265,7 @@ const weightBaseRemoveRec=removeRec;
 removeRec=function(id){const p=getCurPet(),wasWeight=p?.history?.find(r=>r.id===id)?.type==='Вес';if(wasWeight)weightRememberBaseline(p);weightBaseRemoveRec(id);if(wasWeight){const pets=DB.getPets(),pet=pets.find(x=>x.id===p.id);if(pet){weightSyncPet(pet);DB.savePets(pets);renderPetScreen();if(healthState.open)renderHealth();}}};
 
 // Live persistence: Telegram verifies identity; the server owns all private writes.
-const APP_RELEASE='2026-09-23.1';
+const APP_RELEASE='2026-09-26.1';
 const liveState={pets:[],pending:null,busy:false,ready:false,photoExpiresAt:0,ids:new Map()};
 const liveClone=value=>JSON.parse(JSON.stringify(value));
 const liveId=id=>parseInt(id.replaceAll('-','').slice(0,13),16);
@@ -3331,7 +3361,7 @@ const liveRegNext=regNext;
 regNext=()=>liveAction(liveRegNext);
 removeRec=async function(id){const pets=DB.getPets(),pet=pets.find(p=>p.id===curPetId),r=pet?.history?.find(r=>r.id===id);if(!r)return;pet.history=pet.history.filter(r=>r.id!==id);if(r.type==='Вес')weightSyncPet(pet);await DB.savePets(pets);liveRender();photoGarbageCollect();haptic();};
 uiDeleteRecord=function(id){const p=getCurPet(),r=p?.history?.find(r=>r.id===id);if(!r)return;uiConfirm('Удалить запись?',r.title+' — запись и прикреплённые фото исчезнут из дневника.',()=>liveAction(async()=>{await removeRec(id);alertMsg('Запись удалена');}));};
-deletePet=function(){const p=getCurPet();if(!p)return;uiConfirm('Удалить аккаунт питомца?',p.name+' и весь дневник с фотографиями будут удалены.',()=>liveAction(async()=>{await DB.savePets(DB.getPets().filter(x=>x.id!==p.id));closeEdit();closeMenu();closePet();photoGarbageCollect();alertMsg('Аккаунт питомца удалён');}));};
+deletePet=function(){const p=getCurPet();if(!p)return;uiConfirm('Удалить карточку?',p.name+' и весь дневник с фотографиями будут удалены.',()=>liveAction(async()=>{await DB.savePets(DB.getPets().filter(x=>x.id!==p.id));closeEdit();closeMenu();closePet();photoGarbageCollect();alertMsg('Карточка удалена');}));};
 photoDeleteCurrent=function(){const a=photoGalleryItems()[photoGallery.index];if(!a)return;const c={origin:photoGallery.origin,petId:photoGallery.petId,recordId:photoGallery.recordId,id:a.id};
  uiConfirm('Удалить фото?','Текст записи и остальные фото останутся.',()=>liveAction(async()=>{if(c.origin==='draft')photoRemoveDraft(c.id);else{const pets=DB.getPets(),p=pets.find(p=>p.id===c.petId),r=p?.history?.find(r=>r.id===c.recordId);if(!r)return;r.attachments=(r.attachments||[]).filter(a=>a.id!==c.id);await DB.savePets(pets);liveRender();alertMsg('Фото удалено');}photoGarbageCollect();photoRenderGallery();}));
 };
@@ -3344,8 +3374,8 @@ function liveBootMessage(title,text,retry=false){const el=document.getElementByI
 let livePresentationApplied=false;
 async function boot(){
  if(!livePresentationApplied){uiApplyPresentation();livePresentationApplied=true;}
- if(!tg?.initData){liveBootMessage('Любимка живёт в Telegram','Открой приложение через бота — так мы найдём твоих питомцев и дневник.');return;}
- liveBootMessage('Загружаем твоих питомцев','Ещё немного — и мы на месте.',false);document.getElementById('liveTelegram').hidden=true;
+ if(!tg?.initData){liveBootMessage('Любимка живёт в Telegram','Открой приложение через бота — так мы найдём твои карточки и дневники.');return;}
+ liveBootMessage('Загружаем твоих любимок','Ещё немного — и мы на месте.',false);document.getElementById('liveTelegram').hidden=true;
  try{
   await liveLoad();try{liveState.pending=JSON.parse(localStorage.getItem(livePendingKey())||'null');}catch{liveState.pending=null;}
   if(liveState.pending){await liveFlushPending();await liveLoad();}
@@ -3601,10 +3631,10 @@ function remCard(r){
 function remBlock(p){
  remCapture();const items=remStore.items.filter(r=>r.petId===p.id),slots=items.flatMap(remTodaySlots),done=slots.filter(s=>s.completedAt).length;
  const hasHistory=Array.from(remStore.occurrences.values()).some(o=>o.petId===p.id);
- return `<section class="rem-block" id="petRemindersBlock" aria-labelledby="remBlockTitle"><div class="rem-heading"><h2 id="remBlockTitle">${uiIcon('calendar')}Напоминания</h2>${items.length?`<button type="button" id="remAddButton" class="rem-add" onclick="remOpen()" aria-label="Добавить напоминание">${uiIcon('plus')}<span>Добавить</span></button>`:''}</div>${items.length?`<div class="rem-overview"><span>Расписание заботы</span><strong>${slots.length?done+' из '+slots.length+' сегодня':'Сегодня свободно'}</strong></div><div class="rem-list">${items.map(remCard).join('')}</div>`:`<div class="rem-empty"><div class="rem-empty-art">${uiIcon('clock')}</div><h3>Забота по расписанию</h3><p>Пока нет напоминаний. Добавь время для лекарства, кормления или ухода.</p><button type="button" onclick="remOpen()">Добавить напоминание</button></div>`}${items.length||hasHistory?`<button type="button" class="rem-history-link" id="remHistoryButton" onclick="remOpenHistory()">${uiIcon('clock')}История отметок ${uiIcon('next')}</button>`:''}</section>`;
+ return `<section class="rem-block" id="petRemindersBlock" aria-labelledby="remBlockTitle"><div class="rem-heading"><h2 id="remBlockTitle">${uiIcon('calendar')}Напоминания</h2>${items.length?`<button type="button" id="remAddButton" class="rem-add" onclick="remOpen()" aria-label="Добавить напоминание">${uiIcon('plus')}<span>Добавить</span></button>`:''}</div>${items.length?`<div class="rem-overview"><span>Расписание заботы</span><strong>${slots.length?done+' из '+slots.length+' сегодня':'Сегодня свободно'}</strong></div><div class="rem-list">${items.map(remCard).join('')}</div>`:`<div class="rem-empty"><div class="rem-empty-art">${uiIcon('clock')}</div><h3>Забота по расписанию</h3><p>${isHuman(p)?'Пока нет напоминаний. Добавь важную дату, визит или лекарство по назначению.':'Пока нет напоминаний. Добавь время для лекарства, кормления или ухода.'}</p><button type="button" onclick="remOpen()">Добавить напоминание</button></div>`}${items.length||hasHistory?`<button type="button" class="rem-history-link" id="remHistoryButton" onclick="remOpenHistory()">${uiIcon('clock')}История отметок ${uiIcon('next')}</button>`:''}</section>`;
 }
 const remBaseRenderPet=renderPetScreen;
-renderPetScreen=function(){remBaseRenderPet();const p=getCurPet();if(!p)return;const health=document.querySelector('#psBody .pet-health-link');if(health)health.insertAdjacentHTML('beforebegin',remBlock(p));else document.getElementById('psBody')?.insertAdjacentHTML('afterbegin',remBlock(p));};
+renderPetScreen=function(){remBaseRenderPet();const p=getCurPet();if(!p)return;const health=document.querySelector('#psBody .pet-health-link');if(health)health.insertAdjacentHTML('beforebegin',remBlock(p));else document.querySelector('#psBody .pet-identity')?.insertAdjacentHTML('afterend',remBlock(p));};
 function remRefresh(){const p=getCurPet(),block=document.getElementById('petRemindersBlock');if(p&&block)block.outerHTML=remBlock(p);}
 function remToggle(key){
  const slot=remStore.occurrences.get(key);if(!slot||slot.petId!==getCurPet()?.id)return;
@@ -3616,7 +3646,7 @@ function remToggle(key){
 function remOpen(id){
  const p=getCurPet();if(!p)return;const item=id?remStore.items.find(r=>r.id===id&&r.petId===p.id):null;if(id&&!item)return;
  const timezone=remDeviceZone();remUI.trigger=document.activeElement;remUI.original=item?remClone(item):null;
- remUI.draft=item?remClone(item):{id:crypto.randomUUID(),petId:p.id,title:'',emoji:'💊',mode:'daily',times:['09:00'],interval:3,duration:10,start:ReminderCalendar.today(timezone),timezone,scheduleFrom:ReminderCalendar.today(timezone)};
+ remUI.draft=item?remClone(item):{id:crypto.randomUUID(),petId:p.id,title:'',emoji:isHuman(p)?'🔔':'💊',mode:'daily',times:['09:00'],interval:3,duration:10,start:ReminderCalendar.today(timezone),timezone,scheduleFrom:ReminderCalendar.today(timezone)};
  remRenderForm();document.getElementById('remEditor').showModal();document.getElementById('remEditorBody').scrollTop=0;haptic();
 }
 function remClose(force=false){
@@ -3635,10 +3665,10 @@ function remRenderForm(focusId){
  const zones=REM_ZONES.some(x=>x[0]===r.timezone)?REM_ZONES:[[r.timezone,'На устройстве: '+r.timezone],...REM_ZONES];
  document.getElementById('remEditorBody').innerHTML=`<div class="rem-form-error" id="remFormError" role="alert" hidden></div>
  <div class="rem-form-section"><label for="remTitle">Название</label><input class="rem-input" id="remTitle" maxlength="100" placeholder="Например: лекарство по назначению" value="${esc(r.title)}" oninput="remSet('title',this.value)" autocomplete="off"><p class="rem-help">Название будет видно в карточке и напоминании.</p></div>
- <div class="rem-form-section"><h3>Иконка <span class="field-optional">· на твой вкус</span></h3><div class="rem-icon-choices" aria-label="Иконка напоминания">${REM_ICONS.map((e,i)=>`<button type="button" id="remIcon${i}" class="rem-icon-choice" aria-label="Иконка ${e}" aria-pressed="${r.emoji===e}" onclick="remChooseIcon(${i})">${e}</button>`).join('')}</div></div>
+ <div class="rem-form-section"><h3>Иконка <span class="field-optional">· на твой вкус</span></h3><div class="rem-icon-choices" aria-label="Иконка напоминания">${REM_ICONS.map((e,i)=>isHuman(p)&&e==='🍖'?'':`<button type="button" id="remIcon${i}" class="rem-icon-choice" aria-label="Иконка ${e}" aria-pressed="${r.emoji===e}" onclick="remChooseIcon(${i})">${e}</button>`).join('')}</div></div>
  <div class="rem-form-section"><fieldset class="rem-repeat-list"><legend>Как повторять</legend>${REM_MODES.map(([key,title,description])=>`<label class="rem-repeat-option"><input type="radio" name="remMode" id="remMode-${key}" value="${key}" ${r.mode===key?'checked':''} onchange="remChooseMode(this.value)"><span><strong>${title}</strong><small>${description}</small></span></label>`).join('')}</fieldset>
  <div class="rem-settings"><div><label for="remStart">${r.mode==='once'?'Когда напомнить':'Начать с'}</label><input type="date" class="rem-input" id="remStart" value="${r.start}" oninput="remSet('start',this.value)"></div>${r.mode==='interval'?`<div><label for="remInterval">Повторять каждые … дней</label><input type="number" min="1" max="365" step="1" inputmode="numeric" class="rem-input" id="remInterval" value="${r.interval}" oninput="remSet('interval',Number(this.value))"></div>`:''}${r.mode==='course'?`<div><label for="remDuration">Длительность курса, дней</label><input type="number" min="1" max="365" step="1" inputmode="numeric" class="rem-input" id="remDuration" value="${r.duration}" oninput="remSet('duration',Number(this.value))"></div>`:''}</div></div>
- <div class="rem-form-section"><h3>Время${multiple?' · '+r.times.length+' за день':''}</h3>${ReminderCalendar.times(r).map((t,i)=>`<div class="rem-time-row"><label for="remTime${i}"><span class="rem-time-label">${multiple?'Время '+(i+1):'Когда напомнить'}</span><input type="time" class="rem-input" id="remTime${i}" value="${t}" oninput="remTime(${i},this.value)"></label>${multiple&&r.times.length>(r.mode==='multiple'?2:1)?`<button type="button" class="rem-remove-time" aria-label="Убрать время ${i+1}" onclick="remRemoveTime(${i})">${uiIcon('trash')}</button>`:''}</div>`).join('')}${multiple?`<button class="rem-time-add" type="button" id="remAddTime" onclick="remAppendTime()" ${r.times.length>=8?'disabled':''}>+ Добавить время${r.times.length>=8?' · максимум 8':''}</button>`:''}<p class="rem-help">Для лекарств укажи расписание из назначения ветеринара.</p></div>
+ <div class="rem-form-section"><h3>Время${multiple?' · '+r.times.length+' за день':''}</h3>${ReminderCalendar.times(r).map((t,i)=>`<div class="rem-time-row"><label for="remTime${i}"><span class="rem-time-label">${multiple?'Время '+(i+1):'Когда напомнить'}</span><input type="time" class="rem-input" id="remTime${i}" value="${t}" oninput="remTime(${i},this.value)"></label>${multiple&&r.times.length>(r.mode==='multiple'?2:1)?`<button type="button" class="rem-remove-time" aria-label="Убрать время ${i+1}" onclick="remRemoveTime(${i})">${uiIcon('trash')}</button>`:''}</div>`).join('')}${multiple?`<button class="rem-time-add" type="button" id="remAddTime" onclick="remAppendTime()" ${r.times.length>=8?'disabled':''}>+ Добавить время${r.times.length>=8?' · максимум 8':''}</button>`:''}<p class="rem-help">Для лекарств укажи расписание из назначения ${isHuman(p)?'врача':'ветеринара'}.</p></div>
  <div class="rem-form-section"><label for="remTimezone">Часовой пояс</label><select class="rem-input" id="remTimezone" onchange="remSet('timezone',this.value)">${zones.map(([z])=>`<option value="${z}" ${z===r.timezone?'selected':''}>${esc(remZoneLabel(z))}</option>`).join('')}</select><p class="rem-help">Время относится к этому поясу. При поездке его можно изменить здесь.</p></div>
  <div class="rem-preview-summary"><strong>${uiIcon('calendar')}Твоё расписание</strong><p id="remSummaryText">${esc(remFormSummary(r))}</p></div>${remUI.original?`<button type="button" class="rem-delete" onclick="remDelete()">${uiIcon('trash')}Удалить напоминание</button>`:''}<p class="rem-demo-note">Пробная версия: изменения до обновления страницы.<br>Сообщения в Telegram пока не отправляются.</p>`;
  if(focusId)document.getElementById(focusId)?.focus({preventScroll:true});
@@ -3882,6 +3912,78 @@ const postContactBaseEdit=actEdit;
 actEdit=function(){postContactBaseEdit();if(editingPost)postContactSetup();};
 UI_PATHS.chat='M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z';
 UI_PATHS.phone='M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3.1 5.2 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L9 11a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z';
+
+// Human cards use the same owner-private, versioned persistence as animal cards.
+function isHuman(p){return p?.type==='Человек';}
+function animalCards(){return DB.getPets().filter(p=>!isHuman(p));}
+UI_PATHS.person='M20 21v-2a7 7 0 0 0-14 0v2M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z';
+REC_PRESENTATION['Врач']={icon:'vet',label:'Визит к врачу'};
+REC_PRESENTATION['Анализы']={icon:'note',label:'Анализы'};
+const familyPetRegister=startRegister;
+let familyTrigger=null;
+startRegister=function(){closeAdd();familyTrigger=document.activeElement;document.getElementById('familyPicker').showModal();haptic();};
+function familyClosePicker(){document.getElementById('familyPicker').close();familyTrigger?.focus?.({preventScroll:true});}
+function familyChoosePet(){familyClosePicker();familyPetRegister();}
+function familyChooseHuman(){familyClosePicker();humanOpen();}
+const humanState={draft:null,busy:false,photoBusy:false,token:0,trigger:null};
+function humanError(message,field){const e=document.getElementById('humanError');e.textContent=message;e.hidden=false;if(field)document.getElementById(field).focus();}
+function humanSetBusy(){const disabled=humanState.busy||humanState.photoBusy;for(const id of ['humanSaveButton','humanPhotoButton','humanPhotoRemove','humanCloseButton','humanCancelButton','humanName','humanBirth','humanWeight'])document.getElementById(id).disabled=disabled;document.getElementById('humanSaveButton').textContent=humanState.busy?'Сохраняем…':humanState.photoBusy?'Подготавливаем фото…':humanState.draft?.editing?'Сохранить изменения':'Создать карточку';}
+function humanAvatar(){const d=humanState.draft;if(!d)return;document.getElementById('humanAvatar').innerHTML=d.photo?'<img src="'+esc(d.photo)+'" alt="Фото для карточки">':'💛';document.getElementById('humanPhotoRemove').hidden=!d.photo;document.getElementById('humanPhotoButton').textContent=d.photo?'Изменить фото':'Добавить фото';}
+function humanOpen(p=null){
+ if(p&&!isHuman(p))return;humanState.token++;humanState.busy=false;humanState.photoBusy=false;humanState.trigger=document.activeElement;
+ const cloudId=p?.cloudId||crypto.randomUUID();humanState.draft={editing:!!p,id:p?.id??liveId(cloudId),cloudId,photo:p?.photo||null};
+ document.getElementById('humanEditorTitle').textContent=p?'О человеке':'Новая любимка';
+ for(const [id,value] of [['humanName',p?.name],['humanBirth',p?.birth],['humanWeight',p?.weight]])document.getElementById(id).value=value||'';
+ document.getElementById('humanBirth').max=healthToday();document.getElementById('humanError').hidden=true;humanAvatar();humanSetBusy();document.getElementById('humanEditor').showModal();document.getElementById('humanName').focus();
+}
+function humanClose(){if(humanState.busy||humanState.photoBusy)return;humanState.token++;document.getElementById('humanEditor').close();humanState.draft=null;humanState.trigger?.focus?.({preventScroll:true});}
+function humanRemovePhoto(){if(humanState.busy||humanState.photoBusy||!humanState.draft)return;humanState.draft.photo=null;humanAvatar();}
+function humanChoosePhoto(input){
+ const file=input.files?.[0];input.value='';if(!file||!humanState.draft||humanState.busy||humanState.photoBusy)return;
+ if(file.size>12*1024*1024){humanError('Выбери фото до 12 МБ.');return;}
+ if(!/^image\//.test(file.type)){humanError('Выбери фотографию JPG, PNG или WebP.');return;}
+ const token=humanState.token;humanState.photoBusy=true;humanSetBusy();document.getElementById('humanError').hidden=true;
+ compressImage(file,data=>{if(token!==humanState.token)return;humanState.draft.photo=data;humanState.photoBusy=false;humanAvatar();humanSetBusy();},()=>{if(token!==humanState.token)return;humanState.photoBusy=false;humanSetBusy();humanError('Фото не открылось. Попробуй JPG или PNG.');});
+}
+async function humanSave(){
+ const d=humanState.draft;if(!d||humanState.busy||humanState.photoBusy||liveState.busy)return;
+ const name=document.getElementById('humanName').value.trim(),birth=document.getElementById('humanBirth').value,rawWeight=document.getElementById('humanWeight').value.trim();
+ if(!name||name.length>200){humanError('Укажи имя — до 200 символов.','humanName');return;}
+ if(birth&&(healthDay(birth)===null||healthDay(birth)>healthDay(healthToday()))){humanError('Укажи дату рождения не позже сегодняшней.','humanBirth');return;}
+ if(rawWeight&&weightNumber(rawWeight)===null){humanError('Проверь вес: число больше нуля, до трёх цифр после запятой.','humanWeight');return;}
+ humanState.busy=true;humanSetBusy();document.getElementById('humanError').hidden=true;
+ try{
+  const cards=DB.getPets();let card=cards.find(p=>p.cloudId===d.cloudId);
+  if(d.editing&&!card)throw Error('Карточка уже удалена. Закрой форму и вернись на главную.');
+  if(card&&!isHuman(card))throw Error('Открой карточку человека заново.');
+  if(!card){card={id:d.id,cloudId:d.cloudId,version:0,type:'Человек',emoji:'💛',breed:'',gender:'',history:[],weight:rawWeight?String(weightNumber(rawWeight)):'',weightBaseline:rawWeight?String(weightNumber(rawWeight)):''};cards.push(card);}
+  else{if(!weightApplyProfile(card,rawWeight))return;card.weightBaseline=weightBaselines.get(card.id)??card.weightBaseline??'';}
+  Object.assign(card,{name,birth,photo:d.photo});await DB.savePets(cards);DB.setWelcomed();
+  const saved=DB.getPets().find(p=>p.cloudId===d.cloudId);if(!saved)throw Error('Не удалось подтвердить сохранение. Попробуй ещё раз.');
+  humanState.busy=false;humanClose();enterApp();openPet(saved.id);alertMsg(d.editing?'Карточка обновлена':'Новая любимка добавлена 💛');
+ }catch(e){humanError(e.message||'Не удалось сохранить. Проверь интернет и повтори.');}
+ finally{humanState.busy=false;humanSetBusy();}
+}
+const familyOpenEdit=openEdit;
+openEdit=function(){const p=getCurPet();if(isHuman(p))humanOpen(p);else familyOpenEdit();};
+const familyUiEditField=uiEditField;
+uiEditField=function(id){if(!isHuman(getCurPet()))return familyUiEditField(id);humanOpen(getCurPet());document.getElementById(id==='editWeight'?'humanWeight':'humanBirth').focus();};
+const familyHealthEntry=healthEntry;healthEntry=function(p){return isHuman(p)?'':familyHealthEntry(p);};
+const familyCareEntry=carePetEntry;carePetEntry=function(p){return isHuman(p)?'':familyCareEntry(p);};
+const familyPetReminders=petReminders;petReminders=function(p){return isHuman(p)?[]:familyPetReminders(p);};
+const FAMILY_RECORD_TYPES=[['Заметка','📝','Заметка'],['Врач','🩺','Врач'],['Лекарство','💊','Лекарство'],['Анализы','🧪','Анализы'],['Прививка','💉','Прививка'],['Вес','⚖️','Вес']];
+const FAMILY_PET_RECORD_TYPES=[['Прививка','💉','Прививка'],['Ветеринар','🏥','Ветеринар'],['Лекарство','💊','Лекарство'],['Паразиты','🪱','Обработка'],['Груминг','✂️','Груминг'],['Заметка','📝','Заметка'],['Вес','⚖️','Вес']];
+function familyRecordTypes(p){return (isHuman(p)?FAMILY_RECORD_TYPES:FAMILY_PET_RECORD_TYPES).map(([type,emoji,label],i)=>`<button type="button" class="rec-type${i===0?' sel':''}" ${type==='Вес'?'id="recordWeightType"':''} aria-pressed="${i===0}" onclick="pickRecType(this,'${type}','${emoji}')"><span class="ic">${uiIcon(REC_PRESENTATION[type]?.icon||'note')}</span><span class="lbl">${label}</span></button>`).join('');}
+const familyOpenRec=openRec;
+openRec=function(){
+ const person=isHuman(getCurPet());document.getElementById('recTypes').innerHTML=familyRecordTypes(getCurPet());familyOpenRec();
+ if(person){recType='Заметка';recEmoji='📝';weightToggleField();}
+ document.querySelector('#recModal .sheet-subtitle').textContent=person?'Сохрани важное: событие, визит или тёплое воспоминание':'Сохрани то, что важно для питомца';
+ document.querySelector('#photoSection > p').textContent=person?'Фотография, рецепт или заключение врача — рядом с записью.':'Рецепт, заключение врача или снимок питомца — всё останется рядом с записью.';
+ document.getElementById('recordWeight').placeholder=person?'Например, 65,5':'Например, 4,2';
+};
+for(const id of ['familyPicker','humanEditor'])document.getElementById(id).addEventListener('cancel',e=>{e.preventDefault();id==='humanEditor'?humanClose():familyClosePicker();});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(document.getElementById('humanEditor').open||document.getElementById('familyPicker').open){e.preventDefault();e.stopImmediatePropagation();document.getElementById('humanEditor').open?humanClose():familyClosePicker();}},true);
 
 boot();
 </script>
