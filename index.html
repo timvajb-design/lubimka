@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Любимка — рядом с любимыми</title>
-<meta name="lubimka-release" content="2026-09-28.1">
+<meta name="lubimka-release" content="2026-09-28.2">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -859,6 +859,11 @@ body{padding-top:0;}
 @media(prefers-reduced-motion:reduce){.mood-choice{transition:none}.mood-choice:active{transform:none}}
 .mood-reminder-box{margin-top:16px;border-top:1px solid #E8D8C2;padding-top:17px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}.mood-reminder-box>div{flex:1;min-width:155px}.mood-reminder-box strong{font-size:13px}.mood-reminder-box p{font-size:12px;line-height:1.6;color:#82705B;margin:5px 0 0}.mood-reminder-toggle{display:flex;align-items:center;gap:12px;min-height:54px;margin:12px 0 18px;padding:12px;border:1px solid #E7D7C1;border-radius:14px;background:#FFF3DF;font-size:14px}.mood-reminder-toggle input{width:21px;height:21px;accent-color:#C06321;flex-shrink:0}.mood-reminder-warning{color:#95551E!important}#moodReminderEditor .field{display:block;width:100%;margin:9px 0 18px;min-width:0;font-size:16px}#moodReminderEditor h2{font-size:24px}
 
+.mood-home.card{padding:20px;margin-bottom:18px;background:linear-gradient(140deg,#fffaf3,#fff);border:1px solid #eedfcf}
+.mood-home-heading{display:flex;align-items:flex-start;gap:12px;justify-content:space-between}.mood-home-heading>div{min-width:0}.mood-home h2{margin:0;font-size:22px;line-height:1.25;letter-spacing:-.45px;color:#342f29}.mood-home .mood-eyebrow{margin-bottom:7px}.mood-home-count{flex-shrink:0;padding:8px 10px;border-radius:12px;background:#f9ebd9;color:#945a2b;font-size:12px;font-weight:750;white-space:nowrap}.mood-home-intro{margin:10px 0 16px;color:#82715e;font-size:13px;line-height:1.6}.mood-home-list{display:grid;gap:8px}.mood-home-row{display:flex;width:100%;min-height:76px;align-items:center;gap:12px;padding:12px;border:1px solid #eee1d2;border-radius:17px;background:#fff;text-align:left;font:inherit;color:inherit;cursor:pointer}.mood-home-face{display:grid;place-items:center;width:40px;height:44px;border-radius:13px;background:#fff2df;font-size:25px;flex-shrink:0}.mood-home-person{flex:1;min-width:0;overflow-wrap:anywhere}.mood-home-person strong{display:block;font-size:16px;line-height:1.3;margin-bottom:5px}.mood-home-person>span{display:block;font-size:11px;line-height:1.5;color:#8a7662}.mood-home-action{flex-shrink:0;font-weight:700;font-size:12px;color:#b8581e}.mood-home-row.is-done{background:#fcfdf9;border-color:#e2e9d9}.mood-home-row.is-done .mood-home-face{background:#edf3e7}.mood-home-row.is-done .mood-home-person>span{color:#62794d}.mood-home-row:focus-visible{outline:3px solid #d9894b;outline-offset:3px}.mood-home-row:active{transform:scale(.985)}.mood-home-row:disabled{opacity:.6;cursor:wait}
+@media(max-width:360px){.mood-home.card{padding:16px}.mood-home h2{font-size:20px}.mood-home-row{gap:8px;padding:10px}.mood-home-face{width:32px}.mood-home-person strong{font-size:15px}.mood-home-action{font-size:11px}.mood-home-count{padding:7px 8px}}
+@media(prefers-reduced-motion:reduce){.mood-home-row{transition:none}.mood-home-row:active{transform:none}}
+
 </style>
 </head>
 <body>
@@ -1707,7 +1712,7 @@ function renderHome(){
       <div class="info"><h3>${esc(p.name)}</h3><p>${esc(meta)}</p>${p.gender?`<span class="badge">${p.gender}</span>`:''}</div>
       <div class="chev">›</div></div>`;
   });
-  c.innerHTML=html;
+  c.innerHTML=moodHomeMarkup(everyone)+html;
   const score=pets.length?Math.round(pets.reduce((a,p)=>a+healthScore(p),0)/pets.length):0;
   const col=score>=4?'#7CC576':(score>=2?'#F5A623':'#E05A5A');
   const off=201-201*score/5;
@@ -3298,7 +3303,7 @@ const weightBaseRemoveRec=removeRec;
 removeRec=function(id){const p=getCurPet(),wasWeight=p?.history?.find(r=>r.id===id)?.type==='Вес';if(wasWeight)weightRememberBaseline(p);weightBaseRemoveRec(id);if(wasWeight){const pets=DB.getPets(),pet=pets.find(x=>x.id===p.id);if(pet){weightSyncPet(pet);DB.savePets(pets);renderPetScreen();if(healthState.open)renderHealth();}}};
 
 // Live persistence: Telegram verifies identity; the server owns all private writes.
-const APP_RELEASE='2026-09-28.1';
+const APP_RELEASE='2026-09-28.2';
 const liveState={pets:[],pending:null,busy:false,ready:false,photoExpiresAt:0,ids:new Map()};
 const liveClone=value=>JSON.parse(JSON.stringify(value));
 const liveId=id=>parseInt(id.replaceAll('-','').slice(0,13),16);
@@ -4144,6 +4149,25 @@ document.getElementById('moodReminderEditor').addEventListener('cancel',e=>{e.pr
 document.addEventListener('keydown',e=>{if(document.getElementById('moodReminderEditor').open&&(e.key==='Escape'||e.key==='Tab')){e.stopImmediatePropagation();if(e.key==='Escape'){e.preventDefault();moodReminderClose();}}},true);
 const moodReminderBootBase=boot;
 boot=async function(){await moodReminderBootBase();if(liveState.ready&&new URLSearchParams(location.search).get('checkin')==='1'&&getCurPet())moodOpenEditor();};
+
+// The home shortcut reads the same private entries as the individual calendars.
+function moodHomeMarkup(people=DB.getPets()){
+ if(!people.length)return '';
+ const today=healthToday(),done=people.filter(p=>moodForDay(p,today)).length;
+ return `<section class="mood-home card" id="moodHome" data-date="${today}" aria-labelledby="moodHomeTitle"><div class="mood-home-heading"><div><p class="mood-eyebrow">${esc(new Date(today+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'}))}</p><h2 id="moodHomeTitle">Как ваши дела сегодня?</h2></div><span class="mood-home-count" aria-label="Отмечено ${done} из ${people.length}">${done} из ${people.length}</span></div><p class="mood-home-intro">${done===people.length?'Все отметки за сегодня сохранены. Их можно изменить.':'Выбери смайлик и добавь пару слов о дне.'}</p><div class="mood-home-list">${people.map(p=>{
+  const entry=moodForDay(p,today),kind=moodKinds(p)[moodCode(entry)];
+  return `<button type="button" class="mood-home-row ${entry?'is-done':''}" onclick="moodHomeOpen(${p.id})" aria-label="${esc(p.name)}: ${entry?kind.label+'. Изменить отметку':'отметить '+(isHuman(p)?'настроение':'самочувствие')}" ${liveState.busy?'disabled':''}><span class="mood-home-face" aria-hidden="true">${kind?.emoji||esc(p.emoji||(isHuman(p)?'💛':'🐾'))}</span><span class="mood-home-person"><strong>${esc(p.name)}</strong><span>${entry?'✓ '+kind.label:isHuman(p)?'Настроение · ещё не отмечено':'Самочувствие · ещё не отмечено'}</span></span><span class="mood-home-action">${entry?'Изменить':'Отметить'}<span aria-hidden="true"> ›</span></span></button>`;
+ }).join('')}</div></section>`;
+}
+function moodHomeOpen(id){
+ if(liveState.busy||moodState.busy||!DB.getPets().some(p=>p.id===id))return;
+ openPet(id);moodOpenEditor();
+}
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden||!liveState.ready)return;
+ const el=document.getElementById('moodHome');
+ if(el&&el.dataset.date!==healthToday())el.outerHTML=moodHomeMarkup();
+});
 
 boot();
 </script>
