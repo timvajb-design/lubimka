@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Любимка — рядом с любимыми</title>
-<meta name="lubimka-release" content="2026-10-07.1">
+<meta name="lubimka-release" content="2026-10-08.1">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -3814,7 +3814,7 @@ var qrcode = function() {
 <main id="qrPublic" hidden aria-live="polite"></main>
 <dialog id="qrDialog" class="care-dialog qr-dialog" aria-labelledby="qrTitle">
  <header class="mood-dialog-heading"><div><p class="mood-eyebrow">ПОМОЖЕМ ЛЮБИМКЕ ВЕРНУТЬСЯ ДОМОЙ</p><h2 id="qrTitle">QR-адресник</h2></div><button class="mood-close" type="button" aria-label="Закрыть QR-адресник" onclick="qrClose()">×</button></header>
- <div id="qrBody"></div>
+ <p id="qrConnection" class="qr-note" role="status" aria-live="polite"></p><div id="qrBody"></div>
  <p id="qrError" class="qr-error" role="alert" hidden></p>
 </dialog>
 <dialog id="qrReview" class="care-dialog qr-dialog" aria-labelledby="qrReviewTitle"><header class="mood-dialog-heading"><div><p class="mood-eyebrow">ТАК УВИДИТ НАШЕДШИЙ</p><h2 id="qrReviewTitle">Карточка по QR</h2></div><button type="button" class="mood-close" aria-label="Закрыть просмотр QR" onclick="qrReviewClose()">×</button></header><div id="qrReviewBody"></div></dialog>
@@ -6141,7 +6141,7 @@ const weightBaseRemoveRec=removeRec;
 removeRec=function(id){const p=getCurPet(),wasWeight=p?.history?.find(r=>r.id===id)?.type==='Вес';if(wasWeight)weightRememberBaseline(p);weightBaseRemoveRec(id);if(wasWeight){const pets=DB.getPets(),pet=pets.find(x=>x.id===p.id);if(pet){weightSyncPet(pet);DB.savePets(pets);renderPetScreen();if(healthState.open)renderHealth();}}};
 
 // Live persistence: Telegram verifies identity; the server owns all private writes.
-const APP_RELEASE='2026-10-07.1';
+const APP_RELEASE='2026-10-08.1';
 const liveState={pets:[],pending:null,busy:false,ready:false,photoExpiresAt:0,ids:new Map()};
 const liveClone=value=>JSON.parse(JSON.stringify(value));
 const liveId=id=>parseInt(id.replaceAll('-','').slice(0,13),16);
@@ -7205,8 +7205,8 @@ async function qrLoad(){
  finally{qrState.busy=false;}
 }
 function qrRender(){qrDropFiles();qrError('');if(!qrState.tag){qrEdit();return;}const t=qrState.tag;
- document.getElementById('qrBody').innerHTML=`<section class="qr-result"><span class="qr-state ${t.active?'':'off'}">${t.active?'✓ Адресник работает':'Адресник отключён'}</span><h3>${esc(t.name)}</h3>${t.active?`<div class="qr-code" role="img" aria-label="QR-код питомца ${esc(t.name)}">${qrSvg(t.token)}</div><p class="qr-note">Наведи камеру телефона — откроется карточка с контактом хозяина.</p><span class="qr-link">${esc(qrLink(t.token))}</span>`:'<p class="qr-note">По этому коду сведения и контакты больше не открываются. Его можно включить снова с тем же кодом.</p>'}</section>
- <div class="qr-actions">${t.active?'<button type="button" class="primary" onclick="qrDownload(\'png\')">Скачать QR (PNG)</button><button type="button" onclick="qrDownload(\'pdf\')">Лист для печати (PDF)</button><button type="button" onclick="qrPreviewSaved()">Что увидит нашедший</button>':''}<button type="button" onclick="qrEdit()">${t.active?'Изменить контакт и сведения':'Включить адресник'}</button>${t.active?'<button type="button" class="danger" onclick="qrConfirm(\'disable\')">Отключить адресник</button><button type="button" class="danger" onclick="qrConfirm(\'rotate\')">Заменить QR-код</button>':''}</div><div id="qrConfirm"></div>
+ document.getElementById('qrBody').innerHTML=`<section class="qr-result"><span class="qr-state ${t.active?'':'off'}">${qrState.cached?'Сохранённый QR · статус не проверен':t.active?'✓ Адресник работает':'Адресник отключён'}</span><h3>${esc(t.name)}</h3>${t.active?`<div class="qr-code" role="img" aria-label="QR-код питомца ${esc(t.name)}">${qrSvg(t.token)}</div><p class="qr-note">Наведи камеру телефона — откроется карточка с контактом хозяина.</p><span class="qr-link">${esc(qrLink(t.token))}</span>`:'<p class="qr-note">По этому коду сведения и контакты больше не открываются. Его можно включить снова с тем же кодом.</p>'}</section>
+ <div class="qr-actions">${t.active?'<button type="button" class="primary" onclick="qrDownload(\'png\')">Скачать QR (PNG)</button><button type="button" onclick="qrDownload(\'pdf\')">Лист для печати (PDF)</button>'+(qrState.cached?'':'<button type="button" onclick="qrPreviewSaved()">Что увидит нашедший</button>'):''}${qrState.cached?'<button type="button" onclick="qrLoad()">Обновить статус</button>':`<button type="button" onclick="qrEdit()">${t.active?'Изменить контакт и сведения':'Включить адресник'}</button>`}${t.active&&!qrState.cached?'<button type="button" class="danger" onclick="qrConfirm(\'disable\')">Отключить адресник</button><button type="button" class="danger" onclick="qrConfirm(\'rotate\')">Заменить QR-код</button>':''}</div><div id="qrConfirm"></div>
  <p class="qr-note">У каждого питомца свой код. Изменение контакта сохраняет код — перепечатывать наклейку не нужно.</p><p class="qr-note">В PDF — 6 одинаковых адресников. Печатай в масштабе 100%, сохрани белую рамку, защити наклейку от воды и проверь камерой перед креплением. Сам QR на листе — 32 × 32 мм.</p>`;
  document.getElementById('qrDialog').scrollTop=0;
 }
@@ -7257,7 +7257,7 @@ function qrMakePdf(t){
  }
  doc.setFontSize(9);doc.text(doc.splitTextToSize('Контакт можно менять в Любимке: этот код сохранится. После замены QR-кода старые наклейки перестанут работать.',174),18,224);doc.setFontSize(7);doc.text(qrLink(t.token),18,244);doc.text('Любимка · Рядом с теми, кого любишь',18,279);return doc.output('blob');
 }
-async function qrDownload(kind){if(!qrState.tag?.active||qrState.busy)return;try{qrError('');const t=qrState.tag,blob=kind==='pdf'?qrMakePdf(t):await new Promise(resolve=>qrCanvas(t.token).toBlob(resolve,'image/png'));if(!blob)throw Error('Не удалось подготовить файл. Попробуй ещё раз.');const file=careFile(blob,'lubimka-qr-'+t.token.slice(0,8)+'.'+kind,'qr',qrState.petId);qrState.files.push(file);careDownload(file);}catch(e){qrError(e.message);}}
+async function qrDownload(kind){if(!qrState.tag?.active||(qrState.busy&&!qrState.loading))return;try{qrError('');const t=qrState.tag,blob=kind==='pdf'?qrMakePdf(t):await new Promise(resolve=>qrCanvas(t.token).toBlob(resolve,'image/png'));if(!blob)throw Error('Не удалось подготовить файл. Попробуй ещё раз.');const file=careFile(blob,'lubimka-qr-'+t.token.slice(0,8)+'.'+kind,'qr',qrState.petId);qrState.files.push(file);careDownload(file);}catch(e){qrError(e.message);}}
 function qrSafePhoto(url){return typeof url==='string'&&(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(url)||/^https:\/\//.test(url))?url:'';}
 function qrPublicCard(t){const photo=qrSafePhoto(t.photo);return `<article class="qr-public-card">${photo?`<img class="qr-public-photo" src="${esc(photo)}" alt="${esc(t.name)}" referrerpolicy="no-referrer" onerror="this.hidden=true">`:'<div class="qr-public-placeholder" aria-hidden="true">🐾</div>'}<div class="qr-public-info"><h2>${esc(t.name)}</h2><p>${esc([t.type,t.breed].filter(Boolean).join(' · '))}</p>${t.note?`<p class="qr-public-message">${esc(t.note)}</p>`:''}<h3>${t.ownerLabel?'Хозяин: '+esc(t.ownerLabel):'Связаться с хозяином'}</h3>${/^\+[1-9][0-9]{7,14}$/.test(t.phone||'')?`<a class="qr-public-contact primary" href="tel:${esc(t.phone)}"><span>Позвонить хозяину<small>${esc(t.phone)}</small></span></a>`:''}${/^[A-Za-z][A-Za-z0-9_]{4,31}$/.test(t.telegram||'')?`<a class="qr-public-contact ${t.phone?'':'primary'}" href="https://t.me/${esc(t.telegram)}" target="_blank" rel="noopener noreferrer"><span>Написать в Telegram<small>@${esc(t.telegram)}</small></span></a>`:''}</div></article>`;}
 function qrIsPublic(){return location.hash.startsWith('#tag=');}
@@ -7265,13 +7265,91 @@ async function qrPublicBoot(){
  document.body.classList.add('qr-public-mode');const root=document.getElementById('qrPublic');root.hidden=false;document.title='QR-адресник · Любимка';
  const brand='<div class="qr-public-brand"><span aria-hidden="true">💛</span> Любимка</div>',token=location.hash.slice(5);
  root.innerHTML=brand+'<p class="qr-note">Открываем адресник питомца…</p>';
- try{if(!/^[0-9a-f]{32}$/.test(token))throw Object.assign(Error('Адресник не найден'),{status:404});const data=await liveApi('publicTag',{token});if(location.hash.slice(5)!==token)return;root.innerHTML=brand+'<header class="qr-public-head"><p class="mood-eyebrow">ВЫ НАШЛИ ПИТОМЦА?</p><h1>Поможем ему вернуться домой</h1><p>Спасибо, что не прошли мимо. Свяжитесь с хозяином по кнопке ниже.</p></header>'+qrPublicCard(data.tag)+'<p class="qr-public-footer">Здесь только сведения, которые хозяин разрешил показать.<br><a href="https://t.me/lubimkaa1_bot" target="_blank" rel="noopener noreferrer">Свой адресник в Любимке</a></p>';}
+ try{if(!/^[0-9a-f]{32}$/.test(token))throw Object.assign(Error('Адресник не найден'),{status:404});const data=await qrRequest('publicTag',{token},{progress:text=>{if(location.hash.slice(5)===token)root.innerHTML=brand+'<p class="qr-note">'+esc(text)+'</p>';}});if(location.hash.slice(5)!==token)return;root.innerHTML=brand+'<header class="qr-public-head"><p class="mood-eyebrow">ВЫ НАШЛИ ПИТОМЦА?</p><h1>Поможем ему вернуться домой</h1><p>Спасибо, что не прошли мимо. Свяжитесь с хозяином по кнопке ниже.</p></header>'+qrPublicCard(data.tag)+'<p class="qr-public-footer">Здесь только сведения, которые хозяин разрешил показать.<br><a href="https://t.me/lubimkaa1_bot" target="_blank" rel="noopener noreferrer">Свой адресник в Любимке</a></p>';}
  catch(e){const missing=e.status===404;root.innerHTML=brand+`<section class="qr-public-error"><span aria-hidden="true">🏷️</span><h1>${missing?'Адресник недоступен':'Не удалось открыть адресник'}</h1><p>${missing?'Возможно, хозяин отключил или заменил код, либо карточка удалена.':'Проверьте интернет и попробуйте ещё раз. Этот код может быть действующим.'}</p>${missing?'':'<div class="qr-actions"><button type="button" onclick="qrPublicBoot()">Попробовать ещё раз</button></div>'}</section>`;}
 }
 const qrRenderPet=renderPetScreen;renderPetScreen=function(){qrRenderPet();const p=getCurPet();if(p&&!isHuman(p))document.querySelector('#psBody .care-card-actions')?.insertAdjacentHTML('afterend','<button type="button" class="qr-entry" onclick="qrOpen()"><span aria-hidden="true">🏷️</span><span><strong>QR-адресник</strong><small>Код на ошейник, чтобы с тобой связались</small></span><b aria-hidden="true">›</b></button>');};
 document.getElementById('qrDialog').addEventListener('cancel',e=>{e.preventDefault();qrClose();});document.getElementById('qrReview').addEventListener('cancel',e=>{e.preventDefault();qrReviewClose();});
 const qrOriginalBoot=boot;boot=function(){return qrIsPublic()?qrPublicBoot():qrOriginalBoot();};
 window.addEventListener('hashchange',()=>{if(qrIsPublic())qrPublicBoot();else if(document.body.classList.contains('qr-public-mode'))location.reload();});
+
+// Two official routes to the same Supabase project. No third-party relay.
+const qrNetwork={preferred:0};
+const QR_API_ROUTES=[SB_URL+'/functions/v1/lubimka-api','https://aidcgtpxuqlxxmtupvmb.functions.supabase.co/lubimka-api'];
+async function qrRequest(action,body={},options={}){
+ const payload=JSON.stringify({action,...body}),headers={apikey:SB_KEY,'Content-Type':'application/json',...(action==='publicTag'?{}:{'x-telegram-init-data':tg?.initData||''})};
+ const order=[qrNetwork.preferred,1-qrNetwork.preferred];let last;
+ for(let i=0;i<order.length;i++){
+  if(options.signal?.aborted)throw Object.assign(Error('Загрузка отменена'),{name:'AbortError'});
+  const controller=new AbortController(),abort=()=>controller.abort(),timer=setTimeout(abort,i?18000:10000);
+  options.signal?.addEventListener('abort',abort,{once:true});
+  try{
+   options.progress?.(i?'Соединяемся через резервный адрес…':'Связываемся с сервером…');
+   const response=await fetch(QR_API_ROUTES[order[i]],{method:'POST',headers,body:payload,signal:controller.signal,cache:'no-store'});
+   let data;try{data=await response.json();}catch{throw Error('Сервер не вернул ответ');}
+   if(!response.ok){const e=Object.assign(Error(data?.error||'Сервис временно недоступен'),{status:response.status});throw e;}
+   if(!data||typeof data!=='object'||!Object.hasOwn(data,'tag'))throw Error('Неполный ответ сервера');
+   qrNetwork.preferred=order[i];return data;
+  }catch(e){last=e;if(options.signal?.aborted)throw Object.assign(Error('Загрузка отменена'),{name:'AbortError'});if(e.status&&![502,503,504].includes(e.status))throw e;}
+  finally{clearTimeout(timer);options.signal?.removeEventListener('abort',abort);}
+ }
+ throw Object.assign(Error(last?.status?last.message:'Оба адреса сервера сейчас недоступны. Данные для повторной попытки сохранены на этом устройстве.'),{status:last?.status||0,network:true});
+}
+function qrStorageKey(kind){const p=qrPet();return p?.cloudId&&qrState.owner?'lubimka_qr_'+kind+'_v1_'+qrState.owner+'_'+p.cloudId:null;}
+function qrStored(kind,value){const key=qrStorageKey(kind);if(!key)return null;try{if(arguments.length>1){if(value===null)localStorage.removeItem(key);else localStorage.setItem(key,JSON.stringify(value));return value;}return JSON.parse(localStorage.getItem(key)||'null');}catch{return null;}}
+function qrCacheRead(){const t=qrStored('cache');return t&&/^[0-9a-f]{32}$/.test(t.token||'')&&typeof t.active==='boolean'&&Number.isInteger(t.version)&&t.version>0?t:null;}
+function qrCacheSave(t){qrStored('cache',t?{...t,photo:'',savedAt:Date.now()}:null);}
+function qrPendingRead(){const p=qrStored('pending');return p&&['save','disable','rotate'].includes(p.type)&&/^[0-9a-f-]{36}$/.test(p.mutationId||'')&&Number.isInteger(p.baseVersion)&&p.baseVersion>=0?p:null;}
+function qrPendingClear(){qrState.pending=null;qrStored('pending',null);}
+function qrProgress(text){const e=document.getElementById('qrConnection');if(e)e.textContent=text||'';}
+function qrRecovery(message='Изменение ещё не подтверждено сервером. Повтори попытку — отправим тот же запрос, без второго кода.'){
+ document.getElementById('qrBody').innerHTML='<p class="qr-note">'+esc(message)+'</p><div class="qr-actions"><button type="button" class="primary" onclick="qrMutate()">Повторить сохранение</button><button type="button" onclick="qrLoad()">Проверить состояние адресника</button></div>';
+}
+async function qrOpen(){
+ const p=getCurPet();if(!p||isHuman(p)||liveState.busy)return;
+ Object.assign(qrState,{petId:p.id,owner:ME.id,tag:null,pending:null,cached:false,loading:false,requestId:(qrState.requestId||0)+1,trigger:document.activeElement});
+ qrDropFiles();qrError('');qrProgress('');document.getElementById('qrDialog').showModal();
+ qrState.pending=qrPendingRead();if(qrState.pending){qrRecovery();return;}
+ await qrLoad();
+}
+function qrClose(){
+ if(qrState.busy&&!qrState.loading)return;
+ qrState.requestId=(qrState.requestId||0)+1;qrState.loadController?.abort();qrState.busy=false;qrState.loading=false;
+ document.getElementById('qrDialog').close();qrDropFiles();qrProgress('');if(qrState.trigger?.isConnected)qrState.trigger.focus({preventScroll:true});
+}
+async function qrLoad(){
+ if(qrState.busy)return;const p=qrPet();if(!p||ME.id!==qrState.owner)return;
+ const owner=qrState.owner,pet=p.cloudId,id=++qrState.requestId;
+ const current=()=>id===qrState.requestId&&ME.id===owner&&qrPet()?.cloudId===pet;
+ qrState.busy=true;qrState.loading=true;qrState.loadController=new AbortController();qrError('');
+ const cached=qrState.pending?null:qrCacheRead();qrState.cached=!!cached;
+ if(cached){qrState.tag=cached;qrRender();}else document.getElementById('qrBody').innerHTML='<p class="qr-note">Загружаем адресник…</p>';
+ try{
+  const data=await qrRequest('qrTag',{petId:pet,command:{type:'get'}},{signal:qrState.loadController.signal,progress:qrProgress});
+  if(!current())return;qrState.cached=false;qrState.tag=data.tag;qrCacheSave(data.tag);
+  if(qrState.pending&&(data.tag?.version||0)<=qrState.pending.baseVersion){qrRecovery('Сервер пока не подтвердил это изменение. Нажми «Повторить сохранение» — введённые контакты сохранены.');return;}
+  qrPendingClear();qrRender();
+ }catch(e){
+  if(!current()||e.name==='AbortError')return;
+  if(cached&&(!e.status||[502,503,504].includes(e.status))){qrState.cached=true;qrRender();qrError('Не удалось обновить статус. Сохранённый QR можно скачать. Если адресник меняли на другом устройстве, этот код мог устареть.');}
+  else{if(e.status===404)qrCacheSave(null);qrState.cached=false;if(qrState.pending)qrRecovery();else document.getElementById('qrBody').innerHTML='<div class="qr-actions"><button type="button" onclick="qrLoad()">Попробовать ещё раз</button></div>';qrError(e.message);}
+ }finally{if(current()){qrState.busy=false;qrState.loading=false;qrProgress('');}}
+}
+async function qrMutate(type){
+ if(qrState.busy||qrState.cached)return;const p=qrPet();if(!p||ME.id!==qrState.owner)return;qrError('');
+ if(!qrState.pending){try{qrState.pending={type,mutationId:crypto.randomUUID(),baseVersion:qrState.tag?.version||0,...(type==='save'?{details:qrCollect()}: {})};qrStored('pending',qrState.pending);}catch(e){qrError(e.message);return;}}
+ const owner=ME.id,pet=p.cloudId,id=qrState.requestId;qrState.busy=true;
+ document.querySelectorAll('#qrBody button,#qrBody input,#qrBody textarea').forEach(e=>e.disabled=true);
+ try{
+  const result=await qrRequest('qrTag',{petId:pet,command:qrState.pending},{progress:qrProgress});
+  if(ME.id!==owner||qrPet()?.cloudId!==pet||id!==qrState.requestId)return;
+  qrState.tag=result.tag;qrState.cached=false;qrCacheSave(result.tag);qrPendingClear();qrRender();haptic('ok');
+ }catch(e){
+  if(ME.id!==owner||qrPet()?.cloudId!==pet||id!==qrState.requestId)return;
+  if(e.status===400){const draft=qrState.pending?.details;qrPendingClear();qrEdit();if(draft){for(const [field,key] of [['qrPhone','phone'],['qrTelegram','telegram'],['qrOwner','ownerLabel'],['qrNote','note']])document.getElementById(field).value=draft[key]||'';document.getElementById('qrPhoto').checked=!!draft.showPhoto;}qrError(e.message);}
+  else{qrRecovery();qrError(e.message);}
+ }finally{if(ME.id===owner&&qrPet()?.cloudId===pet&&id===qrState.requestId){qrState.busy=false;qrProgress('');}}
+}
 
 boot();
 </script>
