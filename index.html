@@ -4446,19 +4446,74 @@ async function sbGet(path){
   catch(e){ console.warn('sbGet',e); return []; }
 }
 async function sbPost(table,body,ret){
+  if(['posts','stories','shop_photos','helpers','reports'].includes(table))return secureCommunityPost(table,body,ret);
   try{ const r=await fetch(SB_URL+'/rest/v1/'+table,{method:'POST',
     headers:Object.assign({},SB_H,{'Prefer':ret?'return=representation':'resolution=merge-duplicates'}),
     body:JSON.stringify(body)});
     return r.ok?(ret?await r.json():true):null; }catch(e){ console.warn(e); return null; }
 }
 async function sbPatch(path,body){
+  if(/^(posts|stories|shop_photos|helpers|reports)(?:\?|$)/.test(path))return secureCommunityChange(path,body);
   try{ const r=await fetch(SB_URL+'/rest/v1/'+path,{method:'PATCH',headers:SB_H,body:JSON.stringify(body)}); return r.ok; }
   catch(e){ return false; }
 }
 async function sbDel(path){
+  if(/^(posts|stories|shop_photos|helpers|reports)(?:\?|$)/.test(path))return secureCommunityChange(path,null,true);
   try{ const r=await fetch(SB_URL+'/rest/v1/'+path,{method:'DELETE',headers:SB_H}); return r.ok; }
   catch(e){ return false; }
 }
+// The API derives owner/admin from verified Telegram data, never from ME.
+let communityLastError='';
+const communityPending=new Map();
+function safeImageUrl(value){
+ if(typeof value!=='string'||value.length>2000000)return '';
+ if(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(value))return value;
+ try{const u=new URL(value);if(u.protocol==='https:'&&!u.username&&!u.password&&!/[\s<>"'\\]/.test(value))return u.href;
+ if(u.protocol==='blob:'&&u.origin===location.origin)return u.href;}catch{}return '';
+}
+function safeImageAttr(value){return esc(safeImageUrl(value));}
+function safeInlineId(value){const s=String(value??'');return /^(?:[0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i.test(s)?s:'';}
+function safeToken(value){const s=String(value??'');return /^[A-Za-z0-9_-]{1,90}$/.test(s)?s:'';}
+function safePostKind(value){return ['lost','found','adopt','boarding'].includes(value)?value:'lost';}
+function communityPostVersion(id){const p=editingPost?.id===id?editingPost:boardCache.find(x=>x.id===id);return Number.isInteger(p?.version)&&p.version>0?p.version:1;}
+async function communityRequest(command){
+ communityLastError='';
+ if(!tg?.initData){communityLastError='Для сохранения открой Любимку в Telegram';return null;}
+ const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(command)))),b=>b.toString(16).padStart(2,'0')).join('');
+ const key='lubimka_community_pending_'+ME.id+'_'+digest;
+ let mid=communityPending.get(key);try{mid=mid||sessionStorage.getItem(key);}catch{}
+ if(!/^[0-9a-f-]{36}$/i.test(mid||''))mid=crypto.randomUUID();
+ communityPending.set(key,mid);try{sessionStorage.setItem(key,mid);}catch{}
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
+ try{
+  const r=await fetch(SB_URL+'/functions/v1/lubimka-community',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json','x-telegram-init-data':tg.initData},body:JSON.stringify({...command,mutationId:mid}),signal:controller.signal});
+  const result=await r.json();
+  if(!r.ok){if(r.status<500){communityPending.delete(key);try{sessionStorage.removeItem(key);}catch{}}communityLastError=result.error||'Не удалось сохранить';return null;}
+  communityPending.delete(key);try{sessionStorage.removeItem(key);}catch{}
+  if(result.post){const index=boardCache.findIndex(x=>x.id===result.post.id);if(index>=0)boardCache[index]=result.post;if(editingPost?.id===result.post.id)editingPost=result.post;}
+  return result;
+ }catch{communityLastError='Не удалось подтвердить сохранение. Не меняя поля, нажми сохранить ещё раз — повтор не создаст второе объявление.';return null;}
+ finally{clearTimeout(timer);}
+}
+async function secureCommunityPost(table,body,ret){
+ let command;
+ if(table==='posts'){const {author_id,author_name,author_uname,status,...data}=body;command={type:'post.create',data};}
+ else if(table==='stories')command={type:'story.create',data:body};
+ else if(table==='shop_photos')command={type:'shop.save',data:{slot:body.slot,photo:body.photo}};
+ else if(table==='reports')command={type:'report.create',data:{post_id:body.post_id,reason:body.reason}};
+ else if(table==='helpers')command={type:'helper.join'};
+ else return null;
+ const result=await communityRequest(command);return result?(ret&&result.post?[result.post]:true):null;
+}
+async function secureCommunityChange(path,body,remove=false){
+ const match=/^(posts|stories)\?id=eq\.([0-9a-f-]{36})$/i.exec(path);if(!match){communityLastError='Недопустимое действие';return false;}
+ const [,table,id]=match,command={type:(table==='posts'?'post':'story')+(remove?'.delete':'.update'),id};
+ if(table==='posts')command.baseVersion=communityPostVersion(id);
+ if(!remove)command.data=body;
+ return !!await communityRequest(command);
+}
+document.addEventListener('click',event=>{const link=event.target.closest?.('[data-safe-contact]');if(link){event.preventDefault();openLink(link.dataset.safeContact);}});
+
 const DB={};
 function enterApp(){
   document.getElementById('welcome').style.display='none';
@@ -4543,7 +4598,7 @@ function pickEmoji(el,e){
   document.querySelectorAll('#emojiRow .emoji-opt').forEach(o=>o.classList.remove('sel'));
   el.classList.add('sel'); newPet.emoji=e; newPet.photo=null;
   document.getElementById('avatarPreview').textContent=e;
-  document.getElementById('avatarPreview').innerHTML=e;
+  document.getElementById('avatarPreview').textContent=e;
   haptic();
 }
 function compressImage(file, cb, onFail){
@@ -4594,7 +4649,7 @@ function loadPhoto(ev){
   compressImage(f, d=>{ newPet.photo=d;
     document.getElementById('avatarPreview').innerHTML='<img src="'+d+'">'; haptic('ok');
   }, why=>{
-    document.getElementById('avatarPreview').innerHTML=newPet.emoji||'🐱';
+    document.getElementById('avatarPreview').textContent=newPet.emoji||'🐱';
     alertMsg('Не удалось загрузить это фото. Попробуйте другое из галереи.');
   });
 }
@@ -4650,11 +4705,11 @@ function renderHome(){
   }
   let html='';
   everyone.forEach(p=>{
-    const av = p.photo ? `<img class="avatar" src="${p.photo}">` : `<div class="avatar">${p.emoji||(isHuman(p)?'💛':'🐾')}</div>`;
+    const av = p.photo ? `<img class="avatar" src="${safeImageAttr(p.photo)}">` : `<div class="avatar">${esc(p.emoji||(isHuman(p)?'💛':'🐾'))}</div>`;
     const meta=[isHuman(p)?'Человек':p.breed||p.type, petAgeText(p), p.weight?p.weight+' кг':''].filter(Boolean).join(' · ');
-    html+=`<div class="card pet-card" role="button" tabindex="0" onclick="openPet(${p.id})">
+    html+=`<div class="card pet-card" role="button" tabindex="0" onclick="openPet(${safeInlineId(p.id)})">
       ${av}
-      <div class="info"><h3>${esc(p.name)}</h3><p>${esc(meta)}</p>${p.gender?`<span class="badge">${p.gender}</span>`:''}</div>
+      <div class="info"><h3>${esc(p.name)}</h3><p>${esc(meta)}</p>${p.gender?`<span class="badge">${esc(p.gender)}</span>`:''}</div>
       <div class="chev">›</div></div>`;
   });
   c.innerHTML=moodHomeMarkup(everyone)+html;
@@ -4663,7 +4718,7 @@ function renderHome(){
   const off=201-201*score/5;
   let rems=[]; pets.forEach(p=>rems=rems.concat(petReminders(p)));
   rems.sort((a,b)=>(a.days===null?9999:a.days)-(b.days===null?9999:b.days));
-  const remHtml=rems.slice(0,4).map(r=>`<div class="reminder tap" onclick="remTap(${r.pid},'${r.type}')"><span>${r.emoji}</span> ${r.text} <span class="when">${daysText(r.days)}</span><span class="chev-s">›</span></div>`).join('')
+  const remHtml=rems.slice(0,4).map(r=>`<div class="reminder tap" onclick="remTap(${Number(r.pid)},'${r.type}')"><span>${esc(r.emoji)}</span> ${esc(r.text)} <span class="when">${daysText(r.days)}</span><span class="chev-s">›</span></div>`).join('')
     +`<p class="rem-hint">Нажмите на строку, чтобы добавить запись</p>`;
   extra.innerHTML=`
     ${pets.length?`
@@ -4692,7 +4747,7 @@ function renderProfile(){
   document.getElementById('userName').textContent=userName;
   const humans=pets.filter(isHuman).length;document.getElementById('userPets').textContent=humans?'Питомцев: '+(pets.length-humans)+' · Людей: '+humans:'Питомцев: '+pets.length;
   const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-  if(u && u.photo_url){ document.getElementById('userAvatar').innerHTML='<img src="'+u.photo_url+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'; }
+  if(u && u.photo_url){ document.getElementById('userAvatar').innerHTML='<img src="'+safeImageAttr(u.photo_url)+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'; }
 }
 // ================= Pet account screen =================
 let curPetId = null;
@@ -4778,7 +4833,7 @@ function healthTip(s){
 }
 function renderPetScreen(){
   const p=getCurPet(); if(!p) return;
-  const av = p.photo ? `<img src="${p.photo}">` : (p.emoji||'🐾');
+  const av = p.photo ? `<img src="${safeImageAttr(p.photo)}">` : esc(p.emoji||'🐾');
   const hist=(p.history||[]).slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   let histHtml='';
   if(hist.length===0){
@@ -4790,25 +4845,25 @@ function renderPetScreen(){
     hist.forEach(h=>{
       const d=h.date? new Date(h.date+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}):'';
       histHtml+=`<div class="hist-item">
-        <div class="ic">${h.emoji}</div>
-        <div class="tx"><b>${h.title}</b>${h.note?`<div class="note">${h.note}</div>`:''}<div class="dt">${h.type}${d?' · '+d:''}</div></div>
-        <div class="rm" onclick="removeRec(${h.id})">✕</div></div>`;
+        <div class="ic">${esc(h.emoji)}</div>
+        <div class="tx"><b>${esc(h.title)}</b>${h.note?`<div class="note">${esc(h.note)}</div>`:''}<div class="dt">${esc(h.type)}${d?' · '+d:''}</div></div>
+        <div class="rm" onclick="removeRec(${Number(h.id)})">✕</div></div>`;
     });
   }
   const vacc=(p.history||[]).filter(h=>h.type==='Прививка').length;
   document.getElementById('psBody').innerHTML=`
     <div class="ps-profile">
       <div class="big-avatar">${av}</div>
-      <h2>${p.name}</h2>
-      <div class="meta">${[p.breed||p.type,p.gender].filter(Boolean).join(' · ')}</div>
+      <h2>${esc(p.name)}</h2>
+      <div class="meta">${esc([p.breed||p.type,p.gender].filter(Boolean).join(' · '))}</div>
     </div>
     <div class="ps-stats">
       <div class="ps-stat"><b>${petAgeText(p)||'—'}</b><span>возраст</span></div>
-      <div class="ps-stat"><b>${p.weight?p.weight+' кг':'—'}</b><span>вес</span></div>
+      <div class="ps-stat"><b>${p.weight?esc(p.weight)+' кг':'—'}</b><span>вес</span></div>
       <div class="ps-stat"><b>${vacc}</b><span>прививок</span></div>
     </div>
     <button class="btn" onclick="openRec()" style="margin-bottom:16px">➕ Добавить в историю</button>
-    <div class="section-title">История ${p.name}</div>
+    <div class="section-title">История ${esc(p.name)}</div>
     ${histHtml}`;
 }
 function deletePet(){
@@ -4868,7 +4923,7 @@ function openEdit(){
   document.getElementById('editBreed').value=p.breed||'';
   document.getElementById('editBirth').value=p.birth||'';
   document.getElementById('editWeight').value=p.weight||'';
-  document.getElementById('editAvatarCur').innerHTML = p.photo?`<img src="${p.photo}">`:(p.emoji||'🐾');
+  document.getElementById('editAvatarCur').innerHTML = p.photo?`<img src="${safeImageAttr(p.photo)}">`:esc(p.emoji||'🐾');
   document.querySelectorAll('#editTypeRow .mini-choice').forEach(el=>
     el.classList.toggle('sel', el.textContent.includes(p.type)));
   document.querySelectorAll('#editGenderRow .mini-choice').forEach(el=>
@@ -4883,7 +4938,7 @@ function editType(el,t){
   document.querySelectorAll('#editTypeRow .mini-choice').forEach(x=>x.classList.remove('sel'));
   el.classList.add('sel'); editData.type=t;
   if(!editData.photo){ editData.emoji=typeEmoji[t]||'🐾';
-    document.getElementById('editAvatarCur').innerHTML=editData.emoji; }
+    document.getElementById('editAvatarCur').textContent=editData.emoji; }
   haptic();
 }
 function editGender(el,g){
@@ -4895,7 +4950,7 @@ function editGender(el,g){
 function editEmoji(el,e){
   document.querySelectorAll('#editEmojiRow .mini-choice').forEach(x=>x.classList.remove('sel'));
   el.classList.add('sel'); editData.emoji=e; editData.photo=null;
-  document.getElementById('editAvatarCur').innerHTML=e; haptic();
+  document.getElementById('editAvatarCur').textContent=e; haptic();
 }
 function editPhoto(ev){
   const f=ev.target.files && ev.target.files[0];
@@ -4906,7 +4961,7 @@ function editPhoto(ev){
     document.getElementById('editAvatarCur').innerHTML='<img src="'+d+'">';
     document.querySelectorAll('#editEmojiRow .mini-choice').forEach(x=>x.classList.remove('sel')); haptic('ok');
   }, why=>{
-    document.getElementById('editAvatarCur').innerHTML=editData.emoji||'🐱';
+    document.getElementById('editAvatarCur').textContent=editData.emoji||'🐱';
     alertMsg('Не удалось загрузить это фото. Попробуйте другое из галереи.');
   });
 }
@@ -4950,7 +5005,7 @@ function openNotif(){
   } else {
     let rems=[]; pets.forEach(p=>rems=rems.concat(petReminders(p)));
     rems.sort((a,b)=>(a.days===null?9999:a.days)-(b.days===null?9999:b.days));
-    h+=rems.map(r=>`<div class="reminder tap" onclick="closeNotif();remTap(${r.pid},'${r.type}')"><span>${r.emoji}</span> ${r.text} <span class="when">${daysText(r.days)}</span><span class="chev-s">›</span></div>`).join('')
+    h+=rems.map(r=>`<div class="reminder tap" onclick="closeNotif();remTap(${Number(r.pid)},'${r.type}')"><span>${esc(r.emoji)}</span> ${esc(r.text)} <span class="when">${daysText(r.days)}</span><span class="chev-s">›</span></div>`).join('')
       +`<p class="rem-hint">Нажмите на строку, чтобы добавить запись</p>`;
   }
   document.getElementById('notifList').innerHTML=h;
@@ -5032,7 +5087,7 @@ function renderBoard(){
       <div class="meta">📍 ${esc(s.city||'')}${s.address?', '+esc(s.address):''}</div>
       ${s.needs?`<div class="desc"><b>Нужно:</b> ${esc(s.needs)}</div>`:''}
       ${s.description?`<div class="desc">${esc(s.description)}</div>`:''}
-      ${s.contact?`<div class="btns"><button class="b-tg" onclick="openLink('${esc(s.contact)}')">Связаться</button></div>`:''}
+      ${s.contact?`<div class="btns"><button class="b-tg" data-safe-contact="${esc(s.contact)}">Связаться</button></div>`:''}
       </div></div>`).join('');
     return;
   }
@@ -5055,17 +5110,17 @@ function renderBoard(){
     let ph='';
     if(p.photos && p.photos.length){
       if(p.photos.length===1){
-        ph=`<img class="ph" src="${p.photos[0]}">`;
+        ph=`<img class="ph" src="${safeImageAttr(p.photos[0])}">`;
       } else {
         const n=p.photos.length;
-        ph=`<div class="feedcar" ontouchstart="carTS(event,'${p.id}')" ontouchend="carTE(event,'${p.id}')">
-          <div class="feedcar-wrap" id="car_${p.id}">`;
-        p.photos.forEach(im=>ph+=`<div class="feedcar-slide" style="background-image:url(${im})"></div>`);
+        ph=`<div class="feedcar" ontouchstart="carTS(event,'${safeInlineId(p.id)}')" ontouchend="carTE(event,'${safeInlineId(p.id)}')">
+          <div class="feedcar-wrap" id="car_${safeInlineId(p.id)}">`;
+        p.photos.forEach(im=>ph+=`<img class="feedcar-slide" src="${safeImageAttr(im)}" alt="Фото объявления" style="object-fit:cover">`);
         ph+=`</div>
-          <button class="car-btn prev" onclick="carouselSwipe('${p.id}',-1)">‹</button>
-          <button class="car-btn next" onclick="carouselSwipe('${p.id}',1)">›</button>
-          <div class="car-dots" id="dots_${p.id}">${Array.from({length:n},(_,i)=>'<i class="'+(i===0?'on':'')+'"></i>').join('')}</div>
-          <div class="car-count" id="cnt_${p.id}">1/${n}</div>
+          <button class="car-btn prev" onclick="carouselSwipe('${safeInlineId(p.id)}',-1)">‹</button>
+          <button class="car-btn next" onclick="carouselSwipe('${safeInlineId(p.id)}',1)">›</button>
+          <div class="car-dots" id="dots_${safeInlineId(p.id)}">${Array.from({length:n},(_,i)=>'<i class="'+(i===0?'on':'')+'"></i>').join('')}</div>
+          <div class="car-count" id="cnt_${safeInlineId(p.id)}">1/${n}</div>
         </div>`;
       }
     } else {
@@ -5076,21 +5131,21 @@ function renderBoard(){
       (curKind==='lost'?'<span class="st">Пропал</span>':
        (curKind==='adopt'?'<span class="st adopt">Ищет дом</span>':'')));
     const rows=[];
-    if(p.breed||p.color) rows.push([p.breed,p.color].filter(Boolean).join(', '));
+    if(p.breed||p.color) rows.push(esc([p.breed,p.color].filter(Boolean).join(', ')));
     if(p.marks) rows.push('<b>Приметы:</b> '+esc(p.marks));
-    if(p.city||p.district) rows.push('📍 '+[p.city,p.district].filter(Boolean).join(', '));
+    if(p.city||p.district) rows.push('📍 '+esc([p.city,p.district].filter(Boolean).join(', ')));
     if(p.event_date) rows.push('📅 '+new Date(p.event_date+'T00:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}));
     if(p.reward) rows.push('💰 Вознаграждение: '+esc(p.reward));
     if(p.price) rows.push('💵 '+esc(p.price));
     let btns='';
     if(mine){
       btns=`<div class="btns">
-        <button class="b-tg" style="flex:1" onclick="openPostActions('${p.id}')">✏️ Управлять</button>
-        <button class="b-gy" onclick="sharePost('${p.id}')">📣</button></div>`;
+        <button class="b-tg" style="flex:1" onclick="openPostActions('${safeInlineId(p.id)}')">✏️ Управлять</button>
+        <button class="b-gy" onclick="sharePost('${safeInlineId(p.id)}')">📣</button></div>`;
     } else {
       btns=`<div class="btns">
-        <button class="${p.kind==='adopt'?'b-gy':'b-tg'}" style="flex:1" onclick="sharePost('${p.id}')">📣 Рассказать друзьям</button>
-        <button class="b-gy" onclick="reportPost('${p.id}')">⚠️</button></div>`;
+        <button class="${p.kind==='adopt'?'b-gy':'b-tg'}" style="flex:1" onclick="sharePost('${safeInlineId(p.id)}')">📣 Рассказать друзьям</button>
+        <button class="b-gy" onclick="reportPost('${safeInlineId(p.id)}')">⚠️</button></div>`;
     }
     const contactBox=p.kind==='adopt'?postContactHtml(p,mine):p.contact
       ? `<div class="contact-box"><div class="lb">📞 Связаться с автором</div><div class="vl">${esc(p.contact)}</div></div>`
@@ -5132,13 +5187,13 @@ function renderStories(list){
     list.innerHTML=h; return;
   }
   h += boardCache.map(s=>`<div class="story">
-    ${s.photo?`<img src="${s.photo}" alt="">`:`<div class="noimg">🐾</div>`}
+    ${s.photo?`<img src="${safeImageAttr(s.photo)}" alt="">`:`<div class="noimg">🐾</div>`}
     <div class="bd">
-      <span class="tag">${STORY_KINDS[s.kind]||'💚 Помогли'}</span>
+      <span class="tag">${Object.hasOwn(STORY_KINDS,s.kind)?STORY_KINDS[s.kind]:'💚 Помогли'}</span>
       <h4>${esc(s.name||'')}</h4>
       <p>${esc(s.text||'')}</p>
       <div class="mt">${timeAgo(s.created_at)}</div>
-      ${admin?`<button class="del" onclick="delStory('${s.id}')">Удалить</button>`:''}
+      ${admin?`<button class="del" onclick="delStory('${safeInlineId(s.id)}')">Удалить</button>`:''}
     </div></div>`).join('');
   list.innerHTML=h;
 }
@@ -5175,13 +5230,13 @@ async function saveStory(){
     alertMsg('История опубликована! 💚');
     loadBoard();
   } else {
-    alertMsg('Не удалось сохранить. Проверьте, что таблица stories создана в Supabase.');
+    alertMsg(communityLastError||'Не удалось сохранить историю.');
   }
 }
 function delStory(id){
   const go=async()=>{
     const r=await sbDel('stories?id=eq.'+id);
-    if(r){ haptic('ok'); loadBoard(); } else alertMsg('Не удалось удалить.');
+    if(r){ haptic('ok'); loadBoard(); } else alertMsg(communityLastError||'Не удалось удалить.');
   };
   try{ tg.showConfirm('Удалить эту историю?',ok=>{if(ok)go();}); }
   catch(e){ if(confirm('Удалить эту историю?')) go(); }
@@ -5196,7 +5251,7 @@ function emptyBox(e,t,s,btn){
 function esc(s){ return String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
 function openLink(u){
   if(!/^https?:/.test(u)){ if(u.startsWith('@'))u='https://t.me/'+u.slice(1); else { alertMsg(u); return; } }
-  if(tg&&tg.openLink) tg.openLink(u); else window.open(u,'_blank');
+  if(tg&&tg.openLink) tg.openLink(u); else window.open(u,'_blank','noopener,noreferrer');
 }
 // ================= Действия с моим объявлением =================
 let actionsPost=null, editingPost=null;
@@ -5251,17 +5306,17 @@ function sharePost(id){
   haptic();
 }
 async function markFound(id){
-  const go=async()=>{ await sbPatch('posts?id=eq.'+id,{status:'found'}); haptic('ok'); loadBoard(); alertMsg('Отличная новость! 🎉 Объявление помечено как «Нашёлся».'); };
+  const go=async()=>{ if(!await sbPatch('posts?id=eq.'+id,{status:'found'})){alertMsg(communityLastError||'Не удалось сохранить');return;} haptic('ok'); loadBoard(); alertMsg('Отличная новость! 🎉 Объявление помечено как «Нашёлся».'); };
   const m='Питомец нашёлся? Объявление будет помечено ✅';
   try{ tg.showConfirm(m,ok=>{if(ok)go();}); }catch(e){ if(confirm(m))go(); }
 }
 async function delPost(id){
-  const go=async()=>{ await sbDel('posts?id=eq.'+id); haptic('ok'); loadBoard(); };
+  const go=async()=>{ if(!await sbDel('posts?id=eq.'+id)){alertMsg(communityLastError||'Не удалось удалить');return;} haptic('ok'); loadBoard(); };
   const m='Удалить объявление навсегда?';
   try{ tg.showConfirm(m,ok=>{if(ok)go();}); }catch(e){ if(confirm(m))go(); }
 }
 async function reportPost(id){
-  const go=async()=>{ await sbPost('reports',{post_id:id,reporter_id:ME.id,reason:'user_report'}); alertMsg('Спасибо! Мы проверим объявление.'); haptic('ok'); };
+  const go=async()=>{ if(!await sbPost('reports',{post_id:id,reporter_id:ME.id,reason:'user_report'})){alertMsg(communityLastError||'Не удалось отправить жалобу');return;} alertMsg('Спасибо! Мы проверим объявление.'); haptic('ok'); };
   const m='Пожаловаться на это объявление?';
   try{ tg.showConfirm(m,ok=>{if(ok)go();}); }catch(e){ if(confirm(m))go(); }
 }
@@ -5319,7 +5374,7 @@ function renderPhotoBox(busy){
   const ph=pfData.photos||(pfData.photos=[]);
   let h='<div class="ph-grid">';
   ph.forEach((src,i)=>{
-    h+='<div class="ph-th" style="background-image:url('+src+')">'
+    h+='<div class="ph-th"><img src="'+safeImageAttr(src)+'" alt="Фото объявления" style="width:100%;height:100%;object-fit:cover">'
       +(i===0?'<span class="ph-cover">Обложка</span>':'')
       +'<button class="ph-del" onclick="delPfPhoto('+i+')">✕</button></div>';
   });
@@ -5377,7 +5432,7 @@ async function savePost(){
       alertMsg(wasEdit?'Сохранено! ✅ Объявление обновлено.':'Опубликовано! 🎉 Ваше объявление увидят все пользователи Любимки.');
     }
   }
-  else alertMsg('Не удалось сохранить. Проверьте интернет и попробуйте ещё раз.');
+  else alertMsg(communityLastError||'Не удалось сохранить. Проверь интернет и попробуй ещё раз.');
 }
 
 
@@ -5486,11 +5541,11 @@ async function refreshAlerts(){
 }
 function alertCard(a){
   const p=a.post;
-  const ph=(p.photos&&p.photos.length)?`<img src="${p.photos[0]}">`:`<div class="al-emo">${p.animal_type==='Собака'?'🐶':(p.animal_type==='Кошка'?'🐱':'🐾')}</div>`;
+  const ph=(p.photos&&p.photos.length)?`<img src="${safeImageAttr(p.photos[0])}">`:`<div class="al-emo">${p.animal_type==='Собака'?'🐶':(p.animal_type==='Кошка'?'🐱':'🐾')}</div>`;
   const place=[p.city,p.district].filter(Boolean).join(', ');
   if(a.type==='match'){
     const who=a.mine.kind==='lost'?'Возможно, вашего питомца нашли!':'Возможно, это чей-то потерянный питомец';
-    return `<div class="al-card match" onclick="alertGo('${p.kind}')">
+    return `<div class="al-card match" onclick="alertGo('${safePostKind(p.kind)}')">
       <div class="al-badge">🎯 Совпадение ${a.score}%</div>
       <div class="al-row">${ph}<div class="al-txt">
         <b>${who}</b>
@@ -5499,7 +5554,7 @@ function alertCard(a){
       </div><span class="al-chev">›</span></div></div>`;
   }
   const head=p.kind==='lost'?'🚨 Пропал питомец рядом с вами':'🆘 Рядом нашли животное';
-  return `<div class="al-card" onclick="alertGo('${p.kind}')">
+  return `<div class="al-card" onclick="alertGo('${safePostKind(p.kind)}')">
     <div class="al-row">${ph}<div class="al-txt">
       <b>${head}</b>
       <p>${esc(p.title)}${place?' · '+esc(place):''}</p>
@@ -5526,7 +5581,7 @@ function showMatchSheet(ms,kind){
   document.getElementById('msSub').textContent=sub;
   document.getElementById('msList').innerHTML=ms.map(m=>{
     const p=m.post;
-    const ph=(p.photos&&p.photos.length)?`<img src="${p.photos[0]}">`:`<div class="al-emo">${p.animal_type==='Собака'?'🐶':(p.animal_type==='Кошка'?'🐱':'🐾')}</div>`;
+    const ph=(p.photos&&p.photos.length)?`<img src="${safeImageAttr(p.photos[0])}">`:`<div class="al-emo">${p.animal_type==='Собака'?'🐶':(p.animal_type==='Кошка'?'🐱':'🐾')}</div>`;
     const place=[p.city,p.district].filter(Boolean).join(', ');
     const c=p.contact?`<div class="ms-contact">📞 ${esc(p.contact)}</div>`:'';
     return `<div class="al-card match" style="cursor:default">
@@ -5645,7 +5700,7 @@ function paintSlot(slot){
   const wrap=document.getElementById('wrap_'+slot); if(!wrap) return;
   const emo={toy1:'🐣',toy2:'🐭',house:'🏠'}[slot]||'🎁';
   wrap.innerHTML = shopPhotos[slot]
-    ? '<img id="img_'+slot+'" src="'+shopPhotos[slot]+'" alt="">'
+    ? '<img id="img_'+slot+'" src="'+safeImageAttr(shopPhotos[slot])+'" alt="">'
     : '<div class="ph-fallback" id="img_'+slot+'">'+emo+'</div>';
   if(String(ME.id)===String(SHOP_ADMIN)){
     wrap.insertAdjacentHTML('beforeend',
@@ -5722,7 +5777,7 @@ function renderPetScreen(){
   history+=`<article class="diary-entry"><div class="diary-top"><span class="entry-icon ${esc(kind.icon)}">${uiIcon(kind.icon)}</span><div><span class="entry-type">${esc(kind.label)}</span><time class="entry-date" datetime="${esc(h.date||'')}">${esc(uiDate(h.date))}</time></div></div><h4 class="entry-title">${esc(h.title)}</h4>${h.note?`<p class="entry-note">${esc(h.note)}</p>`:''}${photoRecordMarkup(p,h)}<div class="entry-footer"><button type="button" class="entry-edit" onclick="openEditRecord(${Number(h.id)})" aria-label="Редактировать запись: ${esc(h.title)}">${uiIcon('edit')}Редактировать</button><button type="button" class="entry-delete" onclick="uiDeleteRecord(${Number(h.id)})" aria-label="Удалить запись: ${esc(h.title)}">${uiIcon('trash')}Удалить запись</button></div></article>`;
  });
  const count=hist.filter(h=>h.type==='Прививка').length;
- const photo=p.photo?'<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'">':esc(p.emoji||'🐾');
+ const photo=p.photo?'<img src="'+safeImageAttr(p.photo)+'" alt="'+esc(p.name)+'">':esc(p.emoji||'🐾');
  document.getElementById('psBody').innerHTML=`
   <section class="pet-identity ${person?'family-human':''}" aria-label="${person?'Сведения о человеке':'Сведения о питомце'}">
    <div class="pet-identity-row"><div class="pet-portrait">${photo}</div><div class="pet-title"><div class="pet-eyebrow">${person?'Моя любимка':'Мой питомец'}</div><h1>${esc(p.name)}</h1><p class="pet-breed">${esc(person?'Человек':p.breed||p.type||'Питомец')}</p>${p.gender?`<span class="pet-sex">${esc(p.gender)}</span>`:''}<button type="button" class="pet-edit" onclick="openEdit()">${uiIcon('edit')}Редактировать</button></div></div>
@@ -5850,7 +5905,7 @@ function closeHealth(){
 }
 function healthChoose(id){if(!DB.getPets().some(p=>p.id===id))return;healthState.id=id;renderHealth();document.getElementById('healthBody').scrollTop=0;document.getElementById('healthTitle').focus({preventScroll:true});haptic();}
 function healthChooseAnother(){healthState.id=null;renderHealth();document.getElementById('healthBody').scrollTop=0;haptic();}
-function healthThumb(p){return p.photo?`<img src="${esc(p.photo)}" alt="">`:`<span class="health-pet-thumb" aria-hidden="true">${esc(p.emoji||'🐾')}</span>`;}
+function healthThumb(p){return p.photo?`<img src="${safeImageAttr(p.photo)}" alt="">`:`<span class="health-pet-thumb" aria-hidden="true">${esc(p.emoji||'🐾')}</span>`;}
 function renderHealth(){
  if(!healthState.open)return;
  const body=document.getElementById('healthBody'),scroll=body.scrollTop,pets=animalCards();
@@ -6074,7 +6129,7 @@ function photoResetDraft(petId=null,recordId=null,items=[]){delete photoDraft.ne
 function photoStatus(message,isError=false){const e=document.getElementById('photoStatus');e.textContent=message;e.classList.toggle('error',isError);}
 function photoRenderDraft(){
  const items=photoAvailable(photoDraft.items),total=photoDraft.items.length;
- document.getElementById('photoDraftList').innerHTML=items.map((a,i)=>`<div class="photo-draft-item"><button type="button" class="photo-draft-preview" onclick="photoOpenDraft(${i})" aria-label="Открыть фото ${i+1}: ${esc(a.name)}"><img src="${esc(a.url)}" alt="${esc(a.name)}"><span>${i+1}</span></button><button type="button" class="photo-draft-remove" onclick="photoRemoveDraft('${a.id}')" aria-label="Убрать фото ${i+1}: ${esc(a.name)}">${uiIcon('close')}</button></div>`).join('');
+ document.getElementById('photoDraftList').innerHTML=items.map((a,i)=>`<div class="photo-draft-item"><button type="button" class="photo-draft-preview" onclick="photoOpenDraft(${i})" aria-label="Открыть фото ${i+1}: ${esc(a.name)}"><img src="${safeImageAttr(a.url)}" alt="${esc(a.name)}"><span>${i+1}</span></button><button type="button" class="photo-draft-remove" onclick="photoRemoveDraft('${safeToken(a.id)}')" aria-label="Убрать фото ${i+1}: ${esc(a.name)}">${uiIcon('close')}</button></div>`).join('');
  document.getElementById('photoCount').textContent=total+' / '+PHOTO_LIMITS.count;
  const pick=document.getElementById('photoPick');pick.disabled=photoDraft.busy||total>=PHOTO_LIMITS.count;
  pick.innerHTML=uiIcon('camera')+(photoDraft.busy?'Подготавливаем фото…':total?'Добавить ещё фото':'Прикрепить фото');
@@ -6108,7 +6163,7 @@ function photoRemoveDraft(id){photoDraft.items=photoDraft.items.filter(a=>a?.id!
 function photoRecordMarkup(p,h,context='pet'){
  const photos=photoAvailable(h.attachments);
  if(!photos.length)return `<button type="button" class="entry-photo-add" onclick="photoEditRecord(${Number(p.id)},${Number(h.id)})">${uiIcon('camera')}Добавить фото</button>`;
- return `<div class="entry-photos" aria-label="Фото к записи">${photos.slice(0,3).map((a,i)=>`<button type="button" class="entry-photo" onclick="photoOpenRecord(${Number(p.id)},${Number(h.id)},${i})" aria-label="Открыть фото ${i+1} из ${photos.length}"><img src="${esc(a.url)}" alt="${esc(a.name)}" loading="lazy">${i===2&&photos.length>3?`<span class="photo-more">+${photos.length-3}</span>`:''}</button>`).join('')}</div><p class="entry-photo-hint">${photos.length} фото · нажми, чтобы увеличить</p>`;
+ return `<div class="entry-photos" aria-label="Фото к записи">${photos.slice(0,3).map((a,i)=>`<button type="button" class="entry-photo" onclick="photoOpenRecord(${Number(p.id)},${Number(h.id)},${i})" aria-label="Открыть фото ${i+1} из ${photos.length}"><img src="${safeImageAttr(a.url)}" alt="${esc(a.name)}" loading="lazy">${i===2&&photos.length>3?`<span class="photo-more">+${photos.length-3}</span>`:''}</button>`).join('')}</div><p class="entry-photo-hint">${photos.length} фото · нажми, чтобы увеличить</p>`;
 }
 function photoEditRecord(petId,recordId){if(!DB.getPets().some(p=>p.id===petId))return;curPetId=petId;openEditRecord(recordId);setTimeout(()=>document.getElementById('photoSection').scrollIntoView({block:'center',behavior:'smooth'}),0);}
 const photoBaseOpenRec=openRec;
@@ -6150,7 +6205,7 @@ function photoRenderGallery(){
  photoGallery.index=Math.min(Math.max(photoGallery.index,0),items.length-1);const asset=items[photoGallery.index];
  document.getElementById('photoViewerCount').textContent=(photoGallery.index+1)+' / '+items.length;
  document.getElementById('photoViewerName').textContent=asset.name;
- document.getElementById('photoCanvas').innerHTML=`<img src="${esc(asset.url)}" alt="${esc(asset.name)}" draggable="false" onerror="photoViewError()">`;
+ document.getElementById('photoCanvas').innerHTML=`<img src="${safeImageAttr(asset.url)}" alt="${esc(asset.name)}" draggable="false" onerror="photoViewError()">`;
  document.getElementById('photoPrevious').disabled=photoGallery.index===0;document.getElementById('photoNext').disabled=photoGallery.index===items.length-1;
  photoGallery.zoom=1;photoApplyZoom();document.getElementById('photoStage').scrollTop=0;document.getElementById('photoStage').scrollLeft=0;
 }
@@ -6546,13 +6601,13 @@ renderStories=function(list){
     list.innerHTML=h; return;
   }
   h += boardCache.map(s=>`<div class="story">
-    ${s.photo?`<img src="${s.photo}" alt="">`:`<div class="noimg">🐾</div>`}
+    ${s.photo?`<img src="${safeImageAttr(s.photo)}" alt="">`:`<div class="noimg">🐾</div>`}
     <div class="bd">
-      <span class="tag">${STORY_KINDS[s.kind]||'💚 Помогли'}</span>
+      <span class="tag">${Object.hasOwn(STORY_KINDS,s.kind)?STORY_KINDS[s.kind]:'💚 Помогли'}</span>
       <h4>${esc(s.name||'')}</h4>
       <p>${esc(s.text||'')}</p>
       <div class="mt">${timeAgo(s.created_at)}</div>
-      ${admin?`<button class="del" onclick="delStory('${s.id}')">Удалить</button>`:''}
+      ${admin?`<button class="del" onclick="delStory('${safeInlineId(s.id)}')">Удалить</button>`:''}
     </div></div>`).join('');
   list.innerHTML=h;
 };
@@ -6609,7 +6664,7 @@ function remCard(r){
  const slots=remTodaySlots(r),today=ReminderCalendar.today(r.timezone),next=ReminderCalendar.next(r,today);
  let detail=remFrequency(r)+' · '+remZoneName(r.timezone);
  if(r.mode==='course'){const day=ReminderCalendar.distance(today,r.start)+1;if(day>0&&day<=r.duration)detail='День '+day+' из '+r.duration+' · '+remZoneName(r.timezone);}
- return `<article class="rem-card"><button type="button" class="rem-card-main" onclick="remOpen('${r.id}')" aria-label="Редактировать напоминание: ${esc(r.title)}"><span class="rem-card-icon" aria-hidden="true">${esc(r.emoji||'🔔')}</span><span class="rem-card-copy"><strong>${esc(r.title)}</strong><small>${esc(detail)}</small></span>${uiIcon('next')}</button>${slots.length?`<div class="rem-slots" aria-label="Отметки на ${esc(remDateLabel(today))}">${slots.map(s=>`<button type="button" class="rem-slot" data-rem-slot="${esc(s.key)}" aria-pressed="${!!s.completedAt}" aria-label="${s.completedAt?'Отменить отметку':'Отметить выполненным'}: ${esc(r.title)}, ${s.time}" onclick="remToggle('${s.key}')"><span class="rem-slot-circle" aria-hidden="true">${uiIcon('check')}</span><span>${s.time}</span><small>${s.completedAt?'Готово':'Отметить'}</small></button>`).join('')}</div>`:`<p class="rem-next">${next?'Следующее: '+esc(remDateLabel(next))+' · '+ReminderCalendar.times(r).slice().sort().join(', '):(r.mode==='course'?'Курс завершён':'Дата напоминания прошла')}</p>`}</article>`;
+ return `<article class="rem-card"><button type="button" class="rem-card-main" onclick="remOpen('${safeInlineId(r.id)}')" aria-label="Редактировать напоминание: ${esc(r.title)}"><span class="rem-card-icon" aria-hidden="true">${esc(r.emoji||'🔔')}</span><span class="rem-card-copy"><strong>${esc(r.title)}</strong><small>${esc(detail)}</small></span>${uiIcon('next')}</button>${slots.length?`<div class="rem-slots" aria-label="Отметки на ${esc(remDateLabel(today))}">${slots.map(s=>`<button type="button" class="rem-slot" data-rem-slot="${esc(s.key)}" aria-pressed="${!!s.completedAt}" aria-label="${s.completedAt?'Отменить отметку':'Отметить выполненным'}: ${esc(r.title)}, ${s.time}" onclick="remToggle('${s.key}')"><span class="rem-slot-circle" aria-hidden="true">${uiIcon('check')}</span><span>${s.time}</span><small>${s.completedAt?'Готово':'Отметить'}</small></button>`).join('')}</div>`:`<p class="rem-next">${next?'Следующее: '+esc(remDateLabel(next))+' · '+ReminderCalendar.times(r).slice().sort().join(', '):(r.mode==='course'?'Курс завершён':'Дата напоминания прошла')}</p>`}</article>`;
 }
 function remBlock(p){
  remCapture();const items=remStore.items.filter(r=>r.petId===p.id&&!moodIsReminder(r)),slots=items.flatMap(remTodaySlots),done=slots.filter(s=>s.completedAt).length;
@@ -6911,7 +6966,7 @@ function familyChooseHuman(){familyClosePicker();humanOpen();}
 const humanState={draft:null,busy:false,photoBusy:false,token:0,trigger:null};
 function humanError(message,field){const e=document.getElementById('humanError');e.textContent=message;e.hidden=false;if(field)document.getElementById(field).focus();}
 function humanSetBusy(){const disabled=humanState.busy||humanState.photoBusy;for(const id of ['humanSaveButton','humanPhotoButton','humanPhotoRemove','humanCloseButton','humanCancelButton','humanName','humanBirth','humanWeight'])document.getElementById(id).disabled=disabled;document.getElementById('humanSaveButton').textContent=humanState.busy?'Сохраняем…':humanState.photoBusy?'Подготавливаем фото…':humanState.draft?.editing?'Сохранить изменения':'Создать карточку';}
-function humanAvatar(){const d=humanState.draft;if(!d)return;document.getElementById('humanAvatar').innerHTML=d.photo?'<img src="'+esc(d.photo)+'" alt="Фото для карточки">':'💛';document.getElementById('humanPhotoRemove').hidden=!d.photo;document.getElementById('humanPhotoButton').textContent=d.photo?'Изменить фото':'Добавить фото';}
+function humanAvatar(){const d=humanState.draft;if(!d)return;document.getElementById('humanAvatar').innerHTML=d.photo?'<img src="'+safeImageAttr(d.photo)+'" alt="Фото для карточки">':'💛';document.getElementById('humanPhotoRemove').hidden=!d.photo;document.getElementById('humanPhotoButton').textContent=d.photo?'Изменить фото':'Добавить фото';}
 function humanOpen(p=null){
  if(p&&!isHuman(p))return;humanState.token++;humanState.busy=false;humanState.photoBusy=false;humanState.trigger=document.activeElement;
  const cloudId=p?.cloudId||crypto.randomUUID();humanState.draft={editing:!!p,id:p?.id??liveId(cloudId),cloudId,photo:p?.photo||null};
@@ -7101,7 +7156,7 @@ function moodHomeMarkup(people=DB.getPets()){
  const today=healthToday(),done=people.filter(p=>moodForDay(p,today)).length;
  return `<section class="mood-home card" id="moodHome" data-date="${today}" aria-labelledby="moodHomeTitle"><div class="mood-home-heading"><div><p class="mood-eyebrow">${esc(new Date(today+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'}))}</p><h2 id="moodHomeTitle">Как ваши дела сегодня?</h2></div><span class="mood-home-count" aria-label="Отмечено ${done} из ${people.length}">${done} из ${people.length}</span></div><p class="mood-home-intro">${done===people.length?'Все отметки за сегодня сохранены. Их можно изменить.':'Выбери смайлик и добавь пару слов о дне.'}</p><div class="mood-home-list">${people.map(p=>{
   const entry=moodForDay(p,today),kind=moodKinds(p)[moodCode(entry)];
-  return `<button type="button" class="mood-home-row ${entry?'is-done':''}" onclick="moodHomeOpen(${p.id})" aria-label="${esc(p.name)}: ${entry?kind.label+'. Изменить отметку':'отметить '+(isHuman(p)?'настроение':'самочувствие')}" ${liveState.busy?'disabled':''}><span class="mood-home-face" aria-hidden="true">${kind?.emoji||esc(p.emoji||(isHuman(p)?'💛':'🐾'))}</span><span class="mood-home-person"><strong>${esc(p.name)}</strong><span>${entry?'✓ '+kind.label:isHuman(p)?'Настроение · ещё не отмечено':'Самочувствие · ещё не отмечено'}</span></span><span class="mood-home-action">${entry?'Изменить':'Отметить'}<span aria-hidden="true"> ›</span></span></button>`;
+  return `<button type="button" class="mood-home-row ${entry?'is-done':''}" onclick="moodHomeOpen(${safeInlineId(p.id)})" aria-label="${esc(p.name)}: ${entry?kind.label+'. Изменить отметку':'отметить '+(isHuman(p)?'настроение':'самочувствие')}" ${liveState.busy?'disabled':''}><span class="mood-home-face" aria-hidden="true">${kind?.emoji||esc(p.emoji||(isHuman(p)?'💛':'🐾'))}</span><span class="mood-home-person"><strong>${esc(p.name)}</strong><span>${entry?'✓ '+kind.label:isHuman(p)?'Настроение · ещё не отмечено':'Самочувствие · ещё не отмечено'}</span></span><span class="mood-home-action">${entry?'Изменить':'Отметить'}<span aria-hidden="true"> ›</span></span></button>`;
  }).join('')}</div></section>`;
 }
 function moodHomeOpen(id){
@@ -7141,7 +7196,7 @@ function careReportRows(){const p=DB.getPets().find(p=>p.id===careReportState.pe
 function careReportFilter(){if(careReportState.busy||careReportState.file?.sending)return;careReportInvalidate();const rows=careReportRows(),ids=new Set(rows.map(r=>r.cloudId));careReportState.selected=new Set([...careReportState.selected].filter(id=>ids.has(id)));const photoIds=new Set(rows.flatMap(r=>(r.attachments||[]).map(a=>a.id)));careReportState.photos=new Set([...careReportState.photos].filter(id=>photoIds.has(id)));careReportRender();}
 function careReportSelect(all){if(careReportState.busy||careReportState.file?.sending)return;careReportState.selected=new Set(all?careReportRows().map(r=>r.cloudId):[]);if(!all)careReportState.photos.clear();careReportInvalidate();careReportRender();}
 function careReportToggle(id,checked,photo=false){if(careReportState.busy||careReportState.file?.sending)return;const set=photo?careReportState.photos:careReportState.selected;checked?set.add(id):set.delete(id);if(!photo&&!checked){const r=careReportRows().find(r=>r.cloudId===id);for(const a of r?.attachments||[])careReportState.photos.delete(a.id);}careReportInvalidate();careReportRender();}
-function careReportRender(){const rows=careReportRows();document.getElementById('careReportCount').textContent='Показано: '+rows.length+' · Выбрано: '+careReportState.selected.size;document.getElementById('careReportEntries').innerHTML=rows.length?rows.map(r=>`<article class="care-report-entry"><label class="care-check"><input type="checkbox" ${careReportState.selected.has(r.cloudId)?'checked':''} onchange="careReportToggle('${r.cloudId}',this.checked)"><span><time>${esc(uiDate(r.date))} · ${esc(r.type)}</time><strong>${esc(r.title)}</strong></span></label>${r.note?`<p>${esc(r.note)}</p>`:''}${careReportState.selected.has(r.cloudId)&&(r.attachments||[]).length?`<div class="care-report-photos">${r.attachments.map(a=>`<label><img src="${esc(photoAssets.get(a.id)?.url||'')}" alt="Фото к записи"><input type="checkbox" ${careReportState.photos.has(a.id)?'checked':''} onchange="careReportToggle('${a.id}',this.checked,true)"> Добавить фото</label>`).join('')}</div>`:''}</article>`).join(''):'<p class="care-hint">За этот период подходящих записей нет. Измени даты или поиск.</p>';}
+function careReportRender(){const rows=careReportRows();document.getElementById('careReportCount').textContent='Показано: '+rows.length+' · Выбрано: '+careReportState.selected.size;document.getElementById('careReportEntries').innerHTML=rows.length?rows.map(r=>`<article class="care-report-entry"><label class="care-check"><input type="checkbox" ${careReportState.selected.has(r.cloudId)?'checked':''} onchange="careReportToggle('${safeInlineId(r.cloudId)}',this.checked)"><span><time>${esc(uiDate(r.date))} · ${esc(r.type)}</time><strong>${esc(r.title)}</strong></span></label>${r.note?`<p>${esc(r.note)}</p>`:''}${careReportState.selected.has(r.cloudId)&&(r.attachments||[]).length?`<div class="care-report-photos">${r.attachments.map(a=>`<label><img src="${safeImageAttr(photoAssets.get(a.id)?.url||'')}" alt="Фото к записи"><input type="checkbox" ${careReportState.photos.has(a.id)?'checked':''} onchange="careReportToggle('${safeToken(a.id)}',this.checked,true)"> Добавить фото</label>`).join('')}</div>`:''}</article>`).join(''):'<p class="care-hint">За этот период подходящих записей нет. Измени даты или поиск.</p>';}
 function carePdfText(s){return String(s||'').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').replace(/\p{Extended_Pictographic}|\uFE0F|\u200D/gu,'');}
 function careLoadImage(url){return new Promise((resolve,reject)=>{if(!url)return reject(Error('Фото недоступно. Открой карточку заново или убери фото из отчёта.'));const image=new Image();image.crossOrigin='anonymous';const timer=setTimeout(()=>reject(Error('Фото не успело загрузиться. Попробуй ещё раз.')),15000);image.onload=()=>{clearTimeout(timer);resolve(image);};image.onerror=()=>{clearTimeout(timer);reject(Error('Не удалось загрузить выбранное фото. Убери его или попробуй снова.'));};image.src=url;});}
 async function careImageJpeg(url){const im=await careLoadImage(url),scale=Math.min(1,1600/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.naturalWidth*scale));c.height=Math.max(1,Math.round(im.naturalHeight*scale));const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);return {data:c.toDataURL('image/jpeg',.88),width:c.width,height:c.height};}
@@ -7550,7 +7605,7 @@ async function chatRead(older=false){
 }
 function chatMessagesRender(){
  const time=m=>new Date(m.createdAt).toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
- chatEl('chatContent').innerHTML='<div class="chat-media-filters"><button data-chat="media" data-value="all" aria-pressed="'+(chatState.media==='all')+'">Все сообщения</button><button data-chat="media" data-value="photos" aria-pressed="'+(chatState.media==='photos')+'">С фото</button></div><p class="chat-room-note">'+(chatState.history?'Ты читаешь историю. Новые сообщения — по кнопке «К последним».':'Место для вопросов, опыта и маленьких радостей 💛')+'</p><div class="chat-history">'+(chatState.older?'<button class="chat-secondary" data-chat="older">Ранние сообщения</button>':'')+'<button class="chat-secondary" data-chat="refresh">'+(chatState.history?'К последним':'Обновить')+'</button></div>'+(chatState.messages.length?'<div class="chat-messages" role="log" aria-label="Сообщения комнаты">'+chatState.messages.map(m=>'<article class="chat-message'+(m.own?' own':'')+(m.deleted?' deleted':'')+'"><header><strong>'+esc(m.own?'Ты · '+m.author.name:m.author.name)+'</strong></header>'+(!m.deleted&&m.photoUrl?'<button class="chat-image-button" data-chat="photo" data-value="'+esc(m.id)+'" aria-label="Открыть фото от '+esc(m.author.name)+'"><img class="chat-image" src="'+esc(m.photoUrl)+'" alt="Фото участника чата" loading="lazy"></button>':!m.deleted&&m.hasPhoto?'<span class="chat-photo-unavailable">Фото временно недоступно · нажми «Обновить»</span>':'')+(m.deleted||m.body?'<p>'+esc(m.deleted?'Сообщение убрано':m.body)+'</p>':'')+'<footer><time>'+esc(time(m))+'</time>'+(!m.deleted?'<button aria-label="Действия с сообщением от '+esc(m.author.name)+'" data-chat="message" data-value="'+esc(m.id)+'">⋯</button>':'')+'</footer></article>').join('')+'</div>':'<div class="chat-empty"><span>🐾</span><h2>'+(chatState.media==='photos'?'Пока нет фотографий':'Начнём знакомство?')+'</h2><p>'+(chatState.media==='photos'?'Поделись снимком любимки и добавь пару слов.':'Здесь пока тихо. Расскажи, как зовут твоего питомца и что он любит.')+'</p></div>');
+ chatEl('chatContent').innerHTML='<div class="chat-media-filters"><button data-chat="media" data-value="all" aria-pressed="'+(chatState.media==='all')+'">Все сообщения</button><button data-chat="media" data-value="photos" aria-pressed="'+(chatState.media==='photos')+'">С фото</button></div><p class="chat-room-note">'+(chatState.history?'Ты читаешь историю. Новые сообщения — по кнопке «К последним».':'Место для вопросов, опыта и маленьких радостей 💛')+'</p><div class="chat-history">'+(chatState.older?'<button class="chat-secondary" data-chat="older">Ранние сообщения</button>':'')+'<button class="chat-secondary" data-chat="refresh">'+(chatState.history?'К последним':'Обновить')+'</button></div>'+(chatState.messages.length?'<div class="chat-messages" role="log" aria-label="Сообщения комнаты">'+chatState.messages.map(m=>'<article class="chat-message'+(m.own?' own':'')+(m.deleted?' deleted':'')+'"><header><strong>'+esc(m.own?'Ты · '+m.author.name:m.author.name)+'</strong></header>'+(!m.deleted&&m.photoUrl?'<button class="chat-image-button" data-chat="photo" data-value="'+esc(m.id)+'" aria-label="Открыть фото от '+esc(m.author.name)+'"><img class="chat-image" src="'+safeImageAttr(m.photoUrl)+'" alt="Фото участника чата" loading="lazy"></button>':!m.deleted&&m.hasPhoto?'<span class="chat-photo-unavailable">Фото временно недоступно · нажми «Обновить»</span>':'')+(m.deleted||m.body?'<p>'+esc(m.deleted?'Сообщение убрано':m.body)+'</p>':'')+'<footer><time>'+esc(time(m))+'</time>'+(!m.deleted?'<button aria-label="Действия с сообщением от '+esc(m.author.name)+'" data-chat="message" data-value="'+esc(m.id)+'">⋯</button>':'')+'</footer></article>').join('')+'</div>':'<div class="chat-empty"><span>🐾</span><h2>'+(chatState.media==='photos'?'Пока нет фотографий':'Начнём знакомство?')+'</h2><p>'+(chatState.media==='photos'?'Поделись снимком любимки и добавь пару слов.':'Здесь пока тихо. Расскажи, как зовут твоего питомца и что он любит.')+'</p></div>');
 }
 async function chatSend(e){
  e.preventDefault();if(chatState.sending||!chatState.room)return;const room=chatState.room.slug,generation=chatState.generation;const pending=chatPending(room)||{body:chatEl('chatText').value.trim(),clientId:crypto.randomUUID()};if(chatState.photoPreparing.has(room))return;if(!pending.photo)pending.photo=chatState.photos.get(room)||undefined;if(!pending.body&&!pending.photo)return;chatRememberPending(room,pending);chatState.sending=true;chatComposerState();chatNotice();
@@ -7559,12 +7614,12 @@ async function chatSend(e){
  finally{chatState.sending=false;if(chatState.room)chatComposerState();}
 }
 function chatAction(title,html){chatEl('chatActionTitle').textContent=title;chatEl('chatActionContent').innerHTML=html;chatEl('chatActionDialog').showModal();}
-function chatMessageActions(id){const m=chatState.messages.find(x=>x.id===id);if(!m)return;chatAction(m.own?'Твоё сообщение':m.author.name,(m.own||chatState.moderator?'<button class="chat-secondary" data-chat="hide" data-value="'+m.id+'">Убрать сообщение у всех</button>':'')+(!m.own?'<p>Жалобу увидит модератор. Сообщения скрытого участника исчезнут только у тебя.</p><button class="chat-secondary" data-chat="report" data-value="'+m.id+'" data-reason="spam">Пожаловаться: спам</button><button class="chat-secondary" data-chat="report" data-value="'+m.id+'" data-reason="abuse">Пожаловаться: оскорбление</button><button class="chat-secondary" data-chat="report" data-value="'+m.id+'" data-reason="other">Другая причина</button><button class="chat-secondary" data-chat="block" data-value="'+m.author.id+'">Скрыть участника</button>':''));}
+function chatMessageActions(id){const m=chatState.messages.find(x=>x.id===id);if(!m)return;chatAction(m.own?'Твоё сообщение':m.author.name,(m.own||chatState.moderator?'<button class="chat-secondary" data-chat="hide" data-value="'+esc(m.id)+'">Убрать сообщение у всех</button>':'')+(!m.own?'<p>Жалобу увидит модератор. Сообщения скрытого участника исчезнут только у тебя.</p><button class="chat-secondary" data-chat="report" data-value="'+esc(m.id)+'" data-reason="spam">Пожаловаться: спам</button><button class="chat-secondary" data-chat="report" data-value="'+esc(m.id)+'" data-reason="abuse">Пожаловаться: оскорбление</button><button class="chat-secondary" data-chat="report" data-value="'+esc(m.id)+'" data-reason="other">Другая причина</button><button class="chat-secondary" data-chat="block" data-value="'+esc(m.author.id)+'">Скрыть участника</button>':''));}
 async function chatSettings(){chatAction('Общение в Любимке','<p>Пиши бережно. Не размещай чужие личные данные, рекламу и опасные советы. При тревожных симптомах обратись к ветеринару.</p>'+(chatState.profile?'<button class="chat-secondary" data-chat="rename">Изменить имя</button><button class="chat-secondary" data-chat="blocks">Скрытые участники</button>':'')+(chatState.moderator?'<button class="chat-secondary" data-chat="reports">Жалобы участников</button>':''));}
-async function chatBlocks(){const generation=chatState.generation;try{const data=await chatApi('blocks');if(generation!==chatState.generation)return;chatEl('chatActionTitle').textContent='Скрытые участники';chatEl('chatActionContent').innerHTML=data.blocks.length?data.blocks.map(b=>'<button class="chat-secondary" data-chat="unblock" data-value="'+b.id+'">Показывать: '+esc(b.name)+'</button>').join(''):'<p>Ты никого не скрывал.</p>';}catch(e){chatNotice(e.message);}}
+async function chatBlocks(){const generation=chatState.generation;try{const data=await chatApi('blocks');if(generation!==chatState.generation)return;chatEl('chatActionTitle').textContent='Скрытые участники';chatEl('chatActionContent').innerHTML=data.blocks.length?data.blocks.map(b=>'<button class="chat-secondary" data-chat="unblock" data-value="'+esc(b.id)+'">Показывать: '+esc(b.name)+'</button>').join(''):'<p>Ты никого не скрывал.</p>';}catch(e){chatNotice(e.message);}}
 async function chatReports(){
  chatStop();chatState.room=null;chatEl('chatComposer').hidden=true;chatEl('chatTitle').textContent='Жалобы участников';chatEl('chatBack').setAttribute('aria-label','К списку чатов');chatEl('chatActionDialog').close();const generation=chatState.generation;chatEl('chatContent').innerHTML='<p>Загружаем жалобы…</p>';
- try{const data=await chatApi('reports');if(generation!==chatState.generation)return;chatEl('chatContent').innerHTML='<button class="chat-secondary" data-chat="directory">Все чаты</button>'+(data.reports.length?data.reports.map(r=>'<article class="chat-report-item"><strong>'+esc(r.author)+'</strong><small> · '+r.complaints+' жалоб</small>'+(r.photoUrl?'<img class="chat-report-photo" src="'+esc(r.photoUrl)+'" alt="Фото в жалобе">':'')+'<p>'+esc(r.body)+'</p><small>'+esc(r.room)+' · '+esc(r.reasons.map(x=>({spam:'спам',abuse:'оскорбление',other:'другое'})[x]).join(', '))+'</small><div><button class="chat-secondary" data-chat="moderate" data-value="'+r.id+'" data-reason="hide">Убрать сообщение</button><button class="chat-secondary" data-chat="moderate" data-value="'+r.id+'" data-reason="ban">Ограничить автора</button><button class="chat-secondary" data-chat="moderate" data-value="'+r.id+'" data-reason="resolve">Закрыть жалобу</button></div></article>').join(''):'<div class="chat-empty"><span>💛</span><h2>Жалоб пока нет</h2></div>');}catch(e){if(generation===chatState.generation)chatNotice(e.message);}
+ try{const data=await chatApi('reports');if(generation!==chatState.generation)return;chatEl('chatContent').innerHTML='<button class="chat-secondary" data-chat="directory">Все чаты</button>'+(data.reports.length?data.reports.map(r=>'<article class="chat-report-item"><strong>'+esc(r.author)+'</strong><small> · '+Number(r.complaints)+' жалоб</small>'+(r.photoUrl?'<img class="chat-report-photo" src="'+safeImageAttr(r.photoUrl)+'" alt="Фото в жалобе">':'')+'<p>'+esc(r.body)+'</p><small>'+esc(r.room)+' · '+esc(r.reasons.map(x=>({spam:'спам',abuse:'оскорбление',other:'другое'})[x]).join(', '))+'</small><div><button class="chat-secondary" data-chat="moderate" data-value="'+esc(r.id)+'" data-reason="hide">Убрать сообщение</button><button class="chat-secondary" data-chat="moderate" data-value="'+esc(r.id)+'" data-reason="ban">Ограничить автора</button><button class="chat-secondary" data-chat="moderate" data-value="'+esc(r.id)+'" data-reason="resolve">Закрыть жалобу</button></div></article>').join(''):'<div class="chat-empty"><span>💛</span><h2>Жалоб пока нет</h2></div>');}catch(e){if(generation===chatState.generation)chatNotice(e.message);}
 }
 async function chatClick(e){
  const b=e.target.closest('[data-chat]');if(!b)return;const action=b.dataset.chat,value=b.dataset.value;
@@ -7628,7 +7683,7 @@ renderHome=function(){
  document.getElementById('homeCount').textContent=String(people.length);
  document.getElementById('petsContainer').innerHTML=people.length?people.map(p=>{
   const meta=[isHuman(p)?'Человек':p.breed||p.type,petAgeText(p)].filter(Boolean).join(' · ');
-  return '<button type="button" class="home-pet" onclick="openPet('+p.id+')">'+(p.photo?'<img src="'+esc(p.photo)+'" alt="" class="home-avatar">':'<span class="home-avatar" aria-hidden="true">'+esc(p.emoji||(isHuman(p)?'💛':'🐾'))+'</span>')+'<span class="home-pet-info"><strong>'+esc(p.name)+'</strong><small>'+esc(meta)+'</small><span class="home-pet-link">Открыть карточку <span aria-hidden="true">↗</span></span></span><span class="home-pet-arrow" aria-hidden="true">›</span></button>';
+  return '<button type="button" class="home-pet" onclick="openPet('+Number(p.id)+')">'+(p.photo?'<img src="'+safeImageAttr(p.photo)+'" alt="" class="home-avatar">':'<span class="home-avatar" aria-hidden="true">'+esc(p.emoji||(isHuman(p)?'💛':'🐾'))+'</span>')+'<span class="home-pet-info"><strong>'+esc(p.name)+'</strong><small>'+esc(meta)+'</small><span class="home-pet-link">Открыть карточку <span aria-hidden="true">↗</span></span></span><span class="home-pet-arrow" aria-hidden="true">›</span></button>';
  }).join(''):'<div class="home-empty"><h2>Кого добавим первым?</h2><p>Питомца или близкого человека — у каждого будет своя карточка.</p></div>';
  document.getElementById('homeExtra').innerHTML='<button type="button" class="home-add" onclick="startRegister()"><span aria-hidden="true">＋</span> Добавить любимку</button><p class="home-footnote">Дневник, напоминания и забота — внутри карточки</p>';
 };
