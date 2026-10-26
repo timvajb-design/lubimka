@@ -631,7 +631,16 @@ button.pet-stat:hover{background:#FFF9F3;}button.pet-stat span{color:#A64C1D;}
 body{padding-top:0;}
 .app-body{padding-top:var(--demo-height,0px);}
 #help{padding-top:12px;}
-#helpHub[hidden],#helpListing[hidden],#helpLostTabs[hidden],#helpListSpace[hidden]{display:none!important;}
+#helpHub[hidden],#helpListing[hidden],#helpLostTabs[hidden],#helpListSpace[hidden],#helpEntryManage[hidden]{display:none!important;}
+#help .helped-entry.help-entry-secondary{display:grid;grid-template-columns:42px minmax(0,1fr) 16px;align-items:center;text-align:left;width:100%;min-height:92px;padding:14px;margin:14px 0;background:#f0f6e9;border-color:#d8e5cc;}
+#help .helped-entry.help-entry-secondary .cl{color:#45643a;}
+#help .helped-entry.help-entry-secondary .ci{background:#e1ecd8;}
+.help-admin-entry{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:48px;margin:0 0 16px;padding:13px 16px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--accent);font:inherit;font-weight:800;text-align:left;}
+.help-status-controls{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+.help-status-controls button{width:100%;min-height:48px;padding:12px;border:1px solid #bfd2b1;border-radius:14px;background:#f0f6e9;color:#36582c;font:inherit;font-weight:800;white-space:normal;}
+.help-status-controls button:disabled{opacity:.55;}
+.help-status-controls span{display:block;margin-top:6px;color:var(--text-soft);font-size:11px;text-align:center;}
+.helped-more{width:100%;margin:8px 0 20px;}
 .help-primary-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
 .help-secondary-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:20px 0;}
 #help .help-entry{padding:16px 8px;min-width:0;gap:8px;justify-content:flex-start;text-align:center;}
@@ -3654,6 +3663,12 @@ html,body{overflow-x:clip}
           <span class="help-entry-link">Открыть <svg class="help-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m9 5 7 7-7 7"/></svg></span>
         </button>
       </div>
+      <button type="button" class="cat-card help-entry help-entry-secondary helped-entry" id="helpEntryHelped" onclick="helpOpenKind('helped')">
+        <span class="ci" aria-hidden="true">💚</span>
+        <span class="help-entry-copy"><span class="cl">Кому уже помогли</span><span class="help-entry-desc">Вернулись к хозяевам или нашли новый дом</span></span>
+        <svg class="help-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+      </button>
+      <button type="button" class="help-admin-entry" id="helpEntryManage" hidden onclick="helpOpenKind('manage')">Управлять статусами объявлений <span aria-hidden="true">›</span></button>
       <div class="help-secondary-links">
         <button type="button" class="cat-card help-entry help-entry-secondary" id="helpEntryBoarding" onclick="helpOpenKind('boarding')">
           <span class="ci"><svg class="help-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m3 10 8-7 8 7M5 9v11h5"/><circle cx="17" cy="17" r="5"/><path d="M17 14v3l2 1"/></svg></span>
@@ -4541,6 +4556,7 @@ function enterApp(){
   document.getElementById('appBody').style.display='block';
   renderHome();
   renderProfile();
+  helpCheckAdmin();
   openScreen('home');
 }
 function skipWelcome(){ DB.setWelcomed(); haptic(); enterApp(); }
@@ -5110,11 +5126,7 @@ function renderBoard(){
     return;
   }
   if(curKind==='happy'){ renderStories(list); return; }
-  let arr=boardCache.slice();
-  if(curFilter==='mine') arr=arr.filter(p=>p.author_id===ME.id);
-  else if(curFilter==='found') arr=arr.filter(p=>p.status==='found');
-  else if(curFilter!=='all') arr=arr.filter(p=>p.animal_type===curFilter);
-  if(curFilter!=='found'&&curFilter!=='mine') arr=arr.filter(p=>p.status!=='found');
+  let arr=helpVisiblePosts();
 
   if(!arr.length){
     const t={lost:['🔍','Пока никто не потерялся','И это отлично! Если у вас пропал питомец — нажмите «Добавить объявление».'],
@@ -5144,10 +5156,10 @@ function renderBoard(){
     } else {
       ph=`<div class="ph-none">${p.animal_type==='Собака'?'🐶':(p.animal_type==='Кошка'?'🐱':'🐾')}</div>`;
     }
-    const stat=p.status==='found'?'<span class="st found">Нашёлся ✅</span>':
-      (curKind==='found'?'<span class="st adopt">Найден, ищем хозяина</span>':
-      (curKind==='lost'?'<span class="st">Пропал</span>':
-       (curKind==='adopt'?'<span class="st adopt">Ищет дом</span>':'')));
+    const stat=p.status==='found'?'<span class="st found">'+esc(helpResolvedLabel(p))+' ✓</span>':
+      (p.kind==='found'?'<span class="st adopt">Найден, ищем хозяина</span>':
+      (p.kind==='lost'?'<span class="st">Пропал</span>':
+       (p.kind==='adopt'?'<span class="st adopt">Ищет дом</span>':'')));
     const rows=[];
     if(p.breed||p.color) rows.push(esc([p.breed,p.color].filter(Boolean).join(', ')));
     if(p.marks) rows.push('<b>Приметы:</b> '+esc(p.marks));
@@ -5165,7 +5177,8 @@ function renderBoard(){
         <button class="${p.kind==='adopt'?'b-gy':'b-tg'}" style="flex:1" onclick="sharePost('${safeInlineId(p.id)}')">📣 Рассказать друзьям</button>
         <button class="b-gy" onclick="reportPost('${safeInlineId(p.id)}')">⚠️</button></div>`;
     }
-    const contactBox=p.kind==='adopt'?postContactHtml(p,mine):p.contact
+    if(helpAdmin.verified&&['lost','found','adopt','boarding'].includes(p.kind))btns+=`<div class="help-status-controls"><button type="button" data-status-post="${safeInlineId(p.id)}" onclick="helpChangeStatus('${safeInlineId(p.id)}')" ${helpAdmin.busy?'disabled':''}>${helpAdmin.pending.has(p.id)?'Повторить сохранение':p.status==='found'?'↩ Вернуть в поиск':'✓ Отметить: уже помогли'}</button><span>Только для администратора</span></div>`;
+    const contactBox=p.status==='found'?'':p.kind==='adopt'?postContactHtml(p,mine):p.contact
       ? `<div class="contact-box"><div class="lb">📞 Связаться с автором</div><div class="vl">${esc(p.contact)}</div></div>`
       : '';
     return `<div class="post">${ph}<div class="bd">
@@ -5315,7 +5328,7 @@ function actDelete(){ if(!actionsPost) return; const id=actionsPost.id; closePos
 // Поделиться объявлением — доступно всем, не только автору
 function sharePost(id){
   const p=boardCache.find(x=>String(x.id)===String(id)); if(!p) return;
-  const head={lost:'🔍 Помогите найти',adopt:'🏠 Ищет дом',boarding:'🛏 Передержка'}[p.kind]||'🐾';
+  const head=p.status==='found'?'💚 '+helpResolvedLabel(p):{lost:'🔍 Помогите найти',adopt:'🏠 Ищет дом',boarding:'🛏 Передержка'}[p.kind]||'🐾';
   const text=head+': '+(p.title||'')+(p.city?' ('+p.city+')':'')+'. Подробности — в приложении Любимка:';
   if(tg&&tg.openTelegramLink){
     tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(APP_LINK)+'&text='+encodeURIComponent(text));
@@ -6451,12 +6464,88 @@ async function boot(){
 const HELP_SECTIONS={
  lost:{title:'Потеряшки',entry:'helpEntryLost'},found:{title:'Потеряшки',entry:'helpEntryLost'},
  adopt:{title:'Ждут хозяина',entry:'helpEntryAdopt'},boarding:{title:'Передержка',entry:'helpEntryBoarding'},
- shelter:{title:'Приюты',entry:'helpEntryShelter'},happy:{title:'Истории спасения',entry:'helpEntryHappy'}
+ shelter:{title:'Приюты',entry:'helpEntryShelter'},happy:{title:'Истории спасения',entry:'helpEntryHappy'},
+ helped:{title:'Кому уже помогли',entry:'helpEntryHelped'},manage:{title:'Управление объявлениями',entry:'helpEntryManage'}
 };
 const helpState={section:null,empty:false,loading:false};
+// The visible role is only a UI hint; every write is authorised by the server.
+const helpAdmin={verified:false,busy:false,pending:new Map()};
+const helpStatusPage={offset:0,more:false};
+function helpResolvedLabel(post){return post.kind==='adopt'?'Нашли дом':post.kind==='lost'||post.kind==='found'?'Уже у хозяина':'Уже помогли';}
+async function helpAdminRequest(body){
+ if(!tg?.initData)throw new Error('Открой Любимку через свой аккаунт Telegram.');
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
+ try{
+  const r=await fetch(SB_URL+'/functions/v1/lubimka-admin',{method:'POST',headers:{apikey:SB_KEY,'Content-Type':'application/json','x-telegram-init-data':tg.initData},body:JSON.stringify(body),signal:controller.signal});
+  const result=await r.json();
+  if(!r.ok){const error=new Error(result.error||'Не удалось подтвердить действие. Повтори сохранение.');error.status=r.status;throw error;}
+  return result;
+ }finally{clearTimeout(timer);}
+}
+async function helpCheckAdmin(){
+ if(String(ME.id)!==String(ADMIN_ID)||!tg?.initData)return;
+ try{const result=await helpAdminRequest({action:'status'});helpAdmin.verified=result.admin===true;}catch{helpAdmin.verified=false;}
+ document.getElementById('helpEntryManage').hidden=!helpAdmin.verified;
+ if(curScreen==='help'&&helpState.section&&!helpState.loading)renderBoard();
+}
+async function helpLoadStatusBoard(append=false){
+ if(helpState.loading&&append)return;
+ const k=curKind,filter=curFilter,request=++boardReq,offset=append?helpStatusPage.offset:0,list=document.getElementById('boardList');
+ helpState.loading=true;helpUpdateChrome();renderFilters();
+ if(!append){boardCache=[];helpStatusPage.more=false;list.innerHTML='<div class="skel-card"><div class="skel skel-ph"></div><div class="skel skel-l1"></div></div>';}
+ else list.querySelector('.helped-more')?.setAttribute('disabled','');
+ try{
+  let rows,more,next;
+  if(k==='manage'){
+   const result=await helpAdminRequest({action:'posts.list',status:filter==='found'?'found':'active',limit:20,offset});
+   rows=result.posts;more=result.hasMore;next=result.nextOffset;
+  }else{
+   const r=await fetch(SB_URL+'/rest/v1/posts?status=eq.found&select=*&order=created_at.desc,id.desc&limit=21&offset='+offset,{headers:SB_H});
+   if(!r.ok)throw new Error('Не удалось загрузить объявления.');
+   rows=await r.json();more=rows.length>20;rows=rows.slice(0,20);next=offset+rows.length;
+  }
+  if(request!==boardReq||curKind!==k||(k==='manage'&&curFilter!==filter))return;
+  boardCache=append?[...boardCache,...rows.filter(p=>!boardCache.some(old=>old.id===p.id))]:rows;
+  helpStatusPage.offset=next;helpStatusPage.more=!!more;helpState.loading=false;renderBoard();
+ }catch(e){
+  if(request!==boardReq)return;helpState.loading=false;
+  if(append){renderBoard();alertMsg('Не удалось загрузить продолжение. Попробуй ещё раз.');}
+  else list.innerHTML=emptyBox('🐾','Не удалось загрузить объявления','Проверь интернет и повтори. Сохранённые объявления не изменились.','<button type="button" class="help-action help-action-outline" onclick="loadBoard()">Повторить</button>');
+ }
+}
+function helpStatusStorageKey(id){return 'lubimka_admin_status_'+ME.id+'_'+id;}
+function helpReadPending(id){
+ if(helpAdmin.pending.has(id))return helpAdmin.pending.get(id);
+ try{const saved=JSON.parse(sessionStorage.getItem(helpStatusStorageKey(id))||'null');if(saved?.action==='post.update'&&saved.id===id&&['active','found'].includes(saved.data?.status)&&Number.isSafeInteger(saved.baseVersion)&&/^[0-9a-f-]{36}$/i.test(saved.mutationId)){helpAdmin.pending.set(id,saved);return saved;}}catch{}
+ return null;
+}
+function helpForgetPending(id){helpAdmin.pending.delete(id);try{sessionStorage.removeItem(helpStatusStorageKey(id));}catch{}}
+function helpChangeStatus(id){
+ const post=boardCache.find(p=>p.id===id);if(!post||!helpAdmin.verified||helpAdmin.busy||post.status==='hidden')return;
+ const pending=helpReadPending(id),status=pending?.data.status||(post.status==='found'?'active':'found');
+ const message=status==='found'?'Животному «'+post.title+'» уже помогли? Объявление перейдёт в раздел «Кому уже помогли».':'Вернуть «'+post.title+'» в активный поиск?';
+ const go=async()=>{
+  if(helpAdmin.busy)return;
+  const command=pending||{action:'post.update',id:post.id,baseVersion:post.version,mutationId:crypto.randomUUID(),reason:status==='found'?'Подтверждено администратором: животному помогли':'Администратор вернул объявление в поиск',data:{status}};
+  helpAdmin.pending.set(id,command);try{sessionStorage.setItem(helpStatusStorageKey(id),JSON.stringify(command));}catch{}
+  helpAdmin.busy=true;renderBoard();
+  try{
+   const result=await helpAdminRequest(command);helpForgetPending(id);
+   const index=boardCache.findIndex(p=>p.id===id);if(index>=0)boardCache[index]=result.post;
+   haptic('ok');alertMsg(status==='found'?'Сохранено: животному уже помогли 💚':'Объявление снова в поиске.');
+   await loadBoard();
+  }catch(e){
+   if(e.status&&e.status<500){helpForgetPending(id);if(e.status===401||e.status===403){helpAdmin.verified=false;document.getElementById('helpEntryManage').hidden=true;}alertMsg(e.message);if(e.status===409)await loadBoard();}
+   else alertMsg('Не удалось подтвердить сохранение. Нажми «Повторить сохранение» — отправится тот же запрос.');
+  }finally{helpAdmin.busy=false;if(curScreen==='help'&&helpState.section&&!helpState.loading)renderBoard();}
+ };
+ try{tg.showConfirm(message,ok=>{if(ok)go();});}catch{if(confirm(message))go();}
+}
 KIND_LABEL.adopt='Ждут хозяина';
 KIND_DESC.found='Животные, которых нашли на улице. Возможно, их уже ищут.';
 KIND_DESC.happy='Истории животных, которым удалось помочь.';
+KIND_DESC.helped='Они уже в безопасности: вернулись к хозяевам или нашли новый дом. Спасибо всем, кто помогал!';
+KIND_DESC.manage='Отмечай, кому уже помогли. Если помощь снова нужна, объявление можно вернуть в поиск.';
 function helpShowHub(focus=true){
  const previous=helpState.section;helpState.section=null;helpState.empty=false;helpState.loading=false;boardReq++;boardCache=[];
  document.getElementById('helpHub').hidden=false;
@@ -6477,6 +6566,7 @@ function helpUpdateChrome(){
 }
 function helpOpenKind(kind,fromTab=false){
  if(!Object.prototype.hasOwnProperty.call(HELP_SECTIONS,kind))return Promise.resolve();
+ if(kind==='manage'&&!helpAdmin.verified){alertMsg('Управление доступно только администратору.');return Promise.resolve();}
  if(curScreen!=='help')openScreen('help');
  const switching=fromTab&&helpState.section!==null&&(curKind==='lost'||curKind==='found')&&(kind==='lost'||kind==='found');
  curKind=kind;curFilter='all';helpState.section=kind;helpState.empty=false;
@@ -6498,6 +6588,9 @@ function helpFilterIcon(name){
 }
 renderFilters=function(){
  const row=document.getElementById('filterRow');
+ if(curKind==='manage'){
+  row.innerHTML=[['all','В поиске'],['found','Уже помогли']].map(([value,label])=>`<button type="button" class="chip ${curFilter===value?'on':''}" aria-pressed="${curFilter===value}" onclick="setFilter('${value}')">${label}</button>`).join('');row.setAttribute('data-filter-kind','manage');return;
+ }
  if(!helpState.section||curKind==='shelter'||curKind==='happy'){row.innerHTML='';row.setAttribute('data-filter-kind','');return;}
  // Keep existing buttons while a filter changes: keyboard focus and horizontal scroll stay put.
  if(row.getAttribute('data-filter-kind')!==curKind||!row.innerHTML){
@@ -6512,13 +6605,14 @@ renderFilters=function(){
  });
 };
 setFilter=function(filter){
- const allowed=['all','Кошка','Собака','mine',...(curKind==='lost'?['found']:[])];
+ const allowed=curKind==='manage'?['all','found']:['all','Кошка','Собака','mine',...(curKind==='lost'?['found']:[])];
  if(!helpState.section||!allowed.includes(filter))return;
- curFilter=filter;helpUpdateChrome();renderFilters();renderBoard();haptic();
+ curFilter=filter;helpUpdateChrome();renderFilters();if(curKind==='manage')loadBoard();else renderBoard();haptic();
 };
 const helpBaseLoadBoard=loadBoard;
 loadBoard=async function(){
  if(curScreen!=='help'||!helpState.section)return;
+ if(curKind==='helped'||curKind==='manage')return helpLoadStatusBoard();
  helpState.loading=true;helpUpdateChrome();
  const pending=helpBaseLoadBoard(),request=boardReq;
  try{await pending;}finally{
@@ -6532,7 +6626,9 @@ function helpEmptyState(kind,filter='all'){
   adopt:{title:'Здесь будут те, кто ждёт хозяина',text:'Знаешь животное, которому нужен дом? Расскажи о нём — возможно, его семья уже рядом.',icon:'adopt',action:'add'},
   boarding:{title:'Передержек пока нет',text:'Можешь временно приютить питомца? Добавь объявление и расскажи об условиях.',icon:'boarding',action:'add'},
   shelter:{title:'Приютов в списке пока нет',text:'Здесь появятся организации, которым можно помочь. А пока загляни в другие разделы.',icon:'shelter',action:'hub'},
-  happy:{title:'Здесь будут истории спасения',text:'У каждого нового дома — своя история. Здесь будем делиться тем, как животным удалось помочь.',icon:'happy',action:'hub'}
+  happy:{title:'Здесь будут истории спасения',text:'У каждого нового дома — своя история. Здесь будем делиться тем, как животным удалось помочь.',icon:'happy',action:'hub'},
+  helped:{title:'Здесь будут добрые новости',text:'Объявления появятся здесь, когда автор или администратор подтвердит, что животному помогли.',icon:'happy',action:'hub'},
+  manage:{title:'В этом списке пока нет объявлений',text:'Выбери другой статус или вернись к разделам помощи.',icon:'happy',action:'hub'}
  };
  let state=states[kind];
  if(!state)return '';
@@ -6563,6 +6659,9 @@ function helpResetFilters(){
 }
 function helpVisiblePosts(){
  return boardCache.filter(p=>{
+  if(p.status==='hidden')return false;
+  if(curKind==='manage')return p.status===(curFilter==='found'?'found':'active');
+  if(curKind==='helped')return p.status==='found'&&(curFilter==='all'||(curFilter==='mine'?String(p.author_id)===String(ME.id):p.animal_type===curFilter));
   if(curFilter==='mine')return p.author_id===ME.id;
   if(curFilter==='found')return p.status==='found';
   return p.status!=='found'&&(curFilter==='all'||p.animal_type===curFilter);
@@ -6579,13 +6678,14 @@ renderBoard=function(){
  if(curScreen!=='help'||!helpState.section)return;
  // A selected filter must never render cached rows from a different, still-loading category.
  if(helpState.loading)return;
- const posts=['lost','found','adopt','boarding'].includes(curKind);
+ const posts=['lost','found','adopt','boarding','helped','manage'].includes(curKind);
  helpState.empty=posts?helpVisiblePosts().length===0:boardCache.length===0;
  helpSyncAddButton();
  const list=document.getElementById('boardList');
- if(helpState.empty&&posts){list.innerHTML=helpEmptyState(curKind,curFilter);return;}
+ if(helpState.empty&&posts){list.innerHTML=helpEmptyState(curKind,curFilter);if(curKind==='helped'&&helpStatusPage.more)list.insertAdjacentHTML('beforeend','<button type="button" class="help-action help-action-outline helped-more" onclick="helpLoadStatusBoard(true)">Показать ещё</button>');return;}
  if(helpState.empty&&curKind==='shelter'){list.innerHTML=helpEmptyState('shelter');return;}
  helpBaseRenderBoard();
+ if((curKind==='helped'||curKind==='manage')&&helpStatusPage.more)list.insertAdjacentHTML('beforeend','<button type="button" class="help-action help-action-outline helped-more" onclick="helpLoadStatusBoard(true)">Показать ещё</button>');
 };
 alertGo=function(kind){closeNotif();return helpOpenKind(kind);};
 addChoice=function(what){
