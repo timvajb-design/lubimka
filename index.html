@@ -3641,6 +3641,7 @@ body .lm-dialog{background:#17110d;border-color:#533722;box-shadow:0 20px 70px #
       <input class="field" id="pfCity" placeholder="Москва">
       <input class="field" id="pfDistrict" placeholder="Район, метро">
     </div>
+    <section id="pfLocation" class="pf-location" aria-labelledby="pfLocationTitle"><h3 id="pfLocationTitle">Место на карте</h3><p id="pfPointNote">Для потеряшек и поиска дома отметь примерное место. Точный адрес не публикуется.</p><button type="button" id="pfPickPoint">Отметить место на карте</button><div id="pfMapArea" hidden><div id="pfMap" aria-label="Выбери примерное место объявления"></div><div class="pf-map-actions"><button type="button" id="pfMapLocate">Моё местоположение</button><button type="button" id="pfUseCenter">Выбрать центр карты</button></div><p>Передвинь карту и нажми «Выбрать центр карты» или коснись нужного места.</p></div><p id="pfPointError" role="alert"></p></section>
     <label class="edit-label" for="pfContact" id="pfContactLabel">Как с вами связаться?</label>
 <input class="field" id="pfContact" maxlength="200" autocomplete="off" placeholder="@имя или +7 999 123-45-67" aria-describedby="pfContactHint pfContactError" oninput="postContactClearError()">
     <div class="field-hint" id="pfContactHint">Контакт будет виден в объявлении.</div><p class="post-contact-error" id="pfContactError" role="alert" hidden></p>
@@ -5371,6 +5372,8 @@ function actEdit(){
   curKind=p.kind;
   openPostForm();               // сброс формы + правильные подписи под тип
   editingPost=p;                // ставим ПОСЛЕ openPostForm (он сбрасывает)
+  pfData.point=Number.isFinite(p.public_lat)&&Number.isFinite(p.public_lng)?{lat:p.public_lat,lng:p.public_lng}:null;
+  document.dispatchEvent(new Event('lubimka-post-location-open'));
   document.getElementById('pfName').value=p.title||'';
   document.getElementById('pfBreed').value=p.breed||'';
   document.getElementById('pfColor').value=p.color||'';
@@ -5448,9 +5451,10 @@ function openPostForm(){
   document.getElementById('pfPriceWrap').style.display=(curKind==='boarding')?'block':'none';
   document.getElementById('pfDateWrap').style.display=(curKind==='boarding')?'none':'block';
   document.getElementById('postForm').classList.add('active');
+  document.dispatchEvent(new Event('lubimka-post-location-open'));
   haptic();
 }
-function closePostForm(){ document.getElementById('postForm').classList.remove('active'); }
+function closePostForm(){ document.getElementById('postForm').classList.remove('active'); document.dispatchEvent(new Event('lubimka-post-location-close')); }
 function pfType(el,t){
   document.querySelectorAll('#pfTypeRow .mini-choice').forEach(x=>x.classList.remove('sel'));
   el.classList.add('sel'); pfData.type=t; haptic();
@@ -5487,6 +5491,8 @@ function renderPhotoBox(busy){
 }
 function delPfPhoto(i){ pfData.photos.splice(i,1); renderPhotoBox(); haptic(); }
 async function savePost(){
+  if(document.getElementById('pfSave').disabled)return;
+  if(!editingPost&&['lost','found','adopt'].includes(curKind)&&!postLocationValid(pfData.point)){document.getElementById('pfPointError').textContent='Отметь примерное место на карте перед публикацией.';document.getElementById('pfPickPoint').focus({preventScroll:true});document.getElementById('pfLocation').scrollIntoView({block:'nearest'});document.dispatchEvent(new Event('lubimka-post-location-required'));return;}
   const contact=document.getElementById('pfContact').value.trim();
   if(contact.length>200||(curKind==='adopt'&&!postContactParse(contact))){postContactShowError('Укажи @имя в Telegram, ссылку t.me/имя или номер телефона, чтобы с тобой могли связаться.');return;}
   postContactClearError();
@@ -5509,6 +5515,7 @@ async function savePost(){
     price:curKind==='boarding'?document.getElementById('pfPrice').value.trim():null,
     photos:pfData.photos&&pfData.photos.length?pfData.photos:null};
   body.contact=contact||null;
+  if(postLocationValid(pfData.point)){body.public_lat=Math.round(pfData.point.lat*100)/100;body.public_lng=Math.round(pfData.point.lng*100)/100;}
   if(contact){try{localStorage.setItem('lubimka_contact',contact);}catch{}}
   let r, wasEdit=!!editingPost;
   if(wasEdit){
@@ -7924,5 +7931,11 @@ window.LubimkaAdminContext=Object.freeze({
 });
 </script>
 <script type="module" src="./admin/telegram-entry.mjs?v=20261109admin1"></script>
+<link rel="stylesheet" href="./post-location/telegram.css?v=20261109point1">
+<script id="post-location-context">
+function postLocationValid(p){return !!p&&Number.isFinite(p.lat)&&Number.isFinite(p.lng)&&Math.abs(p.lat)<=85&&Math.abs(p.lng)<=180;}
+window.LubimkaPostLocationContext=Object.freeze({get:()=>({kind:curKind,editing:!!editingPost,point:pfData.point||null,city:document.getElementById('pfCity').value,open:document.getElementById('postForm').classList.contains('active')}),setPoint:point=>{pfData.point=point;}});
+</script>
+<script type="module" src="./post-location/telegram-entry.mjs?v=20261109point1"></script>
 </body>
 </html>
