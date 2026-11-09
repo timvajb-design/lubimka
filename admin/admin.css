@@ -23,3 +23,4 @@
 @media(max-width:360px){.web-admin-body{padding-left:10px;padding-right:10px}.web-admin-header{padding-left:12px;padding-right:12px}.web-admin-header button{padding:9px}.web-admin .web-admin-summary{padding:13px}.web-admin-taxi{padding:16px}.web-admin-service-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.web-admin *{scroll-behavior:auto!important;transition:none!important}}
 .web-admin-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:18px 0}.web-admin-metrics>div{border:1px solid #3b2d24;border-radius:14px;padding:14px;background:#191617}.web-admin-metrics dt{font-size:11px;color:#c4b1a1;line-height:1.4}.web-admin-metrics dd{font-size:23px;font-weight:800;color:#fff0e3;margin:7px 0 0}
+.web-admin-tabs button[aria-current=page]:hover{background:#ff9451;border-color:#ff9451;color:#211207}
