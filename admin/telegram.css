@@ -1,0 +1,8 @@
+#miniAdminProfileEntry:empty{display:none}
+#miniAdminProfileEntry{margin:0 0 16px}
+#miniAdminProfileEntry .web-admin-entry{width:100%;margin:0;text-align:left;padding:16px 18px;border:1px solid #754a2e;border-radius:18px;background:linear-gradient(135deg,#352317,#1d1713);color:#fff1e3;font:800 17px/1.4 system-ui,-apple-system,sans-serif;cursor:pointer}
+#miniAdminProfileEntry .web-admin-entry small{margin-top:5px;font:400 12px/1.5 system-ui,-apple-system,sans-serif;color:#c9b4a2}
+#miniAdminProfileEntry .web-admin-entry:focus-visible{outline:2px solid #ffb47f;outline-offset:3px}
+#premiumNav .web-admin-entry{flex:0 0 auto;width:auto;white-space:nowrap;margin:0}
+#premiumNav .web-admin-entry small{display:none}
+.web-admin-entry[hidden],#webAdmin[hidden]{display:none!important}

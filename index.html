@@ -4852,6 +4852,7 @@ function renderProfile(){
   const humans=pets.filter(isHuman).length;document.getElementById('userPets').textContent=humans?'Питомцев: '+(pets.length-humans)+' · Людей: '+humans:'Питомцев: '+pets.length;
   const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
   if(u && u.photo_url){ document.getElementById('userAvatar').innerHTML='<img src="'+safeImageAttr(u.photo_url)+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">'; }
+  document.dispatchEvent(new Event('lubimka-admin-session'));
 }
 // ================= Pet account screen =================
 let curPetId = null;
@@ -7912,5 +7913,16 @@ boot();
 <script id="zootaxi-entry-config">window.LubimkaZootaxiConfig={"enabled":true,"deploymentRegion":"RU","ruDeploymentVerified":true,"formURL":"https://taxi.lubimka.online/zootaxi"};</script>
 <script type="module" src="./zootaxi/integration/entry.mjs?v=20261109zt1"></script>
 <script type="module" src="./market/market.mjs?v=20261109zt1"></script>
+<script id="mini-admin-context">
+// Server status authorizes controls; ME is only the current UI identity.
+window.LubimkaAdminContext=Object.freeze({
+ api:body=>helpAdminRequest(body),
+ session:()=>tg?.initData&&ME.id?{id:String(ME.id)}:null,
+ photoURL:safeImageUrl,
+ onPostsChanged:()=>{if(curScreen==='help')void loadBoard();},
+ onOpenService:service=>{if(service==='stories')return helpOpenKind('happy');if(service==='catalog')return premiumNavigate('shop');}
+});
+</script>
+<script type="module" src="./admin/telegram-entry.mjs?v=20261109admin1"></script>
 </body>
 </html>
