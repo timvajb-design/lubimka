@@ -1,0 +1,106 @@
+/* Shared by the web app and the Telegram Mini App. Keep maps, chat scrolling,
+   media cards and the size of existing controls in their own layout systems. */
+html[data-lubimka-ui="glass"] {
+  --glass-button:linear-gradient(160deg,rgba(255,249,237,.12),rgba(255,240,219,.025) 65%),rgba(31,28,27,.84);
+  --glass-accent:linear-gradient(157deg,#ffb278 0%,#ff9150 46%,#fc8139 100%);
+  --glass-selected:linear-gradient(155deg,rgba(255,168,97,.25),rgba(255,120,45,.12) 75%),#2a201b;
+  --glass-border:rgba(255,234,214,.26);
+  --glass-edge:inset 0 1px 0 rgba(255,255,255,.13),0 2px 7px rgba(0,0,0,.15);
+  --glass-panel:radial-gradient(ellipse at top left,#39302b55,transparent 52%),linear-gradient(155deg,#242221,#171616 75%);
+  --glass-input:linear-gradient(155deg,#343130,#292727);
+  --glass-text:#fff6ee;
+  --glass-subtle:#d0c2b6;
+}
+html[data-lubimka-ui] body :is(.premium-nav button,.premium-top-nav button,.premium-quick button,.web-quick-actions button,
+    .web-account,.web-close,.web-view-switch button,.web-filters button,.web-account-actions button,.web-ad-shortcuts button,
+    .web-dialog form button,.web-admin button,.pet-tabs button,.mini-choice,.choice,.btn,.btn-big,.btn-outline,.chip,
+    .help-back,.care-back,.ps-back,.ps-menu,.health-back,.care-another,.care-nav,.care-library-button,
+    .chat-head button,.chat-secondary,.chat-filter,.chat-tab,.b-gy,.btn-ig,.icon-btn,.help-action,
+    .post-actions-sheet button,.rec-sheet button,.edit-sheet button,.rem-sheet button,.family-choice,.rem-switch button) {
+  background:var(--glass-button)!important;
+  color:var(--glass-text)!important;
+  border:1px solid var(--glass-border)!important;
+  box-shadow:var(--glass-edge)!important;
+}
+html[data-lubimka-ui] body :is(.btn,.btn-big,.pet-primary,.help-action,.web-primary,.web-link,.chat-primary,.b-tg,
+    .web-dialog form button[type=submit],#chatSend,.fab button):not(.btn-outline,.btn-danger,.help-action-outline,.b-gy) {
+  background:var(--glass-accent)!important;
+  color:#26150c!important;
+  border:1px solid #ffc290!important;
+  box-shadow:inset 0 1px 0 #ffffff5c,0 2px 9px #56260535!important;
+}
+html[data-lubimka-ui] body :is(.choice,.chip,.mini-choice,.chat-filter,.chat-tab,.premium-nav button,.premium-top-nav button,.web-filters button,
+    .web-view-switch button,.pet-tabs button,.web-admin-tabs button,.rem-switch button):is(.sel,.on,[aria-pressed=true],[aria-selected=true],[aria-current=page]),
+html[data-lubimka-ui] body .premium-nav [data-zootaxi-nav],
+html[data-lubimka-ui] body .premium-top-nav [data-zootaxi-nav] {
+  background:var(--glass-selected)!important;color:#ffd0a9!important;border-color:#c7814c!important;
+}
+html[data-lubimka-ui] body :is(button,.choice,.mini-choice,.zootaxi-home-card,a.web-link):focus-visible {
+  outline:2px solid #ffc89b;outline-offset:3px;
+}
+html[data-lubimka-ui] body :is(.web-dialog,.rec-sheet,.edit-sheet,.rem-sheet,.sheet,.qr-dialog,.mood-editor,.family-sheet,.add-sheet,.post-actions-sheet,.sform,.chat-join-form,.web-admin form) {
+  background:var(--glass-panel)!important;
+  color:var(--glass-text);border:1px solid rgba(255,237,221,.22)!important;
+  border-radius:22px;box-shadow:inset 0 1px 0 #ffffff12,0 14px 48px #0005;
+}
+html[data-lubimka-ui] body .web-detail-sheet {border-radius:22px 22px 0 0}
+html[data-lubimka-ui] body :is(.web-dialog,.reg-body,.rec-sheet,.edit-sheet,.post-form,.sform,.rem-sheet,.web-admin,.sheet,.qr-dialog,.chat-join-form,.family-sheet)
+    :is(input:not([type=checkbox],[type=radio],[type=file],[type=range],[type=color],[type=hidden],[type=button],[type=submit]),select,textarea),
+html[data-lubimka-ui] body :is(input.field,textarea.field,select.field,.rem-input,.health-weight-input,input[data-manual-date],input[data-manual-date-time]) {
+  background:var(--glass-input)!important;color:var(--glass-text)!important;border:1px solid #695c53!important;
+  border-radius:14px;font-size:16px;min-width:0;box-sizing:border-box;box-shadow:inset 0 1px 0 #ffffff09;
+  caret-color:#ffae73;color-scheme:dark;
+}
+html[data-lubimka-ui] body option {background-color:#272321;color:var(--glass-text)}
+html[data-lubimka-ui] body :is(.web-dialog,.reg-body,.rec-sheet,.edit-sheet,.post-form,.sform,.rem-sheet,.web-admin,.sheet,.qr-dialog)
+    :is(input,textarea)::placeholder {color:#c0b4aa!important;opacity:1}
+html[data-lubimka-ui] body :is(input,textarea,select):focus-visible {outline:2px solid #ffb67f;outline-offset:1px}
+html[data-lubimka-ui] body :is(.reg-body,.web-dialog,.rec-sheet,.edit-sheet,.sform,.rem-sheet) :is(label:not(.btn),legend) {color:var(--glass-subtle)}
+html[data-lubimka-ui] body :is(.btn-danger,.web-admin-danger,[data-admin-action=hide]) {color:#ffbab0!important;border-color:#995e53!important}
+html[data-lubimka-ui] body :is(button,.btn,.btn-big):disabled {opacity:.55;cursor:not-allowed}
+/* Pigmented glass stays readable when blur is unavailable. Only small,
+   stationary top controls need to sample the background behind them. */
+@supports ((backdrop-filter:blur(6px)) or (-webkit-backdrop-filter:blur(6px))) {
+  html[data-lubimka-ui] :is(.web-quick-actions,.premium-quick) button {backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+}
+@media (hover:hover) and (pointer:fine) {
+  html[data-lubimka-ui] body .web-quick-actions button:hover {
+    background:var(--glass-selected)!important;border-color:#d08b56!important;color:#ffe1c8!important;
+  }
+}
+html[data-lubimka-ui] body .web-quick-actions button:is(:active,:focus-visible) {
+  background:linear-gradient(145deg,#754527,#432b1f)!important;color:#fff0e4!important;border-color:#ffa969!important;
+  box-shadow:inset 0 1px 0 #ffcb9d55!important;
+}
+html[data-lubimka-ui] body #zootaxiHomeCard {
+  gap:clamp(12px,2.5vw,22px);padding:clamp(16px,2vw,24px);border-radius:21px;border:1px solid #ad703f;
+  background:radial-gradient(ellipse at 8% 40%,#80441457,transparent 48%),linear-gradient(120deg,#342318,#211a16 70%);
+  box-shadow:inset 0 1px 0 #ffd3a52b,0 5px 19px #0002;color:#fff6eb;
+}
+#zootaxiHomeCard .zootaxi-home-icon {
+  position:relative;isolation:isolate;flex:0 0 66px;height:38px;align-self:center;margin-bottom:3px;
+  border-radius:11px 11px 6px 6px;transform:perspective(50px) rotateX(12deg);
+  background:linear-gradient(172deg,#ffe3a4,#ffb23f 48%,#ff8733);color:transparent;font-size:0;
+  box-shadow:inset 0 1px 1px #fff2cd,0 4px 0 #32251c,0 6px 0 #846244,0 0 16px #ffab3d39;
+}
+#zootaxiHomeCard .zootaxi-home-icon::before {
+  content:'TAXI';position:absolute;inset:2px 0 auto;text-align:center;font:900 18px/21px system-ui,sans-serif;letter-spacing:.07em;color:#26170c;
+}
+#zootaxiHomeCard .zootaxi-home-icon::after {
+  content:'';position:absolute;inset:auto 7px 5px;height:8px;
+  background:repeating-conic-gradient(#362417 0 25%,transparent 0 50%) 0 0/8px 8px;
+}
+#zootaxiHomeCard small {color:#e4cdbb}
+@media (prefers-reduced-motion:no-preference) {
+  #zootaxiHomeCard .zootaxi-home-icon {animation:lubimka-taxi-light .85s ease-out 1}
+  html[data-lubimka-ui] .web-quick-actions button {transition:background-color .15s,border-color .15s,box-shadow .15s}
+  @keyframes lubimka-taxi-light {from{filter:brightness(.72)}45%{filter:brightness(1.11)}to{filter:brightness(1)}}
+}
+@media (prefers-reduced-transparency:reduce) {
+  html[data-lubimka-ui] {--glass-button:#302b28;--glass-selected:#4b3021}
+  html[data-lubimka-ui] :is(.web-quick-actions,.premium-quick) button {backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+@media (forced-colors:active) {
+  html[data-lubimka-ui] body :is(button,.btn,.choice,.mini-choice,.zootaxi-home-card) {border-color:ButtonText!important}
+  html[data-lubimka-ui] body :focus-visible {outline:2px solid Highlight!important}
+}
