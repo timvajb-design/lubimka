@@ -28,11 +28,15 @@ export function installZootaxi(doc=document, config=window.LubimkaZootaxiConfig)
  doc.defaultView.LubimkaZootaxi=api;
  if(!doc.getElementById('zootaxiHomeCard')){
  const link=doc.createElement('a');link.id='zootaxiHomeCard';link.className='zootaxi-home-card';link.href=base;
+ link.setAttribute('aria-labelledby','zootaxiHomeTitle zootaxiBook');
+ link.setAttribute('aria-describedby','zootaxiHomeDescription');
  const icon=doc.createElement('span');icon.className='zootaxi-home-icon';icon.textContent='↗';icon.setAttribute('aria-hidden','true');
- const copy=doc.createElement('span');const title=doc.createElement('strong');title.textContent='Зоотакси';
- const subtitle=doc.createElement('small');subtitle.textContent='Бережно отвезём любимку. Маршрут, цена и время — по согласованию.';
- copy.append(title,subtitle);link.append(icon,copy);
- const anchor=home.querySelector(source==='website'?'.web-quick-actions':'.premium-hero');
+ const copy=doc.createElement('span');copy.className='zootaxi-home-copy';
+ const title=doc.createElement('strong');title.id='zootaxiHomeTitle';title.textContent='Зоотакси';
+ const subtitle=doc.createElement('small');subtitle.id='zootaxiHomeDescription';subtitle.textContent='Бережно отвезём любимку. Маршрут, цена и время — по согласованию.';
+ const cta=doc.createElement('span');cta.id='zootaxiBook';cta.className='zootaxi-home-cta home-service-cta';cta.textContent='Заказать поездку';
+ copy.append(title,subtitle);link.append(icon,copy,cta);
+ const anchor=home.querySelector(source==='website'?'.web-welcome':'.premium-hero');
  if(anchor)anchor.after(link);else home.prepend(link);
  }
  const nav=doc.getElementById(source==='website'?'premiumTopNav':'premiumNav');
