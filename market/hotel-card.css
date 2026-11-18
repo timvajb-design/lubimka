@@ -1,0 +1,6 @@
+.service-hotel{box-sizing:border-box;margin:12px 0 18px;padding:18px 20px;border:1px solid #875933;border-radius:19px;background:linear-gradient(135deg,#33261e,#211b17);color:#fff4e7;font:15px/1.5 system-ui,sans-serif;text-align:left}
+.service-hotel .service-hotel-type{margin:0 0 5px;color:#ffb884;font-size:12px;font-weight:650}
+.service-hotel h3{margin:0;font-size:21px;line-height:1.25}.service-hotel h3 a{color:inherit;text-decoration:none}
+.service-hotel .service-hotel-address{margin:7px 0 13px;color:#e2cbbb;font-size:14px}
+.service-hotel-actions{display:flex;gap:8px;flex-wrap:wrap}.service-hotel-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;box-sizing:border-box;padding:8px 14px;border-radius:12px;border:1px solid #976742;color:#ffe4c9;text-decoration:none;font-weight:700}
+.service-hotel-actions a:first-child{background:#ffab6d;color:#2b190e;border-color:#ffbd88}.service-hotel a:focus-visible{outline:2px solid #ffc899;outline-offset:3px}

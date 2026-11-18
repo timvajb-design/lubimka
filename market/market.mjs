@@ -1,4 +1,5 @@
 import {KINDS,ICONS,contactURL,placementState,safePicture,money,escapeHTML as e} from './domain.mjs';
+import {createHotelCard,hotelMatches} from './hotel-card.mjs';
 
 const screen=document.getElementById('shop');
 if(screen)mount();
@@ -9,10 +10,11 @@ function mount(){
  while(screen.firstChild)legacy.append(screen.firstChild);
  screen.append(legacy);
  const root=document.createElement('section');root.className='lm';root.setAttribute('aria-label','Магазины и услуги');
- root.innerHTML=`<div class="lm-hero"><span class="lm-hero-mark" aria-hidden="true">🐾</span><div class="lm-eyebrow">Рядом с любимыми</div><h2>Всё для счастливых лап</h2><p>Магазины, груминг и ветклиники. Выбирай и связывайся с продавцом напрямую.</p></div>
+ root.innerHTML=`<div class="lm-hero"><span class="lm-hero-mark" aria-hidden="true">🐾</span><div class="lm-eyebrow">Рядом с любимыми</div><h2>Всё для счастливых лап</h2><p>Магазины, груминг, ветклиники и гостиницы для питомцев.</p></div>
  <div class="lm-topline"><h3>Магазины и услуги</h3><button class="lm-link" data-action="mine">Мой бизнес</button></div>
- <div class="lm-tabs" role="group" aria-label="Категория"><button class="lm-tab" data-kind="" aria-pressed="true">Все</button><button class="lm-tab" data-kind="store" aria-pressed="false">Магазины</button><button class="lm-tab" data-kind="grooming" aria-pressed="false">Груминг</button><button class="lm-tab" data-kind="vet" aria-pressed="false">Ветклиники</button></div>
+ <div class="lm-tabs" role="group" aria-label="Категория"><button class="lm-tab" data-kind="" aria-pressed="true">Все</button><button class="lm-tab" data-kind="store" aria-pressed="false">Магазины</button><button class="lm-tab" data-kind="grooming" aria-pressed="false">Груминг</button><button class="lm-tab" data-kind="vet" aria-pressed="false">Ветклиники</button><button class="lm-tab" data-kind="hotel" aria-pressed="false">Гостиницы</button></div>
  <div class="lm-search"><input type="search" id="lmQuery" maxlength="100" aria-label="Поиск товара, магазина или услуги" placeholder="Товар, магазин, услуга"><input type="search" id="lmCity" maxlength="100" aria-label="Город" placeholder="Город"></div>
+ <div id="lmHotels" hidden></div>
  <div id="lmCatalog" class="lm-grid" aria-live="polite"></div>
  <div class="lm-partner"><h4>У вас бизнес для питомцев?</h4><p>Создайте витрину с товарами или услугами. Покупатели смогут связаться с вами напрямую.</p><div class="lm-row"><div class="lm-price">3 000 ₽ <small>/ месяц</small></div><button class="lm-btn secondary" data-action="create">Разместиться</button></div></div>
  <p class="lm-note">Наличие, запись, оплату и доставку согласовывай с продавцом. Любимка помогает вам найти друг друга.</p>`;
@@ -22,6 +24,8 @@ function mount(){
  const dialog=document.createElement('dialog');dialog.className='lm-dialog';dialog.setAttribute('aria-labelledby','lmDialogTitle');
  dialog.innerHTML='<header class="lm-dialog-head"><h2 id="lmDialogTitle"></h2><button class="lm-close" aria-label="Закрыть">×</button></header><div class="lm-dialog-body"></div>';document.body.append(dialog);
  const body=dialog.querySelector('.lm-dialog-body'),catalog=root.querySelector('#lmCatalog');
+ const hotels=root.querySelector('#lmHotels');
+ hotels.append(createHotelCard(document,'telegram'));
  dialog.querySelector('.lm-close').onclick=()=>dialog.close();
  let kind='',loadVersion=0,searchTimer,mine=[],admin=false,adminRows=[];
  const pending=new Map();
@@ -54,9 +58,19 @@ function mount(){
  const picture=(photo,kind,cls='lm-thumb')=>safePicture(photo)?`<img class="${cls}" src="${e(safePicture(photo))}" alt="" loading="lazy">`:`<span class="${cls}" aria-hidden="true">${ICONS[kind]||'🐾'}</span>`;
  function publicCard(m){return `<article class="lm-card"><button class="lm-card-main" data-detail="${e(m.id)}">${picture(m.photo,m.kind)}<div class="lm-card-copy"><span class="lm-meta">${e(KINDS[m.kind])} · ${e(m.city)}</span><h4>${e(m.name)}</h4><p>${e(m.description)}</p><p>${m.kind==='store'?'Товары':'Услуги'}: ${m.itemCount} · Открыть →</p></div></button></article>`;}
  async function load(){
-   const seq=++loadVersion;catalog.setAttribute('aria-busy','true');catalog.innerHTML='<p class="lm-note">Загружаем витрины…</p>';
-   try{const result=await request('catalog',{kind,query:root.querySelector('#lmQuery').value.trim(),city:root.querySelector('#lmCity').value.trim()});if(seq!==loadVersion)return;
+   const seq=++loadVersion;
+   const query=root.querySelector('#lmQuery').value.trim(),city=root.querySelector('#lmCity').value.trim();
+   const matches=hotelMatches(kind,query,city);
+   hotels.hidden=!matches;
+   if(kind==='hotel'){
+     catalog.removeAttribute('aria-busy');
+     catalog.innerHTML=matches?'':'<div class="lm-empty"><h4>Гостиница не найдена</h4><p>Попробуй другое название или город.</p><button class="lm-btn secondary" data-action="reset">Сбросить фильтры</button></div>';
+     return;
+   }
+   catalog.setAttribute('aria-busy','true');catalog.innerHTML='<p class="lm-note">Загружаем витрины…</p>';
+   try{const result=await request('catalog',{kind,query,city});if(seq!==loadVersion)return;
      const rows=result.merchants||[];
+     if(!rows.length&&matches){catalog.replaceChildren();return;}
      const filtered=kind||root.querySelector('#lmQuery').value||root.querySelector('#lmCity').value;
      catalog.innerHTML=rows.length?rows.map(publicCard).join(''):`<div class="lm-empty"><div class="lm-empty-icon" aria-hidden="true">${filtered?'🔎':'🌱'}</div><h4>${filtered?'Пока ничего не нашлось':'Здесь появятся наши партнёры'}</h4><p>${filtered?'Попробуй другой город или категорию.':'Приглашаем магазины, грумеров и ветклиники. Станьте первым партнёром в своём городе.'}</p><button class="lm-btn secondary" data-action="${filtered?'reset':'create'}">${filtered?'Сбросить фильтры':'Добавить свой бизнес'}</button></div>`;
    }catch(error){if(seq===loadVersion)catalog.innerHTML=`<div class="lm-empty"><h4>Не удалось загрузить витрины</h4>${errorBox(error.message)}<button class="lm-btn secondary" data-action="reload">Попробовать ещё раз</button></div>`;}
