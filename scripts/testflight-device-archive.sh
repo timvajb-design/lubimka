@@ -33,6 +33,6 @@ sdk="$(read_plist "$plist" DTSDKName)"
 [[ "$sdk" == iphoneos* && "$(read_plist "$plist" DTPlatformName)" == iphoneos && "$(read_plist "$plist" CFBundleSupportedPlatforms:0)" == iPhoneOS ]] || fail "Unexpected device SDK or platform: $sdk"
 executable="$app/$(read_plist "$plist" CFBundleExecutable)"
 [[ -f "$executable" ]] || fail 'Missing app executable'
-xcrun lipo -verify_arch arm64 "$executable"
+xcrun lipo "$executable" -verify_arch arm64
 xcrun vtool -show-build "$executable" | awk '$1 == "platform" && $2 == "IOS" { device=1 } END { exit !device }' || fail 'Mach-O is missing the iOS device platform'
 printf 'Verified unsigned Release archive: %s (%s, arm64), %s\n' "$bundle" "$sdk" "$archive"
