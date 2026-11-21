@@ -43,3 +43,13 @@ xcrun simctl boot "$sim_id"
 xcrun simctl bootstatus "$sim_id" -b
 xcrun simctl install "$sim_id" "$scratch/build/Build/Products/Debug-iphonesimulator/Lubimka.app"
 xcrun simctl launch "$sim_id" online.lubimka.app
+xcodebuild -project Lubimka.xcodeproj -scheme Lubimka -configuration Debug \
+  -destination "id=$sim_id" -derivedDataPath "$scratch/build" -parallel-testing-enabled NO \
+  -only-testing:LubimkaUITests/ScannerSmokeTests/testOpenScannerAndReturnToHome test
+if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
+  {
+    echo '### Проверка «Любимки» на iPhone'
+    printf 'Устройство: %s. Среда: %s.\n\n' "${phone##*.}" "${runtime##*.}"
+    echo 'Приложение собрано, установлено и запущено. Пройден UI-тест открытия QR-сканера и возврата на главную.'
+  } >> "$GITHUB_STEP_SUMMARY"
+fi

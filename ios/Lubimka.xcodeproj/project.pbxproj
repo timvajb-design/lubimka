@@ -11,7 +11,16 @@
         A00000000000000000000070 /* LinkPolicy.swift */ = {isa = PBXBuildFile; fileRef = A00000000000000000000066 /* LinkPolicy.swift */; };
         A00000000000000000000071 /* ScannerController.swift */ = {isa = PBXBuildFile; fileRef = A00000000000000000000067 /* ScannerController.swift */; };
         A00000000000000000000072 /* Assets.xcassets */ = {isa = PBXBuildFile; fileRef = A00000000000000000000068 /* Assets.xcassets */; };
+        B00000000000000000000004 /* ScannerSmokeTests.swift */ = {isa = PBXBuildFile; fileRef = B00000000000000000000002 /* ScannerSmokeTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+        B0000000000000000000000D = {isa = PBXContainerItemProxy; containerPortal = A00000000000000000000001 /* Project object */; proxyType = 1; remoteGlobalIDString = A00000000000000000000005; remoteInfo = Lubimka; };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+        B0000000000000000000000C = {isa = PBXTargetDependency; target = A00000000000000000000005 /* Lubimka */; targetProxy = B0000000000000000000000D; };
+/* End PBXTargetDependency section */
 
 /* Begin PBXFileReference section */
         A00000000000000000000064 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -21,32 +30,39 @@
         A00000000000000000000068 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
         A00000000000000000000069 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
         A00000000000000000000032 /* Lubimka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lubimka.app; sourceTree = BUILT_PRODUCTS_DIR; };
+        B00000000000000000000002 /* ScannerSmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerSmokeTests.swift; sourceTree = "<group>"; };
+        B00000000000000000000003 /* LubimkaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LubimkaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-        A00000000000000000000002 = {isa = PBXGroup; children = (A00000000000000000000003 /* Lubimka */, A00000000000000000000004 /* Products */,); sourceTree = "<group>"; };
+        A00000000000000000000002 = {isa = PBXGroup; children = (A00000000000000000000003 /* Lubimka */, B00000000000000000000008 /* LubimkaUITests */, A00000000000000000000004 /* Products */,); sourceTree = "<group>"; };
         A00000000000000000000003 /* Lubimka */ = {isa = PBXGroup; children = (A00000000000000000000064 /* AppDelegate.swift */, A00000000000000000000065 /* BrowserController.swift */, A00000000000000000000066 /* LinkPolicy.swift */, A00000000000000000000067 /* ScannerController.swift */, A00000000000000000000068 /* Assets.xcassets */, A00000000000000000000069 /* Info.plist */,); path = Lubimka; sourceTree = "<group>"; };
-        A00000000000000000000004 /* Products */ = {isa = PBXGroup; children = (A00000000000000000000032 /* Lubimka.app */,); name = Products; sourceTree = "<group>"; };
+        A00000000000000000000004 /* Products */ = {isa = PBXGroup; children = (A00000000000000000000032 /* Lubimka.app */, B00000000000000000000003 /* LubimkaUITests.xctest */,); name = Products; sourceTree = "<group>"; };
+        B00000000000000000000008 /* LubimkaUITests */ = {isa = PBXGroup; children = (B00000000000000000000002 /* ScannerSmokeTests.swift */,); path = LubimkaUITests; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
         A00000000000000000000005 /* Lubimka */ = {isa = PBXNativeTarget; buildConfigurationList = A00000000000000000000016; buildPhases = (A0000000000000000000000A,A0000000000000000000000B,A0000000000000000000000C,); buildRules = (); dependencies = (); name = Lubimka; productName = Lubimka; productReference = A00000000000000000000032; productType = "com.apple.product-type.application"; };
+        B00000000000000000000001 /* LubimkaUITests */ = {isa = PBXNativeTarget; buildConfigurationList = B0000000000000000000000B; buildPhases = (B00000000000000000000005,B00000000000000000000006,B00000000000000000000007,); buildRules = (); dependencies = (B0000000000000000000000C,); name = LubimkaUITests; productName = LubimkaUITests; productReference = B00000000000000000000003; productType = "com.apple.product-type.bundle.ui-testing"; };
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-        A00000000000000000000001 /* Project object */ = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = YES; LastSwiftUpdateCheck = 2600; LastUpgradeCheck = 2600; TargetAttributes = {A00000000000000000000005 = {CreatedOnToolsVersion = 26.0; }; }; }; buildConfigurationList = A00000000000000000000015; compatibilityVersion = "Xcode 14.0"; developmentRegion = ru; hasScannedForEncodings = 0; knownRegions = (ru, Base,); mainGroup = A00000000000000000000002; productRefGroup = A00000000000000000000004; projectDirPath = ""; projectRoot = ""; targets = (A00000000000000000000005 /* Lubimka */,); };
+        A00000000000000000000001 /* Project object */ = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = YES; LastSwiftUpdateCheck = 2600; LastUpgradeCheck = 2600; TargetAttributes = {A00000000000000000000005 = {CreatedOnToolsVersion = 26.0; }; B00000000000000000000001 = {CreatedOnToolsVersion = 26.0; TestTargetID = A00000000000000000000005; }; }; }; buildConfigurationList = A00000000000000000000015; compatibilityVersion = "Xcode 14.0"; developmentRegion = ru; hasScannedForEncodings = 0; knownRegions = (ru, Base,); mainGroup = A00000000000000000000002; productRefGroup = A00000000000000000000004; projectDirPath = ""; projectRoot = ""; targets = (A00000000000000000000005 /* Lubimka */, B00000000000000000000001 /* LubimkaUITests */,); };
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
         A0000000000000000000000A = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A0000000000000000000006E,A0000000000000000000006F,A00000000000000000000070,A00000000000000000000071,); runOnlyForDeploymentPostprocessing = 0; };
+        B00000000000000000000005 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B00000000000000000000004 /* ScannerSmokeTests.swift */,); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXFrameworksBuildPhase section */
         A0000000000000000000000B = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+        B00000000000000000000006 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXResourcesBuildPhase section */
         A0000000000000000000000C = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A00000000000000000000072 /* Assets.xcassets */,); runOnlyForDeploymentPostprocessing = 0; };
+        B00000000000000000000007 = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -106,11 +122,14 @@
                 SWIFT_VERSION = 5.0;
                 TARGETED_DEVICE_FAMILY = "1,2";
             }; name = Release; };
+        B00000000000000000000009 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = YES; MARKETING_VERSION = 1.0.0; PRODUCT_BUNDLE_IDENTIFIER = online.lubimka.app.UITests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = Lubimka; }; name = Debug; };
+        B0000000000000000000000A /* Release */ = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; GENERATE_INFOPLIST_FILE = YES; MARKETING_VERSION = 1.0.0; PRODUCT_BUNDLE_IDENTIFIER = online.lubimka.app.UITests; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; TEST_TARGET_NAME = Lubimka; }; name = Release; };
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
         A00000000000000000000015 = {isa = XCConfigurationList; buildConfigurations = (A0000000000000000000001F,A00000000000000000000020,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
         A00000000000000000000016 = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000021,A00000000000000000000022,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+        B0000000000000000000000B = {isa = XCConfigurationList; buildConfigurations = (B00000000000000000000009,B0000000000000000000000A,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
 /* End XCConfigurationList section */
     };
     rootObject = A00000000000000000000001 /* Project object */;
