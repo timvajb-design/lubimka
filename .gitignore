@@ -1,0 +1,14 @@
+.DS_Store
+**/xcuserdata/
+**/DerivedData/
+**/*.xcarchive/
+**/.gradle/
+**/.kotlin/
+**/build/
+**/local.properties
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+*.p8
+*.ipa

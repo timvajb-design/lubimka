@@ -1,0 +1,36 @@
+name: Native mobile preview
+on:
+  push:
+    branches: [mobile/native-preview]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  android:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Test public link handling
+        working-directory: android
+        run: |
+          mkdir -p "$RUNNER_TEMP/link-tests"
+          javac -d "$RUNNER_TEMP/link-tests" app/src/main/java/online/lubimka/app/Links.java tests/LinksTest.java
+          java -cp "$RUNNER_TEMP/link-tests" online.lubimka.app.LinksTest
+          node --test tests/export.test.mjs
+      - name: Build the test APK and unsigned release bundle
+        working-directory: android
+        run: bash gradlew --no-daemon assembleDebug bundleRelease
+  ios:
+    if: github.event.repository.private == false
+    runs-on: macos-26
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Compile, install and launch on an isolated iPhone simulator
+        run: bash test-ios-simulator.sh

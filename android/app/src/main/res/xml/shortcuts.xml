@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="open_post" android:shortcutShortLabel="@string/short_open_link"
+        android:shortcutLongLabel="@string/open_shared_post" android:icon="@drawable/launcher">
+        <intent android:action="online.lubimka.app.OPEN_POST"
+            android:targetPackage="online.lubimka.app" android:targetClass="online.lubimka.app.MainActivity"/>
+    </shortcut>
+</shortcuts>

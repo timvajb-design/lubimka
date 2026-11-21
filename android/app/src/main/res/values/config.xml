@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Любимка</string>
+    <string name="open_shared_post">Открыть объявление в Любимке</string>
+    <string name="short_open_link">По ссылке</string>
+    <color name="surface">#211B18</color>
+    <color name="accent">#FFAA68</color>
+    <color name="icon_background">#FFFFFF</color>
+    <style name="AppTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:windowBackground">@color/surface</item>
+        <item name="android:statusBarColor">@color/surface</item>
+        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

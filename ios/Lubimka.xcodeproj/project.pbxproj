@@ -1,0 +1,118 @@
+// !$*UTF8*$!
+{
+    archiveVersion = 1;
+    classes = {};
+    objectVersion = 56;
+    objects = {
+
+/* Begin PBXBuildFile section */
+        A0000000000000000000006E /* AppDelegate.swift */ = {isa = PBXBuildFile; fileRef = A00000000000000000000064 /* AppDelegate.swift */; };
+        A0000000000000000000006F /* BrowserController.swift */ = {isa = PBXBuildFile; fileRef = A00000000000000000000065 /* BrowserController.swift */; };
+        A00000000000000000000070 /* LinkPolicy.swift */ = {isa = PBXBuildFile; fileRef = A00000000000000000000066 /* LinkPolicy.swift */; };
+        A00000000000000000000071 /* ScannerController.swift */ = {isa = PBXBuildFile; fileRef = A00000000000000000000067 /* ScannerController.swift */; };
+        A00000000000000000000072 /* Assets.xcassets */ = {isa = PBXBuildFile; fileRef = A00000000000000000000068 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+        A00000000000000000000064 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+        A00000000000000000000065 /* BrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserController.swift; sourceTree = "<group>"; };
+        A00000000000000000000066 /* LinkPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPolicy.swift; sourceTree = "<group>"; };
+        A00000000000000000000067 /* ScannerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerController.swift; sourceTree = "<group>"; };
+        A00000000000000000000068 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+        A00000000000000000000069 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+        A00000000000000000000032 /* Lubimka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lubimka.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+        A00000000000000000000002 = {isa = PBXGroup; children = (A00000000000000000000003 /* Lubimka */, A00000000000000000000004 /* Products */,); sourceTree = "<group>"; };
+        A00000000000000000000003 /* Lubimka */ = {isa = PBXGroup; children = (A00000000000000000000064 /* AppDelegate.swift */, A00000000000000000000065 /* BrowserController.swift */, A00000000000000000000066 /* LinkPolicy.swift */, A00000000000000000000067 /* ScannerController.swift */, A00000000000000000000068 /* Assets.xcassets */, A00000000000000000000069 /* Info.plist */,); path = Lubimka; sourceTree = "<group>"; };
+        A00000000000000000000004 /* Products */ = {isa = PBXGroup; children = (A00000000000000000000032 /* Lubimka.app */,); name = Products; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+        A00000000000000000000005 /* Lubimka */ = {isa = PBXNativeTarget; buildConfigurationList = A00000000000000000000016; buildPhases = (A0000000000000000000000A,A0000000000000000000000B,A0000000000000000000000C,); buildRules = (); dependencies = (); name = Lubimka; productName = Lubimka; productReference = A00000000000000000000032; productType = "com.apple.product-type.application"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+        A00000000000000000000001 /* Project object */ = {isa = PBXProject; attributes = {BuildIndependentTargetsInParallel = YES; LastSwiftUpdateCheck = 2600; LastUpgradeCheck = 2600; TargetAttributes = {A00000000000000000000005 = {CreatedOnToolsVersion = 26.0; }; }; }; buildConfigurationList = A00000000000000000000015; compatibilityVersion = "Xcode 14.0"; developmentRegion = ru; hasScannedForEncodings = 0; knownRegions = (ru, Base,); mainGroup = A00000000000000000000002; productRefGroup = A00000000000000000000004; projectDirPath = ""; projectRoot = ""; targets = (A00000000000000000000005 /* Lubimka */,); };
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+        A0000000000000000000000A = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A0000000000000000000006E,A0000000000000000000006F,A00000000000000000000070,A00000000000000000000071,); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXFrameworksBuildPhase section */
+        A0000000000000000000000B = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+        A0000000000000000000000C = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (A00000000000000000000072 /* Assets.xcassets */,); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+        A0000000000000000000001F /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+                ALWAYS_SEARCH_USER_PATHS = NO;
+                CLANG_ENABLE_MODULES = YES;
+                CLANG_ENABLE_OBJC_ARC = YES;
+                COPY_PHASE_STRIP = NO;
+                DEBUG_INFORMATION_FORMAT = dwarf;
+                ENABLE_TESTABILITY = YES;
+                IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+                SDKROOT = iphoneos;
+                SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+                SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+                SWIFT_COMPILATION_MODE = singlefile;
+            }; name = Debug; };
+        A00000000000000000000020 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+                ALWAYS_SEARCH_USER_PATHS = NO;
+                CLANG_ENABLE_MODULES = YES;
+                CLANG_ENABLE_OBJC_ARC = YES;
+                COPY_PHASE_STRIP = NO;
+                DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+                ENABLE_TESTABILITY = NO;
+                IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+                SDKROOT = iphoneos;
+                SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
+                SWIFT_OPTIMIZATION_LEVEL = "-O";
+                SWIFT_COMPILATION_MODE = wholemodule;
+            }; name = Release; };
+        A00000000000000000000021 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                GENERATE_INFOPLIST_FILE = NO;
+                INFOPLIST_FILE = Lubimka/Info.plist;
+                LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks",);
+                MARKETING_VERSION = 1.0.0;
+                PRODUCT_BUNDLE_IDENTIFIER = online.lubimka.app;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SUPPORTS_MACCATALYST = NO;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = "1,2";
+            }; name = Debug; };
+        A00000000000000000000022 /* Release */ = {isa = XCBuildConfiguration; buildSettings = {
+                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                CODE_SIGN_STYLE = Automatic;
+                CURRENT_PROJECT_VERSION = 1;
+                GENERATE_INFOPLIST_FILE = NO;
+                INFOPLIST_FILE = Lubimka/Info.plist;
+                LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks",);
+                MARKETING_VERSION = 1.0.0;
+                PRODUCT_BUNDLE_IDENTIFIER = online.lubimka.app;
+                PRODUCT_NAME = "$(TARGET_NAME)";
+                SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+                SUPPORTS_MACCATALYST = NO;
+                SWIFT_VERSION = 5.0;
+                TARGETED_DEVICE_FAMILY = "1,2";
+            }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+        A00000000000000000000015 = {isa = XCConfigurationList; buildConfigurations = (A0000000000000000000001F,A00000000000000000000020,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+        A00000000000000000000016 = {isa = XCConfigurationList; buildConfigurations = (A00000000000000000000021,A00000000000000000000022,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+    };
+    rootObject = A00000000000000000000001 /* Project object */;
+}
+

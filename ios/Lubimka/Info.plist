@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+    <key>CFBundleDevelopmentRegion</key><string>ru</string>
+    <key>CFBundleDisplayName</key><string>Любимка</string>
+    <key>CFBundleExecutable</key><string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key><string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+    <key>CFBundleName</key><string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>$(MARKETING_VERSION)</string>
+    <key>CFBundleVersion</key><string>$(CURRENT_PROJECT_VERSION)</string>
+    <key>LSRequiresIPhoneOS</key><true/>
+    <key>NSCameraUsageDescription</key><string>Камера нужна для сканирования QR-адресника питомца и для фото, которое вы решите добавить.</string>
+    <key>NSLocationWhenInUseUsageDescription</key><string>По вашей команде «Любимка» определяет местоположение для поиска объявлений рядом.</string>
+    <key>NSPhotoLibraryUsageDescription</key><string>Вы можете выбрать фото питомца для его карточки или объявления.</string>
+    <key>UIApplicationSceneManifest</key><dict>
+        <key>UIApplicationSupportsMultipleScenes</key><false/>
+        <key>UISceneConfigurations</key><dict>
+            <key>UIWindowSceneSessionRoleApplication</key><array><dict>
+                <key>UISceneConfigurationName</key><string>Любимка</string>
+                <key>UISceneDelegateClassName</key><string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+            </dict></array>
+        </dict>
+    </dict>
+    <key>UIApplicationShortcutItems</key><array><dict>
+        <key>UIApplicationShortcutItemType</key><string>online.lubimka.app.scan</string>
+        <key>UIApplicationShortcutItemTitle</key><string>Сканировать QR-адресник</string>
+        <key>UIApplicationShortcutItemIconSymbolName</key><string>qrcode.viewfinder</string>
+    </dict></array>
+    <key>UILaunchScreen</key><dict><key>UIColorName</key><string>LaunchBackground</string></dict>
+    <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
+    <key>UISupportedInterfaceOrientations~ipad</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationPortraitUpsideDown</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
+</dict></plist>
+
