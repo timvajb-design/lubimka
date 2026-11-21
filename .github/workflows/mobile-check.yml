@@ -32,5 +32,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           persist-credentials: false
+      - name: Build and validate the Release archive for a physical iPhone
+        run: bash scripts/testflight-device-archive.sh "$RUNNER_TEMP/Lubimka-iphoneos.xcarchive"
       - name: Compile, install and launch on an isolated iPhone simulator
         run: bash test-ios-simulator.sh
